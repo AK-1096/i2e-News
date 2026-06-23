@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NewsPulse AI</title>
+  <style>
+    body {
+      font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      color: #1a1a1a;
+    }
+    h1 { margin-bottom: 0.25rem; }
+    .tagline { color: #555; margin-top: 0; }
+    article {
+      border-bottom: 1px solid #ddd;
+      padding: 1rem 0;
+    }
+    article h2 { margin: 0 0 0.25rem; font-size: 1.2rem; }
+    article h2 a { color: #0b5cab; text-decoration: none; }
+    article h2 a:hover { text-decoration: underline; }
+    .meta { color: #666; font-size: 0.85rem; margin: 0 0 0.5rem; }
+    .summary { margin: 0; }
+    .empty, .error { color: #666; }
+  </style>
+</head>
+<body>
+  <h1>NewsPulse AI</h1>
+  <p class="tagline">A curated feed of current AI news.</p>
+  <main id="list">Loading articles&hellip;</main>
+
+  <script>
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    function formatDate(d) {
+      var t = Date.parse(d);
+      if (isNaN(t)) return escapeHtml(d);
+      return new Date(t).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    fetch('data/articles.json')
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (articles) {
+        var list = document.getElementById('list');
+        if (!Array.isArray(articles) || articles.length === 0) {
+          list.innerHTML = '<p class="empty">No articles published yet.</p>';
+          return;
+        }
+        // Most recently added first.
+        articles.sort(function (a, b) {
+          return Date.parse(b.addedDate) - Date.parse(a.addedDate);
+        });
+        list.innerHTML = articles.map(function (a) {
+          var href = 'article.html?id=' + encodeURIComponent(a.id);
+          return '<article>' +
+            '<h2><a href="' + href + '">' + escapeHtml(a.title) + '</a></h2>' +
+            '<p class="meta">' + escapeHtml(a.source) + ' &middot; ' + formatDate(a.publishedDate) + '</p>' +
+            '<p class="summary">' + escapeHtml(a.summary) + '</p>' +
+            '</article>';
+        }).join('');
+      })
+      .catch(function (err) {
+        document.getElementById('list').innerHTML =
+          '<p class="error">Could not load articles: ' + escapeHtml(err.message) + '</p>';
+      });
+  </script>
+</body>
+</html>
