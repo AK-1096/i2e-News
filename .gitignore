@@ -1,2 +1,6 @@
 # Source documents, not site content
 *.docx
+
+# Local tooling and internal records — not for the public site
+.claude/
+session logs/

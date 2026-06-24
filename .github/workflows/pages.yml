@@ -16,7 +16,20 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Gate: the static site's archive is only ever as accurate as articles.json
+  # (NFR-3). Validate the data contract against its schema before publishing, so
+  # a bad agent write fails the build instead of corrupting the live archive.
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate articles.json against schema
+        run: npx --yes ajv-cli@5 validate -s data/articles.schema.json -d data/articles.json
+
   deploy:
+    needs: validate
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

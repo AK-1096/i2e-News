@@ -8,5 +8,135 @@
     "topic": "Latest",
     "publishedDate": "2024-03-04",
     "addedDate": "2026-06-23"
+  },
+  {
+    "id": "claude-3-5-sonnet-2024-06-20",
+    "title": "Introducing Claude 3.5 Sonnet",
+    "url": "https://www.anthropic.com/news/claude-3-5-sonnet",
+    "source": "Anthropic",
+    "summary": "Anthropic released Claude 3.5 Sonnet, which outperforms Claude 3 Opus on key benchmarks at twice the speed and a lower cost, with notable gains in coding and visual reasoning.",
+    "topic": "Latest",
+    "publishedDate": "2024-06-20",
+    "addedDate": "2026-06-24"
+  },
+  {
+    "id": "claude-computer-use-2024-10-22",
+    "title": "Introducing computer use, a new Claude 3.5 Sonnet, and Claude 3.5 Haiku",
+    "url": "https://www.anthropic.com/news/3-5-models-and-computer-use",
+    "source": "Anthropic",
+    "summary": "Anthropic added a public beta for 'computer use', letting Claude operate a desktop by moving the cursor, clicking, and typing, alongside an upgraded Claude 3.5 Sonnet and the new Claude 3.5 Haiku.",
+    "topic": "AI agents",
+    "publishedDate": "2024-10-22",
+    "addedDate": "2026-06-22"
+  },
+  {
+    "id": "claude-3-7-sonnet-2025-02-24",
+    "title": "Claude 3.7 Sonnet and Claude Code",
+    "url": "https://www.anthropic.com/news/claude-3-7-sonnet",
+    "source": "Anthropic",
+    "summary": "Anthropic introduced Claude 3.7 Sonnet, its first hybrid reasoning model with an optional extended-thinking mode, and previewed Claude Code, a command-line tool for agentic coding.",
+    "topic": "Latest",
+    "publishedDate": "2025-02-24",
+    "addedDate": "2026-06-21"
+  },
+  {
+    "id": "openai-gpt-4o-2024-05-13",
+    "title": "Hello GPT-4o",
+    "url": "https://openai.com/index/hello-gpt-4o/",
+    "source": "OpenAI",
+    "summary": "OpenAI unveiled GPT-4o ('omni'), a single model trained end-to-end across text, vision, and audio that enables real-time multimodal interaction at GPT-4 Turbo-level intelligence.",
+    "topic": "Multimodal AI",
+    "publishedDate": "2024-05-13",
+    "addedDate": "2026-06-20"
+  },
+  {
+    "id": "openai-o1-2024-09-12",
+    "title": "Introducing OpenAI o1",
+    "url": "https://openai.com/index/introducing-openai-o1-preview/",
+    "source": "OpenAI",
+    "summary": "OpenAI introduced the o1 series, models trained with reinforcement learning to produce a long internal chain of thought before answering, improving performance on hard science, coding, and math problems.",
+    "topic": "AI reasoning",
+    "publishedDate": "2024-09-12",
+    "addedDate": "2026-06-19"
+  },
+  {
+    "id": "openai-sora-2024-02-15",
+    "title": "Sora: Creating video from text",
+    "url": "https://openai.com/index/sora/",
+    "source": "OpenAI",
+    "summary": "OpenAI announced Sora, a text-to-video model able to generate videos up to a minute long while maintaining visual quality and adherence to the user's prompt.",
+    "topic": "Video generation",
+    "publishedDate": "2024-02-15",
+    "addedDate": "2026-06-18"
+  },
+  {
+    "id": "meta-llama-3-2024-04-18",
+    "title": "Introducing Meta Llama 3",
+    "url": "https://ai.meta.com/blog/meta-llama-3/",
+    "source": "Meta",
+    "summary": "Meta released Llama 3 as openly available 8B and 70B models with improved reasoning, positioning them as the best open-source models in their class across industry benchmarks.",
+    "topic": "Open models",
+    "publishedDate": "2024-04-18",
+    "addedDate": "2026-06-17"
+  },
+  {
+    "id": "meta-llama-3-1-2024-07-23",
+    "title": "Introducing Llama 3.1",
+    "url": "https://ai.meta.com/blog/meta-llama-3-1/",
+    "source": "Meta",
+    "summary": "Meta released Llama 3.1, including a 405B-parameter model, with expanded 128K context, multilingual support, and capabilities competitive with leading closed models.",
+    "topic": "Open models",
+    "publishedDate": "2024-07-23",
+    "addedDate": "2026-06-16"
+  },
+  {
+    "id": "google-gemini-1-5-2024-02-15",
+    "title": "Introducing Gemini 1.5",
+    "url": "https://blog.google/innovation-and-ai/products/google-gemini-next-generation-model-february-2024/",
+    "source": "Google",
+    "summary": "Google announced Gemini 1.5 Pro, a mixture-of-experts model with a breakthrough long-context window of up to 1 million tokens in private preview, matching the prior 1.0 Ultra on many tasks.",
+    "topic": "Long context",
+    "publishedDate": "2024-02-15",
+    "addedDate": "2026-06-15"
+  },
+  {
+    "id": "deepseek-r1-2025-01-20",
+    "title": "DeepSeek-R1 Release",
+    "url": "https://api-docs.deepseek.com/news/news250120",
+    "source": "DeepSeek",
+    "summary": "DeepSeek released DeepSeek-R1, an open MIT-licensed reasoning model trained with reinforcement learning that matches OpenAI o1 on math and reasoning benchmarks, plus six distilled smaller models.",
+    "topic": "AI reasoning",
+    "publishedDate": "2025-01-20",
+    "addedDate": "2026-06-13"
+  },
+  {
+    "id": "mistral-mixtral-8x7b-2023-12-11",
+    "title": "Mixtral of experts",
+    "url": "https://mistral.ai/news/mixtral-of-experts/",
+    "source": "Mistral AI",
+    "summary": "Mistral AI released Mixtral 8x7B, an Apache 2.0-licensed sparse mixture-of-experts model that matches or beats Llama 2 70B and GPT-3.5 on most benchmarks with 6x faster inference.",
+    "topic": "Open models",
+    "publishedDate": "2023-12-11",
+    "addedDate": "2026-06-11"
+  },
+  {
+    "id": "mistral-large-2-2024-07-24",
+    "title": "Mistral Large 2 (Large Enough)",
+    "url": "https://mistral.ai/news/mistral-large-2407/",
+    "source": "Mistral AI",
+    "summary": "Mistral AI announced Mistral Large 2, a 123B-parameter model with a 128K context window, strong multilingual and code performance, and significantly improved reasoning over its predecessor.",
+    "topic": "Open models",
+    "publishedDate": "2024-07-24",
+    "addedDate": "2026-06-09"
+  },
+  {
+    "id": "eu-ai-act-2024-08-01",
+    "title": "AI Act enters into force",
+    "url": "https://commission.europa.eu/news-and-media/news/ai-act-enters-force-2024-08-01_en",
+    "source": "European Commission",
+    "summary": "The European Union's AI Act entered into force on 1 August 2024, introducing a risk-based regulatory framework for artificial intelligence with phased obligations for developers and deployers.",
+    "topic": "AI regulation",
+    "publishedDate": "2024-08-01",
+    "addedDate": "2026-06-08"
   }
 ]

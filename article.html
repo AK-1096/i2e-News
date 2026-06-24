@@ -4,41 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>NewsPulse AI</title>
-  <style>
-    body {
-      font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.5;
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 1.5rem;
-      color: #1a1a1a;
-    }
-    .back { display: inline-block; margin-bottom: 1rem; color: #0b5cab; text-decoration: none; }
-    .back:hover { text-decoration: underline; }
-    h1 { margin: 0 0 0.5rem; }
-    .meta { color: #666; font-size: 0.9rem; margin: 0 0 1rem; }
-    .summary { font-size: 1.05rem; }
-    .source-link a { color: #0b5cab; }
-    .error { color: #666; }
-  </style>
+  <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
   <a class="back" href="index.html">&larr; All articles</a>
-  <main id="article">Loading article&hellip;</main>
+  <main id="article" class="article-view">Loading article&hellip;</main>
 
+  <script src="assets/app.js"></script>
   <script>
-    function escapeHtml(s) {
-      return String(s).replace(/[&<>"']/g, function (c) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-      });
-    }
-
-    function formatDate(d) {
-      var t = Date.parse(d);
-      if (isNaN(t)) return escapeHtml(d);
-      return new Date(t).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-    }
-
     function getId() {
       return new URLSearchParams(window.location.search).get('id');
     }
@@ -49,13 +22,9 @@
     if (!id) {
       container.innerHTML = '<p class="error">No article id specified.</p>';
     } else {
-      fetch('data/articles.json')
-        .then(function (r) {
-          if (!r.ok) throw new Error('HTTP ' + r.status);
-          return r.json();
-        })
+      loadArticles()
         .then(function (articles) {
-          var a = (articles || []).filter(function (x) { return x.id === id; })[0];
+          var a = articles.filter(function (x) { return x.id === id; })[0];
           if (!a) {
             container.innerHTML = '<p class="error">Article not found.</p>';
             return;

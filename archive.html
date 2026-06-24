@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>NewsPulse AI</title>
+  <title>Archive — NewsPulse AI</title>
   <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
-  <h1>NewsPulse AI</h1>
-  <p class="tagline">A curated feed of current AI news.</p>
-  <main id="list">Loading articles&hellip;</main>
-  <p class="archive-link"><a href="archive.html">View full archive &rarr;</a></p>
+  <a class="back" href="index.html">&larr; Back to latest</a>
+  <h1>Archive</h1>
+  <p class="tagline">Every article published to NewsPulse AI.</p>
+  <main id="list">Loading archive&hellip;</main>
 
   <script src="assets/app.js"></script>
   <script>
@@ -21,12 +21,12 @@
           list.innerHTML = '<p class="empty">No articles published yet.</p>';
           return;
         }
-        // FR-S7: front page shows only the most recent items; the rest are in the archive.
-        list.innerHTML = articles.slice(0, RECENT_LIMIT).map(renderListItem).join('');
+        // FR-S4: the archive shows the complete published history, newest-first.
+        list.innerHTML = articles.map(renderListItem).join('');
       })
       .catch(function (err) {
         document.getElementById('list').innerHTML =
-          '<p class="error">Could not load articles: ' + escapeHtml(err.message) + '</p>';
+          '<p class="error">Could not load archive: ' + escapeHtml(err.message) + '</p>';
       });
   </script>
 </body>
