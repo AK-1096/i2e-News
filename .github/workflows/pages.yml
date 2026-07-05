@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Validate data contract
 
 on:
   push:
@@ -7,18 +7,13 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
-# Allow one concurrent deployment; don't cancel an in-progress run.
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
+# NFR-3: keep data/articles.json schema-valid. On agent publishes the real gate is in
+# publish.yml, which validates BEFORE commit so a bad write never reaches main. This workflow
+# is a CI signal for human pushes to main. It intentionally does NOT deploy: deploying is
+# handled solely by GitHub Pages' built-in "Deploy from a branch" builder. (It used to run
+# actions/deploy-pages here, which raced with the branch builder and failed — see publish.yml.)
 jobs:
-  # Gate: the static site's archive is only ever as accurate as articles.json
-  # (NFR-3). Validate the data contract against its schema before publishing, so
-  # a bad agent write fails the build instead of corrupting the live archive.
   validate:
     runs-on: ubuntu-latest
     steps:
@@ -27,22 +22,3 @@ jobs:
 
       - name: Validate articles.json against schema
         run: npx --yes ajv-cli@5 validate -s data/articles.schema.json -d data/articles.json
-
-  deploy:
-    needs: validate
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4

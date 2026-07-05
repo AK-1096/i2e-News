@@ -1,9 +1,11 @@
 name: Publish article
 
 # The curator agent (Copilot Studio) publishes an article by sending a repository_dispatch
-# event with the 8 contract fields in client_payload. This workflow does the whole publish in
-# one shot: upsert into data/articles.json, validate against the schema (NFR-3), commit, and
-# deploy the static site — so publishing needs no expression-heavy logic on the agent side.
+# event with the 8 contract fields in client_payload. This workflow upserts into
+# data/articles.json, validates against the schema (NFR-3), commits, and pushes. The push then
+# triggers GitHub Pages' built-in "Deploy from a branch" builder, which does the actual deploy —
+# so we intentionally do NOT deploy here (that raced with the branch builder and caused
+# "Deployment failed, try again later"). Publishing needs no expression-heavy agent-side logic.
 
 on:
   repository_dispatch:
@@ -11,20 +13,16 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
-# Share the 'pages' concurrency group with the push-triggered deploy so the two never overlap.
+# Serialise publish runs: two dispatches close together would otherwise both commit off the same
+# base and the second push would fail non-fast-forward. Queue them (never cancel a pending publish).
 concurrency:
-  group: pages
+  group: publish-article
   cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,14 +60,4 @@ jobs:
             git commit -m "Publish: ${{ github.event.client_payload.title }}"
             git push
           fi
-
-      # Deploy from this same workflow: a GITHUB_TOKEN commit does not re-trigger pages.yml,
-      # so we build + deploy the freshly-updated site here.
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      # No deploy step: the push above triggers the GitHub Pages branch builder, which deploys.
