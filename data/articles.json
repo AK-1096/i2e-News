@@ -1,5 +1,15 @@
 [
   {
+    "id": "techcrunch-microsoft-frontier-company-2026-07-02",
+    "title": "Microsoft launches its own AI deployment company with $2.5 billion commitment",
+    "url": "https://techcrunch.com/2026/07/02/microsoft-launches-its-own-ai-deployment-company-with-2-5-billion-commitment/",
+    "source": "TechCrunch",
+    "summary": "Microsoft has launched \"Microsoft Frontier Company,\" a $2.5 billion initiative that will embed 6,000 engineers directly inside enterprise customers to build and deploy AI systems. The move follows similar forward-deployed engineering ventures by Amazon, OpenAI, and Anthropic, and will be led by Rodrigo Kede Lima, former president of Microsoft Asia.",
+    "topic": "Latest",
+    "publishedDate": "2026-07-02",
+    "addedDate": "2026-07-05"
+  },
+  {
     "id": "pipeline-test-2026-07-03",
     "title": "Custom connector test",
     "url": "https://github.com/AK-1096/i2e-News",
