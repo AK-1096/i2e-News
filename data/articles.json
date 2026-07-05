@@ -1,13 +1,13 @@
 [
   {
     "id": "pipeline-test-2026-07-03",
-    "title": "Pipeline test: NewsPulse publish path",
+    "title": "Custom connector test",
     "url": "https://github.com/AK-1096/i2e-News",
     "source": "NewsPulse Test",
-    "summary": "End-to-end verification of the repository_dispatch publish pipeline: upsert, schema validation, and Pages deploy.",
+    "summary": "Testing the Publish Article custom connector end-to-end.",
     "topic": "Latest",
     "publishedDate": "2026-07-03",
-    "addedDate": "2026-07-03"
+    "addedDate": "2026-07-05"
   },
   {
     "id": "claude-3-family-2024-03-04",
