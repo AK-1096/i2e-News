@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>NewsPulse AI</title>
+  <title>ALerts</title>
   <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
   <header class="masthead">
     <nav class="masthead__inner" aria-label="Primary">
-      <a class="wordmark" href="index.html">NewsPulse AI</a>
+      <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
       <a class="ghost-link" href="index.html">All articles &rarr;</a>
     </nav>
   </header>
@@ -54,7 +54,7 @@
             );
             return;
           }
-          document.title = a.title + ' — NewsPulse AI';
+          document.title = a.title + ' — ALerts';
           container.innerHTML =
             '<article class="clipping">' +
               '<p class="clipping__chip"><span class="chip">' + escapeHtml(a.topic) + '</span></p>' +
@@ -67,7 +67,7 @@
               '</p>' +
               '<p class="clipping__secondary"><a class="ghost-link" href="index.html">Browse all articles</a></p>' +
               '<footer class="clipping__footnote">' +
-                'Curated by i2e Consulting AI Labs — summaries by the NewsPulse curator agent.' +
+                'Curated by i2e Consulting AI Labs — summaries by the ALerts curator agent.' +
               '</footer>' +
             '</article>';
         })

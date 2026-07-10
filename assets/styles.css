@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Inter:wght@400;500;700&display=swap');
 
 /* ==========================================================================
-   NewsPulse AI — "Switch-Lit" design system
+   ALerts — "Switch-Lit" design system
    Editorial-brutalist, inked hairlines on Manuscript Cream paper. Light only.
    ========================================================================== */
 
@@ -167,16 +167,22 @@ a {
 }
 
 .wordmark {
-  font-family: var(--font-sans);
-  font-size: 15px;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.04em;
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: -0.001em;
   color: var(--color-press-black);
   text-decoration: none;
 }
 
-.wordmark:hover {
-  text-decoration: underline;
+.wordmark__foot {
+  display: inline-block;
+  width: 0.19em;
+  height: 0.145em;
+  background: var(--color-highlighter-lime);
+  border: 1px solid var(--color-press-black);
+  box-sizing: border-box;
+  margin-left: -0.03em;
 }
 
 /* Ghost text link */
@@ -393,11 +399,15 @@ a {
   margin: 0 0 var(--spacing-16);
   font-family: var(--font-display);
   font-weight: var(--font-weight-regular);
-  font-size: clamp(48px, 9vw, 68px);
+  font-size: clamp(64px, 15vw, 150px);
   line-height: 0.9;
   letter-spacing: -0.001em;
   text-transform: uppercase;
   color: var(--color-press-black);
+}
+
+.hero__display .wordmark__foot {
+  border-width: 2px;
 }
 
 .hero__dateline {

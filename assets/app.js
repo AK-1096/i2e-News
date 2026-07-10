@@ -1,4 +1,4 @@
-// NewsPulse AI — shared static-reader logic.
+// ALerts — shared static-reader logic.
 // The static site reads data/articles.json as its only data source (FR-S1);
 // no backend, no AI calls run here (NFR-2/NFR-4).
 
