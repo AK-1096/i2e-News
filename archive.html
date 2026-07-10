@@ -7,26 +7,90 @@
   <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
-  <a class="back" href="index.html">&larr; Back to latest</a>
-  <h1>Archive</h1>
-  <p class="tagline">Every article published to NewsPulse AI.</p>
-  <main id="list">Loading archive&hellip;</main>
+  <header class="masthead">
+    <nav class="masthead__inner" aria-label="Primary">
+      <a class="wordmark" href="index.html">NewsPulse AI</a>
+      <a class="ghost-link" href="index.html">Latest &rarr;</a>
+    </nav>
+  </header>
+
+  <main class="frontpage">
+    <section class="hero">
+      <h1 class="record-heading">The Complete Record</h1>
+      <p class="caption" id="dateline">Every article filed by the curator</p>
+    </section>
+
+    <div id="list">
+      <p class="state-loading">Setting the page&hellip;</p>
+    </div>
+
+    <footer class="frontpage__footer">
+      <a class="pill" href="index.html">Back to latest &rarr;</a>
+      <p class="frontpage__note">
+        Curated by i2e Consulting AI Labs — summaries by the NewsPulse curator agent.
+      </p>
+    </footer>
+  </main>
 
   <script src="assets/app.js"></script>
   <script>
+    // Groups articles by month+year of addedDate. loadArticles() returns
+    // items sorted newest-first, so equal-month runs are always consecutive
+    // and each month is emitted as a single ruled block.
+    function monthLabel(addedDate) {
+      var t = Date.parse(addedDate);
+      if (isNaN(t)) return 'Undated';
+      return new Date(t).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+    }
+
     loadArticles()
       .then(function (articles) {
         var list = document.getElementById('list');
+        var dateline = document.getElementById('dateline');
+
         if (articles.length === 0) {
-          list.innerHTML = '<p class="empty">No articles published yet.</p>';
+          list.innerHTML =
+            '<h2 class="state-card__title">Nothing has been filed yet.</h2>' +
+            '<p class="state-card__body">The curator hasn&rsquo;t published any articles. Check back once the next edition goes out.</p>';
           return;
         }
-        // FR-S4: the archive shows the complete published history, newest-first.
-        list.innerHTML = articles.map(renderListItem).join('');
+
+        if (dateline) {
+          dateline.innerHTML =
+            'Every article filed by the curator &middot; ' + articles.length + ' clippings';
+        }
+
+        var html = '';
+        var currentLabel = null;
+        var groupHtml = '';
+
+        function flushGroup() {
+          if (currentLabel === null) return;
+          html +=
+            '<h2 class="caption month-header">' + escapeHtml(currentLabel) + '</h2>' +
+            '<div class="contents">' + groupHtml + '</div>';
+        }
+
+        for (var i = 0; i < articles.length; i++) {
+          var label = monthLabel(articles[i].addedDate);
+          if (label !== currentLabel) {
+            flushGroup();
+            currentLabel = label;
+            groupHtml = '';
+          }
+          groupHtml += renderListItem(articles[i]);
+        }
+        flushGroup();
+
+        list.innerHTML = html;
       })
       .catch(function (err) {
         document.getElementById('list').innerHTML =
-          '<p class="error">Could not load archive: ' + escapeHtml(err.message) + '</p>';
+          '<div class="card">' +
+            '<h2 class="state-card__title">The record couldn&rsquo;t be loaded.</h2>' +
+            '<p class="state-card__body">Could not load articles: ' + escapeHtml(err.message) + '. Try again in a moment.</p>' +
+            '<a class="ghost-link" href="index.html">Back to latest &rarr;</a>' +
+          '</div>';
       });
   </script>
 </body>
