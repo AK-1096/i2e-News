@@ -1,4 +1,4 @@
-// NewsPulse AI — shared static-reader logic.
+// ALerts — shared static-reader logic.
 // The static site reads data/articles.json as its only data source (FR-S1);
 // no backend, no AI calls run here (NFR-2/NFR-4).
 
@@ -34,12 +34,15 @@ function loadArticles() {
     });
 }
 
-// Render one article as a list row (title links to its per-article view).
+// Render one article as an editorial list row. The headline is the single real
+// link (one tab stop per row); a stretched ::after overlay makes the whole row
+// a click target. Every injected field is escaped; the id is URL-encoded.
 function renderListItem(a) {
   var href = 'article.html?id=' + encodeURIComponent(a.id);
-  return '<article>' +
-    '<h2><a href="' + href + '">' + escapeHtml(a.title) + '</a></h2>' +
-    '<p class="meta">' + escapeHtml(a.source) + ' &middot; ' + formatDate(a.publishedDate) + '</p>' +
-    '<p class="summary">' + escapeHtml(a.summary) + '</p>' +
+  return '<article class="row">' +
+    '<p class="row__chip"><span class="chip">' + escapeHtml(a.topic) + '</span></p>' +
+    '<h2 class="row__headline"><a href="' + href + '">' + escapeHtml(a.title) + '</a></h2>' +
+    '<p class="row__meta caption">' + escapeHtml(a.source) + ' &middot; ' + formatDate(a.publishedDate) + '</p>' +
+    '<p class="row__summary">' + escapeHtml(a.summary) + '</p>' +
     '</article>';
 }

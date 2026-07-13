@@ -3,12 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>NewsPulse AI</title>
+  <title>ALerts</title>
   <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
-  <a class="back" href="index.html">&larr; All articles</a>
-  <main id="article" class="article-view">Loading article&hellip;</main>
+  <header class="masthead">
+    <nav class="masthead__inner" aria-label="Primary">
+      <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
+      <a class="ghost-link" href="index.html">All articles &rarr;</a>
+    </nav>
+  </header>
+
+  <main class="reading">
+    <div id="article">
+      <p class="state-loading">Setting the page&hellip;</p>
+    </div>
+  </main>
 
   <script src="assets/app.js"></script>
   <script>
@@ -16,29 +26,56 @@
       return new URLSearchParams(window.location.search).get('id');
     }
 
+    // Bordered-card state (no id / not found / fetch error), inside the column.
+    function stateCard(title, body) {
+      return '<div class="card">' +
+        '<h2 class="state-card__title">' + title + '</h2>' +
+        '<p class="state-card__body">' + body + '</p>' +
+        '<a class="ghost-link" href="index.html">Back to all articles &rarr;</a>' +
+        '</div>';
+    }
+
     var container = document.getElementById('article');
     var id = getId();
 
     if (!id) {
-      container.innerHTML = '<p class="error">No article id specified.</p>';
+      container.innerHTML = stateCard(
+        'This clipping isn&rsquo;t in the record.',
+        'No article was specified in the link. Head back to the front page to browse what the curator has filed.'
+      );
     } else {
       loadArticles()
         .then(function (articles) {
           var a = articles.filter(function (x) { return x.id === id; })[0];
           if (!a) {
-            container.innerHTML = '<p class="error">Article not found.</p>';
+            container.innerHTML = stateCard(
+              'This clipping isn&rsquo;t in the record.',
+              'We couldn&rsquo;t find an article matching that link. It may have been removed, or the link may be out of date.'
+            );
             return;
           }
-          document.title = a.title + ' — NewsPulse AI';
+          document.title = a.title + ' — ALerts';
           container.innerHTML =
-            '<h1>' + escapeHtml(a.title) + '</h1>' +
-            '<p class="meta">' + escapeHtml(a.source) + ' &middot; ' + formatDate(a.publishedDate) +
-              ' &middot; Topic: ' + escapeHtml(a.topic) + '</p>' +
-            '<p class="summary">' + escapeHtml(a.summary) + '</p>' +
-            '<p class="source-link"><a href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener noreferrer">Read the original at ' + escapeHtml(a.source) + ' &rarr;</a></p>';
+            '<article class="clipping">' +
+              '<p class="clipping__chip"><span class="chip">' + escapeHtml(a.topic) + '</span></p>' +
+              '<h1 class="headline">' + escapeHtml(a.title) + '</h1>' +
+              '<p class="dateline caption">' + escapeHtml(a.source) + ' &middot; ' + formatDate(a.publishedDate) + '</p>' +
+              '<p class="excerpt">' + escapeHtml(a.summary) + '</p>' +
+              '<p class="clipping__action">' +
+                '<a class="btn-accent" href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener noreferrer">' +
+                  'Read the original at ' + escapeHtml(a.source) + ' &rarr;</a>' +
+              '</p>' +
+              '<p class="clipping__secondary"><a class="ghost-link" href="index.html">Browse all articles</a></p>' +
+              '<footer class="clipping__footnote">' +
+                'Curated by i2e Consulting AI Labs — summaries by the ALerts curator agent.' +
+              '</footer>' +
+            '</article>';
         })
         .catch(function (err) {
-          container.innerHTML = '<p class="error">Could not load article: ' + escapeHtml(err.message) + '</p>';
+          container.innerHTML = stateCard(
+            'This clipping couldn&rsquo;t be loaded.',
+            'Something went wrong fetching the record: ' + escapeHtml(err.message) + '. Try again in a moment.'
+          );
         });
     }
   </script>

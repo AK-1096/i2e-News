@@ -1,10 +1,10 @@
-# NewsPulse AI
+# ALerts
 
 A curated feed of current AI news for i2e Consulting — a Proof of Concept from AI Labs.
 
 **Live site:** https://ak-1096.github.io/i2e-News/
 
-NewsPulse AI raises AI awareness across the organisation with a clean, human-curated feed of AI
+ALerts (formerly NewsPulse AI) raises AI awareness across the organisation with a clean, human-curated feed of AI
 developments. It uses a **split-surface** architecture: a curator publishes from inside Teams, and
 everyone reads from a simple static site.
 
