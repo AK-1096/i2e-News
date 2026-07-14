@@ -34,6 +34,46 @@ function loadArticles() {
     });
 }
 
+// --- AI Playbook (data/usecases.json) --------------------------------------
+// Sibling data contract; same no-backend read model as the news path.
+
+// Fetch usecases.json and return the list ordered newest-first by addedDate.
+// Rejects on HTTP/parse failure.
+function loadUsecases() {
+  return fetch('data/usecases.json')
+    .then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function (usecases) {
+      if (!Array.isArray(usecases)) return [];
+      return usecases.slice().sort(function (a, b) {
+        return Date.parse(b.addedDate) - Date.parse(a.addedDate);
+      });
+    });
+}
+
+// Human-readable label for a sourcePlatform enum value.
+function platformLabel(p) {
+  var map = { reddit: 'Reddit', hackernews: 'Hacker News', blog: 'Blog', newsletter: 'Newsletter', youtube: 'YouTube', other: 'Other' };
+  return map[p] || (p ? String(p) : 'Other');
+}
+
+// Render one use-case as an editorial list row (reuses the .row component).
+// Category leads as the chip; the meta line carries platform + tools.
+function renderUsecaseItem(u) {
+  var href = 'usecase.html?id=' + encodeURIComponent(u.id);
+  var tools = Array.isArray(u.tools) ? u.tools.join(' · ') : '';
+  var meta = escapeHtml(platformLabel(u.sourcePlatform));
+  if (tools) meta += ' &middot; ' + escapeHtml(tools);
+  return '<article class="row">' +
+    '<p class="row__chip"><span class="chip">' + escapeHtml(u.category) + '</span></p>' +
+    '<h2 class="row__headline"><a href="' + href + '">' + escapeHtml(u.title) + '</a></h2>' +
+    '<p class="row__meta caption">' + meta + '</p>' +
+    '<p class="row__summary">' + escapeHtml(u.whatItDoes) + '</p>' +
+    '</article>';
+}
+
 // Render one article as an editorial list row. The headline is the single real
 // link (one tab stop per row); a stretched ::after overlay makes the whole row
 // a click target. Every injected field is escaped; the id is URL-encoded.

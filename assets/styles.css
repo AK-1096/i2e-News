@@ -576,3 +576,87 @@ a {
 .month-header:first-of-type {
   margin-top: 0;
 }
+
+/* --------------------------------------------------------------------------
+   AI Playbook — playbook.html (list) + usecase.html (detail).
+   Reuses the masthead, .hero, .contents/.row list, .clipping detail column,
+   .chip, .caption, and .btn-accent from above. These rules are the only
+   Playbook-specific additions: a right-aligned nav group, the standing
+   disclaimer banner, tool chips, and the detail field blocks.
+   -------------------------------------------------------------------------- */
+
+/* Masthead can now hold more than one right-side link; group them on one line. */
+.masthead__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-20);
+}
+
+/* Active nav link carries the 1px underline (DESIGN.md top-nav rule). */
+.masthead__nav .ghost-link[aria-current="page"] {
+  text-decoration: underline;
+}
+
+/* Standing disclaimer — a bordered note, hairline like every other surface. */
+.disclaimer {
+  border: 1px solid var(--color-press-black);
+  border-radius: var(--radius-cards);
+  padding: var(--spacing-16);
+  margin-bottom: var(--spacing-30);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: var(--font-weight-regular);
+  line-height: 1.27;
+  letter-spacing: 0.04em;
+  color: var(--color-press-black);
+  max-width: 70ch;
+}
+
+.disclaimer strong {
+  font-weight: var(--font-weight-bold);
+}
+
+/* Tool chips — cornflower fill to read as a different axis from the lime
+   category chip. Inked outline, same geometry as .chip. */
+.tool-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tool-chip {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.067em;
+  text-transform: uppercase;
+  color: var(--color-press-black);
+  background: var(--color-cornflower-wash);
+  border: 1px solid var(--color-press-black);
+  border-radius: var(--radius-buttons);
+  padding: 6px 10px;
+}
+
+/* Detail-page field block: a caption label over a body paragraph. */
+.field {
+  margin-bottom: var(--spacing-20);
+}
+
+.field__label {
+  margin: 0 0 var(--spacing-8);
+}
+
+.field__body {
+  margin: 0;
+  max-width: 65ch;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.27;
+  letter-spacing: 0.04em;
+  color: var(--color-press-black);
+  white-space: pre-line;
+}
