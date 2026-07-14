@@ -1,23 +1,26 @@
 name: Publish article
 
-# The curator agent (Copilot Studio) publishes an article by sending a repository_dispatch
-# event with the 8 contract fields in client_payload. This workflow upserts into
-# data/articles.json, validates against the schema (NFR-3), commits, and pushes. The push then
-# triggers GitHub Pages' built-in "Deploy from a branch" builder, which does the actual deploy —
-# so we intentionally do NOT deploy here (that raced with the branch builder and caused
-# "Deployment failed, try again later"). Publishing needs no expression-heavy agent-side logic.
+# The curator agent (Copilot Studio) publishes by sending a repository_dispatch event with the
+# contract fields in client_payload. Two event types share this workflow:
+#   - publish-article → data/articles.json (news path, unchanged)
+#   - publish-usecase → data/usecases.json (AI Playbook path)
+# Each branch upserts, validates against its schema (NFR-3 / FR-U8) BEFORE commit, then commits and
+# pushes. The push triggers GitHub Pages' built-in "Deploy from a branch" builder, which does the
+# actual deploy — so we intentionally do NOT deploy here (that raced with the branch builder and
+# caused "Deployment failed, try again later"). Publishing needs no expression-heavy agent-side logic.
 
 on:
   repository_dispatch:
-    types: [publish-article]
+    types: [publish-article, publish-usecase]
 
 permissions:
   contents: write
 
-# Serialise publish runs: two dispatches close together would otherwise both commit off the same
-# base and the second push would fail non-fast-forward. Queue them (never cancel a pending publish).
+# Serialise ALL publish runs (news + playbook): two dispatches close together would otherwise both
+# commit off the same base and the second push would fail non-fast-forward. One shared lane covers
+# both event types because both push to main. Queue them (never cancel a pending publish).
 concurrency:
-  group: publish-article
+  group: publish
   cancel-in-progress: false
 
 jobs:
@@ -32,8 +35,11 @@ jobs:
         with:
           node-version: 20
 
+      # --- News path (publish-article) -------------------------------------
       - name: Upsert article into the data contract
+        if: github.event.action == 'publish-article'
         env:
+          PUBLISH_TARGET: article
           ART_ID: ${{ github.event.client_payload.id }}
           ART_TITLE: ${{ github.event.client_payload.title }}
           ART_URL: ${{ github.event.client_payload.url }}
@@ -47,15 +53,42 @@ jobs:
       # Same gate as pages.yml: a bad write fails here, before commit/deploy, so the live
       # archive is never corrupted (NFR-3).
       - name: Validate articles.json against schema
+        if: github.event.action == 'publish-article'
         run: npx --yes ajv-cli@5 validate -s data/articles.schema.json -d data/articles.json
 
+      # --- Playbook path (publish-usecase) ---------------------------------
+      - name: Upsert use-case into the data contract
+        if: github.event.action == 'publish-usecase'
+        env:
+          PUBLISH_TARGET: usecase
+          UC_ID: ${{ github.event.client_payload.id }}
+          UC_TITLE: ${{ github.event.client_payload.title }}
+          UC_TOOLS: ${{ toJSON(github.event.client_payload.tools) }}
+          UC_CATEGORY: ${{ github.event.client_payload.category }}
+          UC_WHAT_IT_DOES: ${{ github.event.client_payload.whatItDoes }}
+          UC_WHAT_IT_IMPROVES: ${{ github.event.client_payload.whatItImproves }}
+          UC_HOW_TO_TRY: ${{ github.event.client_payload.howToTry }}
+          UC_SOURCE_URL: ${{ github.event.client_payload.sourceUrl }}
+          UC_SOURCE_PLATFORM: ${{ github.event.client_payload.sourcePlatform }}
+          UC_AUTHOR: ${{ github.event.client_payload.author }}
+          UC_DIFFICULTY: ${{ github.event.client_payload.difficulty }}
+          UC_CURATOR_VERIFIED: ${{ github.event.client_payload.curatorVerified }}
+          UC_PUBLISHED: ${{ github.event.client_payload.publishedDate }}
+          UC_ADDED: ${{ github.event.client_payload.addedDate }}
+        run: node scripts/upsert-article.mjs
+
+      - name: Validate usecases.json against schema
+        if: github.event.action == 'publish-usecase'
+        run: npx --yes ajv-cli@5 validate -s data/usecases.schema.json -d data/usecases.json
+
+      # --- Shared commit ---------------------------------------------------
       - name: Commit the updated data contract
         run: |
           git config user.name "newspulse-bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/articles.json
+          git add data/articles.json data/usecases.json
           if git diff --cached --quiet; then
-            echo "No change to data/articles.json (idempotent republish); skipping commit."
+            echo "No change to the data contract (idempotent republish); skipping commit."
           else
             git commit -m "Publish: ${{ github.event.client_payload.title }}"
             git push
