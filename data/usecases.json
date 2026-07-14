@@ -1,8 +1,27 @@
 [
   {
+    "id": "hn-spec-driven-ai-workflow-2026-04-15",
+    "title": "Treat every feature as a thinking problem first: spec-driven AI development",
+    "tools": [
+      "Claude Code",
+      "Claude"
+    ],
+    "category": "workflow",
+    "whatItDoes": "A five-stage loop for building with AI agents: rubber-duck the problem with the model, write a short PRD, break it into issues, let the agent implement, then review with AI-assisted audits including mutation testing to verify test coverage.",
+    "whatItImproves": "Moves cognitive effort upstream — problems get caught at the spec stage instead of through trial-and-error coding, and the audit stage catches weak tests the implementation produced.",
+    "howToTry": "1. Start a conversation with your agent to frame and validate the problem before any code. 2. Have it write a short PRD and break it into issues. 3. Implement issue by issue. 4. Finish with an AI review pass and mutation testing on the new tests.",
+    "sourceUrl": "https://news.ycombinator.com/item?id=47775653",
+    "sourcePlatform": "hackernews",
+    "curatorVerified": false,
+    "publishedDate": "2026-04-15",
+    "addedDate": "2026-07-14"
+  },
+  {
     "id": "simonwillison-judgement-lower-power-subagent-2026-07-03",
     "title": "Let the model pick a cheaper sub-model for grunt work",
-    "tools": ["Claude Code"],
+    "tools": [
+      "Claude Code"
+    ],
     "category": "workflow",
     "whatItDoes": "Instead of prescribing exactly how the agent should work, add a standing instruction telling it to use its own judgement to choose an appropriate lower-power model and run that work in a subagent. Judgement-heavy reasoning stays in the main loop while routine implementation is delegated down.",
     "whatItImproves": "Cuts token spend noticeably without a visible drop in quality or velocity — Simon Willison reported getting a ton of work done while his Claude allowance shrank far more slowly than before.",
@@ -18,7 +37,9 @@
   {
     "id": "hn-claude-code-daily-driver-skills-subagents-2026-05-27",
     "title": "Run Claude Code as a daily driver with CLAUDE.md, skills, subagents and MCPs",
-    "tools": ["Claude Code"],
+    "tools": [
+      "Claude Code"
+    ],
     "category": "integration",
     "whatItDoes": "A walkthrough of using Claude Code as an everyday development tool by layering its advanced features: a project CLAUDE.md for standing context, reusable skills, task-scoped subagents, plugins, and MCP servers that connect the agent to external systems.",
     "whatItImproves": "Turns ad-hoc prompting into a repeatable setup — shared project context and reusable skills cut ramp-up on each task and keep the agent consistent across a team.",
@@ -34,7 +55,11 @@
   {
     "id": "simonwillison-unreasonable-effectiveness-of-html-2026-05-08",
     "title": "Ask for an HTML artifact instead of Markdown for rich explanations",
-    "tools": ["Claude Code", "Claude", "ChatGPT"],
+    "tools": [
+      "Claude Code",
+      "Claude",
+      "ChatGPT"
+    ],
     "category": "prompting-technique",
     "whatItDoes": "When you want an explanation, review, or report, prompt the model to produce a self-contained HTML artifact rather than Markdown. HTML lets it add SVG diagrams, color-coded severity, inline margin annotations, and in-page navigation that plain text can't express.",
     "whatItImproves": "Complex output becomes far more navigable and scannable — a PR review or technical explainer with diagrams and severity coloring reads in a fraction of the time versus a wall of Markdown.",
