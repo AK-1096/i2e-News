@@ -1,0 +1,72 @@
+{
+  "description": "Admin-definable registry of AI Playbook discovery sources (BRD addendum §6). Mirrors the website knowledge sources configured on the curator agent; keep the two in sync (see runbook). 'enabled: false' entries are the documented reserve bench, not discovered by default.",
+  "updated": "2026-07-14",
+  "sources": [
+    {
+      "platform": "reddit",
+      "name": "r/ChatGPT (top-weekly)",
+      "url": "https://www.reddit.com/r/ChatGPT/top/?t=week",
+      "enabled": true
+    },
+    {
+      "platform": "hackernews",
+      "name": "Hacker News front page + Algolia search",
+      "url": "https://news.ycombinator.com",
+      "enabled": true
+    },
+    {
+      "platform": "blog",
+      "name": "Simon Willison's Weblog",
+      "url": "https://simonwillison.net",
+      "enabled": true
+    },
+    {
+      "platform": "newsletter",
+      "name": "Ben's Bites (web archive)",
+      "url": "https://www.bensbites.com",
+      "enabled": true
+    },
+    {
+      "platform": "youtube",
+      "name": "AI Engineer",
+      "url": "https://www.youtube.com/@aiDotEngineer",
+      "enabled": true
+    },
+    {
+      "platform": "youtube",
+      "name": "Matt Pocock",
+      "url": "https://www.youtube.com/@mattpocockuk",
+      "enabled": true
+    },
+    {
+      "platform": "reddit",
+      "name": "r/ClaudeAI",
+      "url": "https://www.reddit.com/r/ClaudeAI/",
+      "enabled": false
+    },
+    {
+      "platform": "reddit",
+      "name": "r/LocalLLaMA",
+      "url": "https://www.reddit.com/r/LocalLLaMA/",
+      "enabled": false
+    },
+    {
+      "platform": "blog",
+      "name": "Anthropic Cookbook",
+      "url": "https://github.com/anthropics/anthropic-cookbook",
+      "enabled": false
+    },
+    {
+      "platform": "blog",
+      "name": "OpenAI Cookbook",
+      "url": "https://cookbook.openai.com",
+      "enabled": false
+    },
+    {
+      "platform": "other",
+      "name": "Product Hunt AI",
+      "url": "https://www.producthunt.com/topics/artificial-intelligence",
+      "enabled": false
+    }
+  ]
+}

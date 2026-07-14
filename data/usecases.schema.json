@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ALerts AI Playbook usecases.json",
+  "description": "The data contract between the curator agent (write, publish-usecase) and the static Playbook reader (read). Sibling of articles.schema.json.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "id",
+      "title",
+      "tools",
+      "category",
+      "whatItDoes",
+      "whatItImproves",
+      "howToTry",
+      "sourceUrl",
+      "sourcePlatform",
+      "curatorVerified",
+      "publishedDate",
+      "addedDate"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Stable unique slug; used in the usecase.html?id= URL, e.g. reddit-recursive-prompting-2026-07-10."
+      },
+      "title": { "type": "string", "minLength": 1, "description": "Short, imperative where possible." },
+      "tools": {
+        "type": "array",
+        "minItems": 1,
+        "items": { "type": "string", "minLength": 1 },
+        "description": "Tool names the technique applies to; drives the tool filter + sanctioned toggle."
+      },
+      "category": {
+        "type": "string",
+        "enum": ["prompting-technique", "workflow", "automation", "integration"],
+        "description": "One of the four Playbook categories."
+      },
+      "whatItDoes": {
+        "type": "string",
+        "minLength": 1,
+        "description": "1-3 sentences: the technique itself."
+      },
+      "whatItImproves": {
+        "type": "string",
+        "minLength": 1,
+        "description": "1-2 sentences: the before/after — time saved, quality gained, step removed."
+      },
+      "howToTry": {
+        "type": "string",
+        "minLength": 1,
+        "description": "2-5 short steps to reproduce it."
+      },
+      "sourceUrl": {
+        "type": "string",
+        "pattern": "^https?://",
+        "description": "Original post/video/article (link-out target)."
+      },
+      "sourcePlatform": {
+        "type": "string",
+        "enum": ["reddit", "hackernews", "blog", "newsletter", "youtube", "other"],
+        "description": "Which Playbook source the entry came from."
+      },
+      "author": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Handle/name credit for the original poster (optional)."
+      },
+      "difficulty": {
+        "type": "string",
+        "enum": ["beginner", "intermediate", "advanced"],
+        "description": "Self-select hint for a mixed-skill audience (optional)."
+      },
+      "curatorVerified": {
+        "type": "boolean",
+        "description": "Set at the confirmation gate; default false."
+      },
+      "publishedDate": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "description": "Original publication date of the source (YYYY-MM-DD)."
+      },
+      "addedDate": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "description": "When the curator published it via the agent (YYYY-MM-DD); defaults repo-side to publish day."
+      }
+    }
+  }
+}

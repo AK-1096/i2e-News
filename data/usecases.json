@@ -1,0 +1,50 @@
+[
+  {
+    "id": "simonwillison-judgement-lower-power-subagent-2026-07-03",
+    "title": "Let the model pick a cheaper sub-model for grunt work",
+    "tools": ["Claude Code"],
+    "category": "workflow",
+    "whatItDoes": "Instead of prescribing exactly how the agent should work, add a standing instruction telling it to use its own judgement to choose an appropriate lower-power model and run that work in a subagent. Judgement-heavy reasoning stays in the main loop while routine implementation is delegated down.",
+    "whatItImproves": "Cuts token spend noticeably without a visible drop in quality or velocity — Simon Willison reported getting a ton of work done while his Claude allowance shrank far more slowly than before.",
+    "howToTry": "1. Open your Claude Code memory / CLAUDE.md. 2. Add a line like: 'For coding tasks, use your judgement to decide an appropriate lower-power model and run that in a subagent.' 3. Let the agent decide per-task which model fits. 4. Watch usage and correct the guidance if it under- or over-delegates.",
+    "sourceUrl": "https://simonwillison.net/2026/Jul/3/judgement/",
+    "sourcePlatform": "blog",
+    "author": "Simon Willison",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-07-03",
+    "addedDate": "2026-07-14"
+  },
+  {
+    "id": "hn-claude-code-daily-driver-skills-subagents-2026-05-27",
+    "title": "Run Claude Code as a daily driver with CLAUDE.md, skills, subagents and MCPs",
+    "tools": ["Claude Code"],
+    "category": "integration",
+    "whatItDoes": "A walkthrough of using Claude Code as an everyday development tool by layering its advanced features: a project CLAUDE.md for standing context, reusable skills, task-scoped subagents, plugins, and MCP servers that connect the agent to external systems.",
+    "whatItImproves": "Turns ad-hoc prompting into a repeatable setup — shared project context and reusable skills cut ramp-up on each task and keep the agent consistent across a team.",
+    "howToTry": "1. Add a CLAUDE.md at your repo root with project conventions. 2. Capture recurring workflows as skills. 3. Delegate scoped work to subagents. 4. Wire in an MCP server for the external tools you use most.",
+    "sourceUrl": "https://news.ycombinator.com/item?id=48289950",
+    "sourcePlatform": "hackernews",
+    "author": "arps18",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-05-27",
+    "addedDate": "2026-07-14"
+  },
+  {
+    "id": "simonwillison-unreasonable-effectiveness-of-html-2026-05-08",
+    "title": "Ask for an HTML artifact instead of Markdown for rich explanations",
+    "tools": ["Claude Code", "Claude", "ChatGPT"],
+    "category": "prompting-technique",
+    "whatItDoes": "When you want an explanation, review, or report, prompt the model to produce a self-contained HTML artifact rather than Markdown. HTML lets it add SVG diagrams, color-coded severity, inline margin annotations, and in-page navigation that plain text can't express.",
+    "whatItImproves": "Complex output becomes far more navigable and scannable — a PR review or technical explainer with diagrams and severity coloring reads in a fraction of the time versus a wall of Markdown.",
+    "howToTry": "1. Feed the model your content (e.g. a diff or doc). 2. Explicitly ask for an HTML artifact, not Markdown. 3. Name the interactive elements you want: tables, color-coded findings, in-page anchors. 4. Ask for semantic CSS styling for clarity.",
+    "sourceUrl": "https://simonwillison.net/2026/May/8/unreasonable-effectiveness-of-html/",
+    "sourcePlatform": "blog",
+    "author": "Simon Willison (via Thariq Shihipar)",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2026-05-08",
+    "addedDate": "2026-07-14"
+  }
+]
