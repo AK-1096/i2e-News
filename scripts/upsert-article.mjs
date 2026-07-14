@@ -1,76 +1,154 @@
-// Upsert a single article into data/articles.json (the data contract).
+// Upsert a single record into a data-contract file (data/articles.json or data/usecases.json).
 //
-// Reads the 8 contract fields from ART_* environment variables (populated from a
-// repository_dispatch client_payload by .github/workflows/publish.yml) and performs an
-// idempotent upsert by `id`: if an article with the same id already exists it is replaced
-// in place; otherwise the new article is prepended (newest-first). The file is written back
-// pretty-printed (2-space indent + trailing newline) so diffs stay clean.
+// Which contract is written is selected by PUBLISH_TARGET ("article" — default — or "usecase"),
+// so the news path (publish-article) and the AI Playbook path (publish-usecase) share one script
+// and one idempotent-upsert-by-`id` implementation. Fields are read from prefixed environment
+// variables (ART_* / UC_*) populated from a repository_dispatch client_payload by
+// .github/workflows/publish.yml. Existing id → replace in place; new id → prepend (newest-first).
+// The file is written back pretty-printed (2-space indent + trailing newline) so diffs stay clean.
 //
-// The result is validated against data/articles.schema.json in the workflow *after* this
-// script runs, so a malformed payload fails the build instead of corrupting the live archive.
+// The result is validated against the matching JSON Schema in the workflow *after* this script
+// runs, so a malformed payload fails the build instead of corrupting the live data.
 
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const DATA_FILE = join(ROOT, "data", "articles.json");
-
-// Contract field order — matches data/articles.schema.json (additionalProperties: false).
-const FIELD_ORDER = ["id", "title", "url", "source", "summary", "topic", "publishedDate", "addedDate"];
 
 const todayUtc = () => new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
-function readEnv() {
-  const article = {
-    id: process.env.ART_ID,
-    title: process.env.ART_TITLE,
-    url: process.env.ART_URL,
-    source: process.env.ART_SOURCE,
-    summary: process.env.ART_SUMMARY,
-    topic: process.env.ART_TOPIC || "Latest",
-    publishedDate: process.env.ART_PUBLISHED,
-    addedDate: process.env.ART_ADDED || todayUtc(),
-  };
+// --- Target definitions -----------------------------------------------------
+// Each target maps the contract's field order to a builder that reads its value
+// from the environment. `required` fields fail the run loudly when empty/missing;
+// fields not in `required` are optional and are omitted when empty.
 
-  // Fail loudly on missing required fields so the workflow surfaces a clear error.
-  const missing = FIELD_ORDER.filter((k) => !article[k] || String(article[k]).trim() === "");
+const TARGETS = {
+  article: {
+    file: join(ROOT, "data", "articles.json"),
+    label: "article",
+    // Contract field order — matches data/articles.schema.json (additionalProperties: false).
+    fields: {
+      id: () => process.env.ART_ID,
+      title: () => process.env.ART_TITLE,
+      url: () => process.env.ART_URL,
+      source: () => process.env.ART_SOURCE,
+      summary: () => process.env.ART_SUMMARY,
+      topic: () => process.env.ART_TOPIC || "Latest",
+      publishedDate: () => process.env.ART_PUBLISHED,
+      addedDate: () => process.env.ART_ADDED || todayUtc(),
+    },
+    required: ["id", "title", "url", "source", "summary", "topic", "publishedDate", "addedDate"],
+  },
+  usecase: {
+    file: join(ROOT, "data", "usecases.json"),
+    label: "use-case",
+    // Contract field order — matches data/usecases.schema.json (additionalProperties: false).
+    fields: {
+      id: () => process.env.UC_ID,
+      title: () => process.env.UC_TITLE,
+      tools: () => parseList(process.env.UC_TOOLS),
+      category: () => process.env.UC_CATEGORY,
+      whatItDoes: () => process.env.UC_WHAT_IT_DOES,
+      whatItImproves: () => process.env.UC_WHAT_IT_IMPROVES,
+      howToTry: () => process.env.UC_HOW_TO_TRY,
+      sourceUrl: () => process.env.UC_SOURCE_URL,
+      sourcePlatform: () => process.env.UC_SOURCE_PLATFORM,
+      author: () => process.env.UC_AUTHOR,
+      difficulty: () => process.env.UC_DIFFICULTY,
+      curatorVerified: () => parseBool(process.env.UC_CURATOR_VERIFIED),
+      publishedDate: () => process.env.UC_PUBLISHED,
+      addedDate: () => process.env.UC_ADDED || todayUtc(),
+    },
+    required: [
+      "id", "title", "tools", "category", "whatItDoes", "whatItImproves", "howToTry",
+      "sourceUrl", "sourcePlatform", "curatorVerified", "publishedDate", "addedDate",
+    ],
+  },
+};
+
+// Tools arrive as a JSON array string (["a","b"]) or a comma-separated list. Both normalise
+// to a trimmed, non-empty string[].
+function parseList(raw) {
+  if (raw == null || String(raw).trim() === "") return [];
+  const s = String(raw).trim();
+  if (s.startsWith("[")) {
+    try {
+      const arr = JSON.parse(s);
+      if (Array.isArray(arr)) return arr.map((x) => String(x).trim()).filter(Boolean);
+    } catch {
+      /* fall through to comma-split */
+    }
+  }
+  return s.split(",").map((x) => x.trim()).filter(Boolean);
+}
+
+// curatorVerified is always present (default false). Only the exact string "true" is true.
+function parseBool(raw) {
+  return String(raw).trim().toLowerCase() === "true";
+}
+
+function isEmpty(v) {
+  if (v == null) return true;
+  if (Array.isArray(v)) return v.length === 0;
+  if (typeof v === "boolean") return false; // false is a valid value, not "missing"
+  return String(v).trim() === "";
+}
+
+function buildRecord(target) {
+  const raw = {};
+  for (const [key, read] of Object.entries(target.fields)) raw[key] = read();
+
+  const missing = target.required.filter((k) => isEmpty(raw[k]));
   if (missing.length > 0) {
-    console.error(`upsert-article: missing required field(s): ${missing.join(", ")}`);
+    console.error(`upsert-${target.label}: missing required field(s): ${missing.join(", ")}`);
     process.exit(1);
   }
 
-  // Normalise into contract order and trim stray whitespace.
+  // Normalise into contract order; trim strings, keep arrays/booleans; drop empty optionals.
   const ordered = {};
-  for (const k of FIELD_ORDER) ordered[k] = String(article[k]).trim();
+  for (const key of Object.keys(target.fields)) {
+    const v = raw[key];
+    if (isEmpty(v) && !target.required.includes(key)) continue; // omit empty optional
+    if (Array.isArray(v)) ordered[key] = v;
+    else if (typeof v === "boolean") ordered[key] = v;
+    else ordered[key] = String(v).trim();
+  }
   return ordered;
 }
 
 async function main() {
-  const article = readEnv();
+  const targetName = process.env.PUBLISH_TARGET || "article";
+  const target = TARGETS[targetName];
+  if (!target) {
+    console.error(`upsert: unknown PUBLISH_TARGET "${targetName}" (expected article | usecase)`);
+    process.exit(1);
+  }
 
-  let articles;
+  const record = buildRecord(target);
+
+  let records;
   try {
-    articles = JSON.parse(await readFile(DATA_FILE, "utf8"));
+    records = JSON.parse(await readFile(target.file, "utf8"));
   } catch (err) {
-    console.error(`upsert-article: could not read/parse ${DATA_FILE}: ${err.message}`);
+    console.error(`upsert-${target.label}: could not read/parse ${target.file}: ${err.message}`);
     process.exit(1);
   }
-  if (!Array.isArray(articles)) {
-    console.error("upsert-article: articles.json is not a JSON array");
+  if (!Array.isArray(records)) {
+    console.error(`upsert-${target.label}: ${target.file} is not a JSON array`);
     process.exit(1);
   }
 
-  const existingIndex = articles.findIndex((a) => a && a.id === article.id);
+  const existingIndex = records.findIndex((r) => r && r.id === record.id);
   if (existingIndex >= 0) {
-    articles[existingIndex] = article; // replace in place — idempotent
-    console.log(`upsert-article: replaced existing article "${article.id}"`);
+    records[existingIndex] = record; // replace in place — idempotent
+    console.log(`upsert-${target.label}: replaced existing "${record.id}"`);
   } else {
-    articles.unshift(article); // prepend — newest first
-    console.log(`upsert-article: added new article "${article.id}"`);
+    records.unshift(record); // prepend — newest first
+    console.log(`upsert-${target.label}: added new "${record.id}"`);
   }
 
-  await writeFile(DATA_FILE, JSON.stringify(articles, null, 2) + "\n", "utf8");
+  await writeFile(target.file, JSON.stringify(records, null, 2) + "\n", "utf8");
 }
 
 main();
