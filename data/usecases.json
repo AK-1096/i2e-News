@@ -71,5 +71,44 @@
     "curatorVerified": false,
     "publishedDate": "2026-05-08",
     "addedDate": "2026-07-14"
+  },
+  {
+    "id": "youtube-aiengineer-evals-error-analysis-2026-01-15",
+    "title": "Build AI evals by reading your traces, not guessing",
+    "tools": [
+      "Claude",
+      "ChatGPT"
+    ],
+    "category": "workflow",
+    "whatItDoes": "A grounded four-step method for building trustworthy evals for an LLM app: read a sample of real production traces, write freeform 'open coding' notes on whatever went wrong, cluster those notes into a handful of recurring failure modes, then build a targeted eval — often an LLM-as-judge — for the most common ones. Demonstrated live on real production data from Nurture Boss.",
+    "whatItImproves": "Replaces vibes-based 'looks good to me' checking with evals grounded in your own failures, so you measure the few things that actually break instead of chasing generic benchmark scores.",
+    "howToTry": "1. Pull 30-100 real traces from your app. 2. Open-code each one: write a short freeform note on any problem, with no predefined categories. 3. Axial-code: cluster those notes into a small set of named failure modes. 4. Build an eval (a code check or an LLM-as-judge) for the top failure modes, and validate the judge against your own human labels before trusting it.",
+    "sourceUrl": "https://www.youtube.com/watch?v=J7N9FMouSKg",
+    "sourcePlatform": "youtube",
+    "author": "Hamel Husain & Shreya Shankar (AI Engineer)",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-01-15",
+    "addedDate": "2026-07-15"
+  },
+  {
+    "id": "youtube-mattpocock-grill-me-planning-2026-04-24",
+    "title": "Let the agent grill you with questions before it writes any code",
+    "tools": [
+      "Claude Code",
+      "Cursor",
+      "Codex"
+    ],
+    "category": "workflow",
+    "whatItDoes": "The 'Grill Me' skill flips planning around: instead of the agent jumping to code from a short brief, it interrogates you with 20-80 questions about the feature — surfacing design branches, edge cases, and hidden assumptions — and the resulting dialogue becomes the design concept you build from.",
+    "whatItImproves": "Misalignment and missing requirements get caught during planning instead of after implementation, and because you answer the questions yourself you stay connected to the codebase rather than losing the thread in a specs-to-code handoff.",
+    "howToTry": "1. Install or recreate a 'grill me' skill that instructs the agent to ask questions instead of writing code. 2. Paste your rough brief (e.g. a Slack message) and let it interrogate you. 3. Answer the questions together until the plan is aligned. 4. Turn the conversation into a PRD and break it into thin vertical slices before letting the agent implement.",
+    "sourceUrl": "https://youtu.be/-QFHIoCo-Ko",
+    "sourcePlatform": "youtube",
+    "author": "Matt Pocock",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-04-24",
+    "addedDate": "2026-07-15"
   }
 ]
