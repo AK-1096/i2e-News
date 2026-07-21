@@ -11,8 +11,8 @@
     <nav class="masthead__inner" aria-label="Primary">
       <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
       <span class="masthead__nav">
-        <a class="ghost-link" href="playbook.html">Playbook</a>
-        <a class="ghost-link" href="index.html">All articles &rarr;</a>
+        <a class="ghost-link" href="playbook.html">AI Guide</a>
+        <a class="ghost-link" href="index.html">Front Page</a>
       </span>
     </nav>
   </header>
@@ -64,6 +64,7 @@
               '<h1 class="headline">' + escapeHtml(a.title) + '</h1>' +
               '<p class="dateline caption">' + escapeHtml(a.source) + ' &middot; ' + formatDate(a.publishedDate) + '</p>' +
               '<p class="excerpt">' + escapeHtml(a.summary) + '</p>' +
+              renderRelevance(a.relevance) +
               '<p class="clipping__action">' +
                 '<a class="btn-accent" href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener noreferrer">' +
                   'Read the original at ' + escapeHtml(a.source) + ' &rarr;</a>' +

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AI Playbook — ALerts</title>
+  <title>AI Guide — ALerts</title>
   <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
@@ -11,8 +11,8 @@
     <nav class="masthead__inner" aria-label="Primary">
       <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
       <span class="masthead__nav">
-        <a class="ghost-link" href="index.html">News</a>
-        <a class="ghost-link" href="playbook.html" aria-current="page">Playbook</a>
+        <a class="ghost-link" href="index.html">Front Page</a>
+        <a class="ghost-link" href="playbook.html" aria-current="page">AI Guide</a>
         <a class="ghost-link" href="archive.html">Archive &rarr;</a>
       </span>
     </nav>
@@ -20,16 +20,26 @@
 
   <main class="frontpage">
     <section class="hero">
-      <h1 class="record-heading">The AI Playbook</h1>
+      <h1 class="headline">AI Guide</h1>
       <p class="caption" id="dateline">Community-sourced ways people use AI &amp; its tools</p>
     </section>
 
-    <p class="disclaimer">
-      <strong>Community-sourced techniques.</strong> Playbook entries are gathered from public
-      internet sources and are not official i2e guidance. Verify results before relying on them,
-      follow i2e&rsquo;s data-handling policies, and never enter confidential, client, or personal
-      data into tools not approved by IT.
-    </p>
+    <aside class="disclaimer" role="note" aria-label="Important notice">
+      <p class="disclaimer__kicker">Read this first</p>
+      <p class="disclaimer__lead">
+        <strong>Community-sourced techniques.</strong> AI Guide entries are gathered from public
+        internet sources. Verify results before relying on them, follow i2e&rsquo;s data-handling
+        policies, and never enter confidential, client, or personal data into tools not approved by IT.
+      </p>
+      <ul class="disclaimer__points">
+        <li>This content is shared for knowledge purposes only.</li>
+        <li>It is based on general industry practices, not on any specific project or client.</li>
+        <li>It is <strong>not</strong> official i2e IT guidance.</li>
+        <li>For official guidance, contact the IT team before acting on anything here.</li>
+      </ul>
+    </aside>
+
+    <div id="role-filter"></div>
 
     <div id="list">
       <p class="state-loading">Setting the page&hellip;</p>
@@ -62,12 +72,24 @@
             'Community-sourced ways people use AI &amp; its tools &middot; ' + usecases.length + ' entries';
         }
 
-        list.innerHTML = '<div class="contents">' + usecases.map(renderUsecaseItem).join('') + '</div>';
+        function render(role) {
+          var filtered = filterByRole(usecases, role);
+          if (filtered.length === 0) {
+            list.innerHTML =
+              '<h2 class="state-card__title">Nothing filed for this role yet.</h2>' +
+              '<p class="state-card__body">No entries match that role right now. Try another role, or pick &ldquo;Everyone&rdquo; to see the full guide.</p>';
+            return;
+          }
+          list.innerHTML = '<div class="contents">' + filtered.map(renderUsecaseItem).join('') + '</div>';
+        }
+
+        renderRoleFilter(document.getElementById('role-filter'), render);
+        render(null);
       })
       .catch(function (err) {
         document.getElementById('list').innerHTML =
           '<div class="card">' +
-            '<h2 class="state-card__title">The Playbook couldn&rsquo;t be loaded.</h2>' +
+            '<h2 class="state-card__title">The AI Guide couldn&rsquo;t be loaded.</h2>' +
             '<p class="state-card__body">Could not load use-cases: ' + escapeHtml(err.message) + '. Try again in a moment.</p>' +
             '<a class="ghost-link" href="index.html">Back to news &rarr;</a>' +
           '</div>';
