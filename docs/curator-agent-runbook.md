@@ -153,6 +153,26 @@ message body):
 > the raw connector body fails (400 "Location invalid" for a URL in `Post in`; 400 "Message body is
 > missing" when it shapes the JSON wrong).
 
+> ⚠️ **The Teams body is HTML — the link must be an anchor tag, not a bare URL.** The flow's
+> **"Post message in a chat or channel"** action sends `Body/messageBody` as HTML (it wraps the AI
+> `Text` input in `<p class="editor-paragraph">…</p>`). In HTML mode Teams does **not** reliably
+> auto-link a raw URL, so a message like `Read more: https://…` renders as dead, unclickable text.
+> Instruct the agent to emit the live link as an explicit anchor:
+> `<a href="https://ak-1096.github.io/i2e-News/article.html?id=<id>">Read here</a>`. This is an
+> **instruction fix on the "Post to Teams" tool** (the `Text` input description / Customize) — no flow
+> edit is needed, and the action has no separate Content-Type toggle to change.
+>
+> **Append this rule — do not overwrite the Description.** The tool Description already holds the
+> guardrails (*call once, only after "Publish article" succeeds; never post on failure*). Add the
+> anchor rule to the **end** of that text (or, more targeted, put it in the `Text` input's
+> **Customize**), so those guardrails are preserved. The character in `id=<id>` is a **placeholder** —
+> the agent substitutes the real slug, it is never hardcoded.
+>
+> The `<id>` is **not returned by "Publish article"** — that POST returns **204 No Content**. The agent
+> must **reuse the exact same `id` slug it sent in the publish `client_payload`** (§5), never mint a
+> new one. *(Regression seen Jul 2026: an AI-filled bare URL posted as plain text; fixed by mandating
+> the anchor tag.)*
+
 ### Step 8 — Configurability · **FR-A8 / FR-A9**
 - Keep the **discovery sources** (knowledge sources) and the **Teams Team/Channel** editable in the
   agent/flow config, not hardcoded in logic, so they can be changed without a rebuild (**NFR-8**).
@@ -200,6 +220,55 @@ intentionally do **not** run `deploy-pages` (that raced with the branch builder 
 now a **validation-only** CI check on human pushes.
 
 > Keep the PAT in the **custom connector's API-key auth**, not embedded in any flow expression.
+
+### Content generation guidance — titles, `audience` & `relevance` (extends FR-A5)
+
+This governs **what the agent writes** at the confirmation gate (§3 Step 5) for **every article**
+**and** every **AI Guide** entry (`playbook.html` / `data/usecases.json`). It sits alongside the
+factual-summary rule (FR-A5 / NFR-2) — the same "generate, then show before write" gate applies.
+
+**Title guidance.** Write the `title` for the **reader's benefit and day-to-day applicability**, not
+as a restatement of the technical concept. Lead with what an i2e employee can *do* with it; keep it
+factual (no hype), but framed around the payoff rather than the mechanism.
+
+> **Before → after.**
+> `Anthropic ships prompt caching API` → `Cut your AI tool costs: reuse prompts instead of resending them`
+>
+> Both are truthful; the second tells the reader why it matters to their day.
+
+**New required content fields.** The agent must now generate these for **every article and every AI
+Guide entry**, and show them in the same confirmation gate before publishing:
+
+- **`audience`** — an array of **one or more** role slugs, drawn from **exactly** this set (use the
+  slug on the left; the label on the right is for the reader-facing UI):
+
+  | slug | role |
+  |------|------|
+  | `developers` | Developers / Coders |
+  | `qa` | QA |
+  | `ba-pc` | BAs & Project Coordinators |
+  | `pm` | Project Managers |
+  | `non-technical` | Non-technical users |
+
+  Pick the roles who **genuinely** benefit — use multiple when warranted, but do not list a role that
+  gains nothing concrete just to widen reach.
+
+- **`relevance`** — an object of **three short, second-person** strings, each answering one question
+  concretely (no generic filler), written for **i2e Consulting employees** — an IT-services
+  consultancy serving **pharma / life-science** clients:
+  - `whyRelevant` — *"Why is this relevant to me?"*
+  - `dailyImpact` — *"How will this help in my daily job?"*
+  - `practicalBenefit` — *"What practical benefit does it provide?"*
+
+> ⚠️ **Concrete, not generic.** "It boosts productivity" fails the bar. Anchor each string in a real
+> i2e task — e.g. a validation-document review, a client status update, a GxP-aware data-handling
+> step — so the reader recognises their own work.
+
+> The confirmation gate (§3 Step 5, "Ask before running" = **Yes**) must show the curator the
+> drafted `title`, `audience`, and all three `relevance` strings **before** the publish POST fires.
+> The data contract / schema that carries these fields lives under `data/` and is versioned there —
+> keep the field names above verbatim (`audience`, `relevance.whyRelevant`, `relevance.dailyImpact`,
+> `relevance.practicalBenefit`) so the payload validates.
 
 ---
 

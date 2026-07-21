@@ -166,13 +166,16 @@ a {
   gap: var(--spacing-16);
 }
 
+/* The wordmark is a logo: it must never break across lines. Below ~650px the
+   full 52px would crowd the nav and wrap, so it scales down to a 34px floor. */
 .wordmark {
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: clamp(34px, 8vw, 52px);
   line-height: 1;
   letter-spacing: -0.001em;
   color: var(--color-press-black);
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .wordmark__foot {
@@ -553,21 +556,10 @@ a {
 }
 
 /* --------------------------------------------------------------------------
-   archive.html — "the complete record" page heading + month-grouped list.
-   Reuses .hero (spacing only), .caption, .contents, and .row from the
-   front-page section above; these two rules are the only archive-specific
-   additions.
+   archive.html — month-grouped list. Reuses .hero / .hero__display, .caption,
+   .contents, and .row from the front-page section above; these two rules are
+   the only archive-specific additions.
    -------------------------------------------------------------------------- */
-
-.record-heading {
-  font-family: var(--font-serif);
-  font-weight: var(--font-weight-light);
-  font-size: clamp(32px, 6vw, 57px);
-  line-height: 1.04;
-  letter-spacing: 0.002em;
-  color: var(--color-press-black);
-  margin: 0 0 var(--spacing-16);
-}
 
 .month-header {
   margin: var(--spacing-40) 0 var(--spacing-12);
@@ -578,10 +570,10 @@ a {
 }
 
 /* --------------------------------------------------------------------------
-   AI Playbook — playbook.html (list) + usecase.html (detail).
+   AI Guide — playbook.html (list) + usecase.html (detail).
    Reuses the masthead, .hero, .contents/.row list, .clipping detail column,
    .chip, .caption, and .btn-accent from above. These rules are the only
-   Playbook-specific additions: a right-aligned nav group, the standing
+   AI Guide-specific additions: a right-aligned nav group, the standing
    disclaimer banner, tool chips, and the detail field blocks.
    -------------------------------------------------------------------------- */
 
@@ -597,23 +589,61 @@ a {
   text-decoration: underline;
 }
 
-/* Standing disclaimer — a bordered note, hairline like every other surface. */
+/* Standing disclaimer — a newspaper public-notice box. Stays inside the
+   Switch-Lit system (inked border, press-black text) but the signal-yellow
+   accent (the wordmark foot lime) fires as a heavy left stripe + a solid
+   kicker block, so the notice is impossible to scroll past unnoticed. */
 .disclaimer {
-  border: 1px solid var(--color-press-black);
+  border: 2px solid var(--color-press-black);
+  border-left: 8px solid var(--color-highlighter-lime);
   border-radius: var(--radius-cards);
-  padding: var(--spacing-16);
+  padding: var(--spacing-16) var(--spacing-20);
   margin-bottom: var(--spacing-30);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: var(--font-weight-regular);
-  line-height: 1.27;
-  letter-spacing: 0.04em;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
   color: var(--color-press-black);
   max-width: 70ch;
 }
 
 .disclaimer strong {
   font-weight: var(--font-weight-bold);
+}
+
+/* Solid lime kicker block — the "READ THIS FIRST" public-notice label. */
+.disclaimer__kicker {
+  display: inline-block;
+  margin: 0 0 var(--spacing-12);
+  padding: 3px var(--spacing-8);
+  background: var(--color-highlighter-lime);
+  border: 1px solid var(--color-press-black);
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-press-black);
+}
+
+.disclaimer__lead {
+  margin: 0;
+}
+
+/* The four standing points, ruled as a tight list. */
+.disclaimer__points {
+  margin: var(--spacing-12) 0 0;
+  padding-left: 1.15em;
+}
+
+.disclaimer__points li {
+  margin-bottom: var(--spacing-6);
+}
+
+.disclaimer__points li:last-child {
+  margin-bottom: 0;
 }
 
 /* Tool chips — cornflower fill to read as a different axis from the lime
@@ -639,6 +669,464 @@ a {
   border: 1px solid var(--color-press-black);
   border-radius: var(--radius-buttons);
   padding: 6px 10px;
+}
+
+/* --------------------------------------------------------------------------
+   Role filter bar — archive.html + playbook.html (rendered by renderRoleFilter).
+   Bordered pill chips; the selected chip inverts to solid press-black ink.
+   -------------------------------------------------------------------------- */
+.role-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-12) var(--spacing-16);
+  margin-bottom: var(--spacing-40);
+}
+
+.role-filter__kicker {
+  letter-spacing: 0.12em;
+}
+
+.role-filter__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-8);
+}
+
+.role-chip {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.067em;
+  text-transform: uppercase;
+  color: var(--color-press-black);
+  background: transparent;
+  border: 1px solid var(--color-press-black);
+  border-radius: var(--radius-pills);
+  padding: 8px 15px;
+  min-height: 34px;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.role-chip:hover {
+  background: var(--color-paper-shadow);
+}
+
+.role-chip.is-selected {
+  background: var(--color-press-black);
+  color: var(--color-manuscript-cream);
+}
+
+.role-chip.is-selected:hover {
+  background: var(--color-press-black);
+}
+
+/* Inverted strip variant — the front-page full-width black band. The .role-strip
+   wrapper paints the edge-to-edge band; .role-filter--strip constrains the row
+   to the page measure. Chips outline in cream; the selected chip goes solid lime. */
+.role-strip {
+  background: var(--color-press-black);
+  border-bottom: 1px solid var(--color-press-black);
+}
+
+.role-filter--strip {
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  padding: var(--spacing-12) var(--spacing-30);
+  gap: var(--spacing-10) var(--spacing-12);
+}
+
+.role-filter--strip .role-filter__kicker {
+  color: var(--color-manuscript-cream);
+}
+
+.role-filter--strip .role-chip {
+  color: var(--color-manuscript-cream);
+  background: transparent;
+  border-color: var(--color-manuscript-cream);
+}
+
+.role-filter--strip .role-chip:hover {
+  background: rgba(249, 249, 247, 0.14);
+}
+
+.role-filter--strip .role-chip.is-selected,
+.role-filter--strip .role-chip.is-selected:hover {
+  color: var(--color-press-black);
+  background: var(--color-highlighter-lime);
+  border-color: var(--color-highlighter-lime);
+}
+
+/* Cream focus ring so the outline stays visible on the black band. */
+.role-filter--strip .role-chip:focus-visible {
+  outline-color: var(--color-manuscript-cream);
+}
+
+/* --------------------------------------------------------------------------
+   index.html — "Twin Broadsheets" front page.
+   Two section fronts side by side (Alerts / AI Guide) under the inverted role
+   strip; a single hairline divides them. Each panel: kicker, display title,
+   serif sub, a lead story, up to three ruled rows, and a pinned footer pill.
+   Stacks to one column below 900px. Reuses .chip, .pill, .state-* and the
+   shared role-filter logic; these rules are the front-page-specific additions.
+   -------------------------------------------------------------------------- */
+.twin {
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+  padding: var(--spacing-30);
+}
+
+.panel--news {
+  border-right: 1px solid var(--color-press-black);
+}
+
+.panel--guide {
+  background: var(--color-paper-shadow);
+}
+
+.panel__kicker {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-10);
+  margin: 0 0 var(--spacing-6);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-press-black);
+}
+
+.panel__kicker-sq {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  background: var(--color-highlighter-lime);
+  border: 1px solid var(--color-press-black);
+}
+
+.panel__title {
+  margin: 0 0 var(--spacing-5);
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-regular);
+  font-size: 44px;
+  line-height: 0.95;
+  letter-spacing: -0.001em;
+  text-transform: uppercase;
+  color: var(--color-press-black);
+}
+
+/* The section title is the panel's own entry point — it goes to the same place
+   as the pill at the panel foot. Underline only on hover/focus so the display
+   type stays clean at rest. */
+.panel__title a {
+  color: inherit;
+  text-decoration: none;
+  text-underline-offset: 0.06em;
+  text-decoration-thickness: 2px;
+}
+
+.panel__title a:hover,
+.panel__title a:focus-visible {
+  text-decoration: underline;
+}
+
+.panel__sub {
+  margin: 0 0 var(--spacing-19);
+  font-family: var(--font-serif);
+  font-weight: var(--font-weight-light);
+  font-size: 15px;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  color: #333333;
+}
+
+/* Body flexes to fill, so the footer pill pins to the panel bottom. */
+.panel__body {
+  flex: 1 1 auto;
+}
+
+/* Lead story — a top hairline sets it off from the sub. */
+.panel__lead {
+  border-top: 1px solid var(--color-press-black);
+  padding: var(--spacing-15) 0 var(--spacing-16);
+}
+
+.panel__lead-chip {
+  margin: 0 0 var(--spacing-8);
+}
+
+.panel__lead-headline {
+  margin: 0 0 var(--spacing-6);
+  max-width: 46ch;
+  font-family: var(--font-serif);
+  font-weight: var(--font-weight-regular);
+  font-size: 24px;
+  line-height: 1.12;
+  letter-spacing: 0;
+}
+
+.panel__lead-headline a {
+  color: var(--color-press-black);
+  text-decoration: none;
+}
+
+.panel__lead-headline a:hover {
+  text-decoration: underline;
+}
+
+.panel__lead-summary {
+  margin: 0;
+  max-width: 46ch;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: #333333;
+}
+
+.panel__meta {
+  margin: var(--spacing-8) 0 0;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #555555;
+}
+
+/* Ruled row list — the next three stories. Sage hairlines, lighter than the
+   lead's press-black rule. */
+.panel__rows {
+  border-top: 1px solid var(--color-sage-border);
+}
+
+.panel__row {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+  padding: 11px 0;
+  border-bottom: 1px solid var(--color-sage-border);
+}
+
+.panel__row:last-child {
+  border-bottom: none;
+}
+
+.panel__row-title {
+  font-family: var(--font-serif);
+  font-weight: var(--font-weight-regular);
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.panel__row-title a {
+  color: var(--color-press-black);
+  text-decoration: none;
+}
+
+/* Stretched link: the whole row is one click target, one tab stop. */
+.panel__row-title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.panel__row:hover .panel__row-title a {
+  text-decoration: underline;
+}
+
+.panel__row:has(.panel__row-title a:focus-visible) {
+  outline: 2px solid var(--color-press-black);
+  outline-offset: 2px;
+}
+
+.panel__row-title a:focus-visible {
+  outline: none;
+}
+
+.panel__row-meta {
+  flex: none;
+  padding-top: 3px;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #555555;
+  white-space: nowrap;
+}
+
+/* Compact in-panel states keep the panel title + footer visible around them. */
+.panel__empty {
+  border-top: 1px solid var(--color-sage-border);
+  padding-top: var(--spacing-16);
+}
+
+.panel__empty .state-card__title {
+  font-size: 22px;
+}
+
+/* Footer pill pinned to the panel bottom. */
+.panel__foot {
+  margin: var(--spacing-20) 0 0;
+}
+
+/* Slim front-page footer beneath the twin grid. */
+.twin-footer {
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  padding: var(--spacing-20) var(--spacing-30) var(--spacing-30);
+  border-top: none;
+  justify-content: flex-start;
+}
+
+/* Full-bleed + full-height front page (index.html only, scoped via the
+   body.frontpage--full class). The masthead inner, role strip, twin grid and
+   footer stretch edge-to-edge with a shared inner gutter so the wordmark, the
+   strip label/chips and each panel's content align to one left line. The page
+   is a min-height:100vh flex column so the twin grid (and thus the Guide tint
+   and center divider) always reach the footer. Other pages keep the
+   1200px-capped masthead untouched. */
+body.frontpage--full {
+  --front-gutter: 56px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+body.frontpage--full .masthead__inner,
+body.frontpage--full .role-filter--strip,
+body.frontpage--full .twin,
+body.frontpage--full .twin-footer {
+  max-width: none;
+  margin: 0;
+}
+
+body.frontpage--full .masthead__inner,
+body.frontpage--full .role-filter--strip,
+body.frontpage--full .twin-footer,
+body.frontpage--full .panel {
+  padding-inline: var(--front-gutter);
+}
+
+/* Twin grid takes the remaining height; its single row fills, so both panels
+   stretch to the footer and each pill stays pinned at the panel foot. */
+body.frontpage--full .twin {
+  flex: 1 1 auto;
+  grid-template-rows: 1fr;
+}
+
+/* Stack to a single column; the divider moves under the news panel. */
+@media (max-width: 900px) {
+  .twin {
+    grid-template-columns: 1fr;
+  }
+
+  .panel {
+    min-height: 0;
+  }
+
+  .panel--news {
+    border-right: none;
+    border-bottom: 1px solid var(--color-press-black);
+  }
+
+  /* Stacked layout: drop the forced full height, natural content heights. */
+  body.frontpage--full {
+    --front-gutter: 24px;
+    display: block;
+    min-height: 0;
+  }
+
+  body.frontpage--full .twin {
+    flex: none;
+    grid-template-rows: none;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Match the mobile gutter used by the panel/strip/footer rules below so the
+     masthead wordmark stays on the same left line. */
+  body.frontpage--full {
+    --front-gutter: 16px;
+  }
+
+  .role-filter--strip {
+    padding: var(--spacing-10) var(--spacing-16);
+  }
+
+  .panel {
+    padding: var(--spacing-20) var(--spacing-16);
+  }
+
+  .twin-footer {
+    padding: var(--spacing-16) var(--spacing-16) var(--spacing-30);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   "Why this matters to you" block — article.html + usecase.html (renderRelevance).
+   A hairline-bordered section echoing the field blocks, with a single small
+   lime marker beside the kicker (the wordmark-foot motif) as the only accent.
+   -------------------------------------------------------------------------- */
+.relevance {
+  border: 1px solid var(--color-press-black);
+  border-radius: var(--radius-cards);
+  padding: var(--spacing-20);
+  margin-bottom: var(--spacing-30);
+  max-width: 70ch;
+}
+
+.relevance__kicker {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  margin: 0 0 var(--spacing-16);
+  letter-spacing: 0.12em;
+}
+
+.relevance__marker {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  background: var(--color-highlighter-lime);
+  border: 1px solid var(--color-press-black);
+}
+
+.relevance__entry {
+  margin-bottom: var(--spacing-16);
+}
+
+.relevance__entry:last-child {
+  margin-bottom: 0;
+}
+
+.relevance__label {
+  margin: 0 0 var(--spacing-6);
+}
+
+.relevance__body {
+  margin: 0;
+  max-width: 65ch;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.27;
+  letter-spacing: 0.04em;
+  color: var(--color-press-black);
 }
 
 /* Detail-page field block: a caption label over a body paragraph. */

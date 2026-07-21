@@ -11,17 +11,19 @@
     <nav class="masthead__inner" aria-label="Primary">
       <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
       <span class="masthead__nav">
-        <a class="ghost-link" href="playbook.html">Playbook</a>
-        <a class="ghost-link" href="index.html">Latest &rarr;</a>
+        <a class="ghost-link" href="playbook.html">AI Guide</a>
+        <a class="ghost-link" href="index.html">Front Page</a>
       </span>
     </nav>
   </header>
 
   <main class="frontpage">
     <section class="hero">
-      <h1 class="record-heading">The Complete Record</h1>
+      <h1 class="hero__display" aria-label="ALerts">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</h1>
       <p class="caption" id="dateline">Every article filed by the curator</p>
     </section>
+
+    <div id="role-filter"></div>
 
     <div id="list">
       <p class="state-loading">Setting the page&hellip;</p>
@@ -46,6 +48,34 @@
       return new Date(t).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
     }
 
+    // Build the month-grouped markup for a given (already filtered) list.
+    // Months with no surviving articles are never emitted, so an empty month
+    // header can't appear. Returns '' when nothing matches.
+    function renderGrouped(articles) {
+      var html = '';
+      var currentLabel = null;
+      var groupHtml = '';
+
+      function flushGroup() {
+        if (currentLabel === null || groupHtml === '') return;
+        html +=
+          '<h2 class="caption month-header">' + escapeHtml(currentLabel) + '</h2>' +
+          '<div class="contents">' + groupHtml + '</div>';
+      }
+
+      for (var i = 0; i < articles.length; i++) {
+        var label = monthLabel(articles[i].addedDate);
+        if (label !== currentLabel) {
+          flushGroup();
+          currentLabel = label;
+          groupHtml = '';
+        }
+        groupHtml += renderListItem(articles[i]);
+      }
+      flushGroup();
+      return html;
+    }
+
     loadArticles()
       .then(function (articles) {
         var list = document.getElementById('list');
@@ -63,29 +93,20 @@
             'Every article filed by the curator &middot; ' + articles.length + ' clippings';
         }
 
-        var html = '';
-        var currentLabel = null;
-        var groupHtml = '';
-
-        function flushGroup() {
-          if (currentLabel === null) return;
-          html +=
-            '<h2 class="caption month-header">' + escapeHtml(currentLabel) + '</h2>' +
-            '<div class="contents">' + groupHtml + '</div>';
-        }
-
-        for (var i = 0; i < articles.length; i++) {
-          var label = monthLabel(articles[i].addedDate);
-          if (label !== currentLabel) {
-            flushGroup();
-            currentLabel = label;
-            groupHtml = '';
+        function render(role) {
+          var filtered = filterByRole(articles, role);
+          var html = renderGrouped(filtered);
+          if (html === '') {
+            list.innerHTML =
+              '<h2 class="state-card__title">Nothing filed for this role yet.</h2>' +
+              '<p class="state-card__body">No clippings match that role right now. Try another role, or pick &ldquo;Everyone&rdquo; to see the full record.</p>';
+            return;
           }
-          groupHtml += renderListItem(articles[i]);
+          list.innerHTML = html;
         }
-        flushGroup();
 
-        list.innerHTML = html;
+        renderRoleFilter(document.getElementById('role-filter'), render);
+        render(null);
       })
       .catch(function (err) {
         document.getElementById('list').innerHTML =

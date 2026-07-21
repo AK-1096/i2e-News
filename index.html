@@ -6,65 +6,231 @@
   <title>ALerts</title>
   <link rel="stylesheet" href="assets/styles.css">
 </head>
-<body>
+<body class="frontpage--full">
   <header class="masthead">
     <nav class="masthead__inner" aria-label="Primary">
       <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
       <span class="masthead__nav">
-        <a class="ghost-link" href="playbook.html">Playbook</a>
         <a class="ghost-link" href="archive.html">Archive &rarr;</a>
       </span>
     </nav>
   </header>
 
-  <main class="frontpage">
-    <section class="hero">
-      <h1 class="hero__display" aria-label="ALerts">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</h1>
-      <p class="hero__dateline caption" id="dateline">Curated AI News &middot; <span style="text-transform:none">i2e</span> Consulting AI Labs</p>
+  <div class="role-strip">
+    <div id="role-filter"></div>
+  </div>
+
+  <main class="twin">
+    <section class="panel panel--news" aria-labelledby="news-title">
+      <p class="panel__kicker"><span class="panel__kicker-sq" aria-hidden="true"></span>The News</p>
+      <h2 class="panel__title" id="news-title"><a href="archive.html">Events</a></h2>
+      <p class="panel__sub" id="news-sub">Curated AI news</p>
+      <div class="panel__body" id="news-body">
+        <p class="state-loading">Setting the page&hellip;</p>
+      </div>
+      <p class="panel__foot"><a class="pill" href="archive.html">All events &rarr;</a></p>
     </section>
 
-    <div id="list" class="contents">
-      <p class="state-loading">Setting the page&hellip;</p>
-    </div>
-
-    <footer class="frontpage__footer">
-      <a class="pill" href="archive.html">Full archive &rarr;</a>
-      <p class="frontpage__note">
-        Curated by i2e Consulting AI Labs — summaries by the ALerts curator agent.
-      </p>
-    </footer>
+    <section class="panel panel--guide" aria-labelledby="guide-title">
+      <p class="panel__kicker"><span class="panel__kicker-sq" aria-hidden="true"></span>The Practice</p>
+      <h2 class="panel__title" id="guide-title"><a href="playbook.html">AI Guide</a></h2>
+      <p class="panel__sub">Ways to use AI in your daily work — field-tested</p>
+      <div class="panel__body" id="guide-body">
+        <p class="state-loading">Setting the page&hellip;</p>
+      </div>
+      <p class="panel__foot"><a class="pill" href="playbook.html">Open the guide &rarr;</a></p>
+    </section>
   </main>
+
+  <footer class="frontpage__footer twin-footer">
+    <p class="frontpage__note">
+      Curated by i2e Consulting AI Labs — summaries by the ALerts curator agent.
+    </p>
+  </footer>
 
   <script src="assets/app.js"></script>
   <script>
+    // Twin Broadsheets front page: one inverted role strip governs both panels.
+    // Each panel loads its own feed independently — one failing must not blank
+    // the other — and re-renders on role change (lead = newest match, then 3 rows).
+    var currentRole = null;
+    var newsData = { status: 'loading', items: [], error: '' };
+    var guideData = { status: 'loading', items: [], error: '' };
+
+    // Truncate to ~max chars on a word boundary, appending an ellipsis.
+    function excerpt(text, max) {
+      text = String(text || '');
+      if (text.length <= max) return text;
+      var cut = text.slice(0, max);
+      var lastSpace = cut.lastIndexOf(' ');
+      if (lastSpace > 40) cut = cut.slice(0, lastSpace);
+      return cut.replace(/[\s.,;:—-]+$/, '') + '…';
+    }
+
+    // Short "Mon D" date for the right-aligned row meta.
+    function shortDate(d) {
+      var t = Date.parse(d);
+      if (isNaN(t)) return escapeHtml(d);
+      return new Date(t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    }
+
+    function emptyRole() {
+      return '<div class="panel__empty">' +
+        '<h3 class="state-card__title">Nothing filed for this role yet.</h3>' +
+        '<p class="state-card__body">Try another role, or pick &ldquo;Everyone&rdquo; to see everything.</p>' +
+        '</div>';
+    }
+
+    function emptyAll(msg) {
+      return '<div class="panel__empty">' +
+        '<h3 class="state-card__title">Nothing has been filed yet.</h3>' +
+        '<p class="state-card__body">' + msg + '</p>' +
+        '</div>';
+    }
+
+    function errorCard(title, body, href, linkLabel) {
+      return '<div class="card">' +
+        '<h3 class="state-card__title">' + title + '</h3>' +
+        '<p class="state-card__body">' + body + '</p>' +
+        '<a class="ghost-link" href="' + href + '">' + linkLabel + '</a>' +
+        '</div>';
+    }
+
+    // --- Alerts (news) panel -------------------------------------------------
+    function renderNewsLead(a) {
+      var href = 'article.html?id=' + encodeURIComponent(a.id);
+      return '<div class="panel__lead">' +
+        '<p class="panel__lead-chip"><span class="chip">' + escapeHtml(a.topic) + '</span></p>' +
+        '<h3 class="panel__lead-headline"><a href="' + href + '">' + escapeHtml(a.title) + '</a></h3>' +
+        '<p class="panel__lead-summary">' + escapeHtml(excerpt(a.summary, 180)) + '</p>' +
+        '<p class="panel__meta">' + escapeHtml(a.source) + ' &middot; ' + formatDate(a.publishedDate) + '</p>' +
+        '</div>';
+    }
+
+    function renderNewsRow(a) {
+      var href = 'article.html?id=' + encodeURIComponent(a.id);
+      return '<div class="panel__row">' +
+        '<span class="panel__row-title"><a href="' + href + '">' + escapeHtml(a.title) + '</a></span>' +
+        '<span class="panel__row-meta">' + shortDate(a.publishedDate) + '</span>' +
+        '</div>';
+    }
+
+    function renderNews() {
+      var body = document.getElementById('news-body');
+      if (newsData.status === 'loading') return;
+      if (newsData.status === 'error') {
+        body.innerHTML = errorCard(
+          'The events couldn’t be loaded.',
+          'Could not load articles: ' + escapeHtml(newsData.error) + '. Try again in a moment.',
+          'archive.html', 'Try the full archive &rarr;');
+        return;
+      }
+      if (newsData.items.length === 0) {
+        body.innerHTML = emptyAll('The curator hasn&rsquo;t published any events yet. Check back once the next edition goes out.');
+        return;
+      }
+      var filtered = filterByRole(newsData.items, currentRole);
+      if (filtered.length === 0) {
+        body.innerHTML = emptyRole();
+        return;
+      }
+      var html = renderNewsLead(filtered[0]);
+      var rows = filtered.slice(1, 4);
+      if (rows.length) {
+        html += '<div class="panel__rows">' + rows.map(renderNewsRow).join('') + '</div>';
+      }
+      body.innerHTML = html;
+    }
+
+    // --- AI Guide panel ------------------------------------------------------
+    function renderGuideLead(u) {
+      var href = 'usecase.html?id=' + encodeURIComponent(u.id);
+      var parts = [];
+      if (Array.isArray(u.tools) && u.tools.length) parts.push(escapeHtml(u.tools[0]));
+      var aud = audienceMeta(u.audience);
+      if (aud) parts.push(escapeHtml(aud));
+      var meta = parts.join(' &middot; ');
+      var html = '<div class="panel__lead">' +
+        '<p class="panel__lead-chip"><span class="chip">' + escapeHtml(u.category) + '</span></p>' +
+        '<h3 class="panel__lead-headline"><a href="' + href + '">' + escapeHtml(u.title) + '</a></h3>' +
+        '<p class="panel__lead-summary">' + escapeHtml(excerpt(u.whatItDoes, 180)) + '</p>';
+      if (meta) html += '<p class="panel__meta">' + meta + '</p>';
+      return html + '</div>';
+    }
+
+    function renderGuideRow(u) {
+      var href = 'usecase.html?id=' + encodeURIComponent(u.id);
+      var meta = audienceMeta(u.audience) || u.category || '';
+      return '<div class="panel__row">' +
+        '<span class="panel__row-title"><a href="' + href + '">' + escapeHtml(u.title) + '</a></span>' +
+        '<span class="panel__row-meta">' + escapeHtml(meta) + '</span>' +
+        '</div>';
+    }
+
+    function renderGuide() {
+      var body = document.getElementById('guide-body');
+      if (guideData.status === 'loading') return;
+      if (guideData.status === 'error') {
+        body.innerHTML = errorCard(
+          'The AI Guide couldn’t be loaded.',
+          'Could not load use-cases: ' + escapeHtml(guideData.error) + '. Try again in a moment.',
+          'playbook.html', 'Open the guide &rarr;');
+        return;
+      }
+      if (guideData.items.length === 0) {
+        body.innerHTML = emptyAll('The curator hasn&rsquo;t published any use-cases yet. Check back once the next digest is reviewed.');
+        return;
+      }
+      var filtered = filterByRole(guideData.items, currentRole);
+      if (filtered.length === 0) {
+        body.innerHTML = emptyRole();
+        return;
+      }
+      var html = renderGuideLead(filtered[0]);
+      var rows = filtered.slice(1, 4);
+      if (rows.length) {
+        html += '<div class="panel__rows">' + rows.map(renderGuideRow).join('') + '</div>';
+      }
+      body.innerHTML = html;
+    }
+
+    // --- Wire up the shared inverted strip + both feeds ----------------------
+    renderRoleFilter(
+      document.getElementById('role-filter'),
+      function (role) {
+        currentRole = role;
+        renderNews();
+        renderGuide();
+      },
+      { variant: 'role-filter--strip', kicker: 'Show me content for &mdash;' }
+    );
+
     loadArticles()
       .then(function (articles) {
-        var list = document.getElementById('list');
-        var dateline = document.getElementById('dateline');
-
-        if (articles.length === 0) {
-          list.innerHTML =
-            '<h2 class="state-card__title">Nothing has been filed yet.</h2>' +
-            '<p class="state-card__body">The curator hasn&rsquo;t published any articles. Check back once the next edition goes out.</p>';
-          return;
+        newsData.status = 'ready';
+        newsData.items = articles;
+        var sub = document.getElementById('news-sub');
+        if (articles.length && sub) {
+          sub.innerHTML = 'Curated AI news &middot; updated ' + formatDate(articles[0].addedDate);
         }
-
-        // Newest addedDate leads the dateline (articles are sorted newest-first).
-        if (dateline) {
-          dateline.innerHTML =
-            'Curated AI News &middot; <span style="text-transform:none">i2e</span> Consulting AI Labs &middot; Updated ' + formatDate(articles[0].addedDate);
-        }
-
-        // FR-S7: front page shows only the most recent items; the rest are in the archive.
-        list.innerHTML = articles.slice(0, RECENT_LIMIT).map(renderListItem).join('');
+        renderNews();
       })
       .catch(function (err) {
-        document.getElementById('list').innerHTML =
-          '<div class="card">' +
-            '<h2 class="state-card__title">The page couldn&rsquo;t be loaded.</h2>' +
-            '<p class="state-card__body">Could not load articles: ' + escapeHtml(err.message) + '. Try again in a moment.</p>' +
-            '<a class="ghost-link" href="archive.html">Try the full archive &rarr;</a>' +
-          '</div>';
+        newsData.status = 'error';
+        newsData.error = err.message;
+        renderNews();
+      });
+
+    loadUsecases()
+      .then(function (usecases) {
+        guideData.status = 'ready';
+        guideData.items = usecases;
+        renderGuide();
+      })
+      .catch(function (err) {
+        guideData.status = 'error';
+        guideData.error = err.message;
+        renderGuide();
       });
   </script>
 </body>
