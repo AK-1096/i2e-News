@@ -7,9 +7,15 @@
       "Claude"
     ],
     "category": "workflow",
+    "audience": ["developers", "qa"],
     "whatItDoes": "A five-stage loop for building with AI agents: rubber-duck the problem with the model, write a short PRD, break it into issues, let the agent implement, then review with AI-assisted audits including mutation testing to verify test coverage.",
     "whatItImproves": "Moves cognitive effort upstream — problems get caught at the spec stage instead of through trial-and-error coding, and the audit stage catches weak tests the implementation produced.",
     "howToTry": "1. Start a conversation with your agent to frame and validate the problem before any code. 2. Have it write a short PRD and break it into issues. 3. Implement issue by issue. 4. Finish with an AI review pass and mutation testing on the new tests.",
+    "relevance": {
+      "whyRelevant": "On client delivery work you're often handed vague feature asks; this spec-first loop turns that ambiguity into a short PRD and issues before any code, which is how i2e avoids expensive mid-engagement rework.",
+      "dailyImpact": "You catch design problems while speccing instead of in code review or a client demo, and the mutation-testing audit tells you whether the agent's tests actually protect the delivered feature.",
+      "practicalBenefit": "You ship code with tests you can trust and a written spec trail you can show a client, reducing back-and-forth and defending scope when requirements drift."
+    },
     "sourceUrl": "https://news.ycombinator.com/item?id=47775653",
     "sourcePlatform": "hackernews",
     "curatorVerified": false,
@@ -23,9 +29,15 @@
       "Claude Code"
     ],
     "category": "workflow",
+    "audience": ["developers"],
     "whatItDoes": "Instead of prescribing exactly how the agent should work, add a standing instruction telling it to use its own judgement to choose an appropriate lower-power model and run that work in a subagent. Judgement-heavy reasoning stays in the main loop while routine implementation is delegated down.",
     "whatItImproves": "Cuts token spend noticeably without a visible drop in quality or velocity — Simon Willison reported getting a ton of work done while his Claude allowance shrank far more slowly than before.",
     "howToTry": "1. Open your Claude Code memory / CLAUDE.md. 2. Add a line like: 'For coding tasks, use your judgement to decide an appropriate lower-power model and run that in a subagent.' 3. Let the agent decide per-task which model fits. 4. Watch usage and correct the guidance if it under- or over-delegates.",
+    "relevance": {
+      "whyRelevant": "i2e runs AI-assisted delivery at scale, so token spend is a real project cost; this one-line CLAUDE.md instruction lets the agent push routine implementation to a cheaper model while keeping judgement work on the strong one.",
+      "dailyImpact": "You keep coding at the same pace but your Claude allowance drains far slower, so you get more agent work done within the same budget on a client engagement.",
+      "practicalBenefit": "A single standing instruction cuts your AI tooling cost per project with no visible quality drop — a margin win you can apply across every repo you touch."
+    },
     "sourceUrl": "https://simonwillison.net/2026/Jul/3/judgement/",
     "sourcePlatform": "blog",
     "author": "Simon Willison",
@@ -41,9 +53,15 @@
       "Claude Code"
     ],
     "category": "integration",
+    "audience": ["developers"],
     "whatItDoes": "A walkthrough of using Claude Code as an everyday development tool by layering its advanced features: a project CLAUDE.md for standing context, reusable skills, task-scoped subagents, plugins, and MCP servers that connect the agent to external systems.",
     "whatItImproves": "Turns ad-hoc prompting into a repeatable setup — shared project context and reusable skills cut ramp-up on each task and keep the agent consistent across a team.",
     "howToTry": "1. Add a CLAUDE.md at your repo root with project conventions. 2. Capture recurring workflows as skills. 3. Delegate scoped work to subagents. 4. Wire in an MCP server for the external tools you use most.",
+    "relevance": {
+      "whyRelevant": "When i2e rotates people across client repos, ramp-up time is billable friction; a repo CLAUDE.md plus reusable skills and MCP connections encode the project's conventions so the agent, and any consultant using it, starts consistent.",
+      "dailyImpact": "You spend less time re-explaining project context each task, and shared skills mean two consultants on the same engagement get the same behavior from the agent instead of divergent ad-hoc prompting.",
+      "practicalBenefit": "You can hand a new team member a repo where the AI setup already knows the conventions, cutting onboarding on a client project from days to hours."
+    },
     "sourceUrl": "https://news.ycombinator.com/item?id=48289950",
     "sourcePlatform": "hackernews",
     "author": "arps18",
@@ -61,9 +79,15 @@
       "ChatGPT"
     ],
     "category": "prompting-technique",
+    "audience": ["developers", "qa", "ba-pc", "pm", "non-technical"],
     "whatItDoes": "When you want an explanation, review, or report, prompt the model to produce a self-contained HTML artifact rather than Markdown. HTML lets it add SVG diagrams, color-coded severity, inline margin annotations, and in-page navigation that plain text can't express.",
     "whatItImproves": "Complex output becomes far more navigable and scannable — a PR review or technical explainer with diagrams and severity coloring reads in a fraction of the time versus a wall of Markdown.",
     "howToTry": "1. Feed the model your content (e.g. a diff or doc). 2. Explicitly ask for an HTML artifact, not Markdown. 3. Name the interactive elements you want: tables, color-coded findings, in-page anchors. 4. Ask for semantic CSS styling for clarity.",
+    "relevance": {
+      "whyRelevant": "i2e consultants constantly turn analysis into deliverables — PR reviews, architecture explainers, status write-ups — and asking for a self-contained HTML artifact instead of Markdown makes those far more scannable for busy clients and colleagues.",
+      "dailyImpact": "Your reviews and explainers gain diagrams, color-coded severity, and in-page navigation, so a reader gets your point in a fraction of the time versus scrolling a wall of Markdown.",
+      "practicalBenefit": "You can hand a client a polished, navigable HTML explainer generated from the same content in one prompt, raising the perceived quality of routine deliverables at no extra effort."
+    },
     "sourceUrl": "https://simonwillison.net/2026/May/8/unreasonable-effectiveness-of-html/",
     "sourcePlatform": "blog",
     "author": "Simon Willison (via Thariq Shihipar)",
@@ -80,9 +104,15 @@
       "ChatGPT"
     ],
     "category": "workflow",
+    "audience": ["developers", "qa"],
     "whatItDoes": "A grounded four-step method for building trustworthy evals for an LLM app: read a sample of real production traces, write freeform 'open coding' notes on whatever went wrong, cluster those notes into a handful of recurring failure modes, then build a targeted eval — often an LLM-as-judge — for the most common ones. Demonstrated live on real production data from Nurture Boss.",
     "whatItImproves": "Replaces vibes-based 'looks good to me' checking with evals grounded in your own failures, so you measure the few things that actually break instead of chasing generic benchmark scores.",
     "howToTry": "1. Pull 30-100 real traces from your app. 2. Open-code each one: write a short freeform note on any problem, with no predefined categories. 3. Axial-code: cluster those notes into a small set of named failure modes. 4. Build an eval (a code check or an LLM-as-judge) for the top failure modes, and validate the judge against your own human labels before trusting it.",
+    "relevance": {
+      "whyRelevant": "When i2e ships an LLM feature for a client, 'looks good to me' isn't a defensible quality bar; this trace-driven method builds evals grounded in the feature's actual failure modes, which is how you prove reliability on delivery.",
+      "dailyImpact": "Instead of guessing at test cases, you read real traces, cluster what actually breaks, and build targeted checks — including an LLM-as-judge you've validated against your own labels — for the failures that matter.",
+      "practicalBenefit": "You get a measurable quality signal you can show a client and catch regressions before they do, turning subjective AI output into something you can sign off on."
+    },
     "sourceUrl": "https://www.youtube.com/watch?v=J7N9FMouSKg",
     "sourcePlatform": "youtube",
     "author": "Hamel Husain & Shreya Shankar (AI Engineer)",
@@ -100,9 +130,15 @@
       "Codex"
     ],
     "category": "workflow",
+    "audience": ["developers", "ba-pc", "pm"],
     "whatItDoes": "The 'Grill Me' skill flips planning around: instead of the agent jumping to code from a short brief, it interrogates you with 20-80 questions about the feature — surfacing design branches, edge cases, and hidden assumptions — and the resulting dialogue becomes the design concept you build from.",
     "whatItImproves": "Misalignment and missing requirements get caught during planning instead of after implementation, and because you answer the questions yourself you stay connected to the codebase rather than losing the thread in a specs-to-code handoff.",
     "howToTry": "1. Install or recreate a 'grill me' skill that instructs the agent to ask questions instead of writing code. 2. Paste your rough brief (e.g. a Slack message) and let it interrogate you. 3. Answer the questions together until the plan is aligned. 4. Turn the conversation into a PRD and break it into thin vertical slices before letting the agent implement.",
+    "relevance": {
+      "whyRelevant": "Scope ambiguity is the classic killer on client engagements; letting the agent interrogate you with dozens of questions before it writes code forces hidden assumptions and edge cases out during planning, when they're cheap to fix.",
+      "dailyImpact": "You turn a thin client brief — even a Slack message — into an aligned plan and PRD through the Q&A, and because you answer the questions yourself you stay close to the requirements instead of losing them in a specs-to-code handoff.",
+      "practicalBenefit": "You catch missing requirements before implementation, so you avoid rebuilding a feature after a client review and enter the build with vertical slices you can estimate and defend."
+    },
     "sourceUrl": "https://youtu.be/-QFHIoCo-Ko",
     "sourcePlatform": "youtube",
     "author": "Matt Pocock",

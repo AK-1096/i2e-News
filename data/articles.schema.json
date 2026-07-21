@@ -39,6 +39,27 @@
         "type": "string",
         "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
         "description": "When the curator published it via the agent (YYYY-MM-DD)."
+      },
+      "audience": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "enum": ["developers", "qa", "ba-pc", "pm", "non-technical"]
+        },
+        "description": "Which i2e roles genuinely benefit: developers (Developers/Coders), qa (QA), ba-pc (BAs & Project Coordinators), pm (Project Managers), non-technical (Non-technical users). Optional."
+      },
+      "relevance": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["whyRelevant", "dailyImpact", "practicalBenefit"],
+        "properties": {
+          "whyRelevant": { "type": "string", "minLength": 1, "description": "Answers 'Why is this relevant to me?' for an i2e reader." },
+          "dailyImpact": { "type": "string", "minLength": 1, "description": "Answers 'How will this help in my daily job?'" },
+          "practicalBenefit": { "type": "string", "minLength": 1, "description": "Answers 'What practical benefit does it provide?'" }
+        },
+        "description": "Reader-facing relevance framing for i2e employees; optional, present on the newest items."
       }
     }
   }
