@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Archive — ALerts</title>
-  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/styles.css?v=2">
 </head>
 <body>
   <header class="masthead">
@@ -37,7 +37,7 @@
     </footer>
   </main>
 
-  <script src="assets/app.js"></script>
+  <script src="assets/app.js?v=2"></script>
   <script>
     // Groups articles by month+year of addedDate. loadArticles() returns
     // items sorted newest-first, so equal-month runs are always consecutive
@@ -116,6 +116,14 @@
             '<a class="ghost-link" href="index.html">Back to latest &rarr;</a>' +
           '</div>';
       });
+
+    // Dynamic header: retract the masthead on scroll-down, pin the compact
+    // "Archive" bar top-left, restore the masthead on scroll-up.
+    initDynamicHeader({
+      title: 'Archive',
+      sub: 'Every article filed by the curator',
+      collapseAfter: document.querySelector('.hero')
+    });
   </script>
 </body>
 </html>

@@ -88,7 +88,7 @@ var ROLE_SHORT = {
 function renderRoleFilter(container, onChange, options) {
   options = options || {};
   var variantClass = options.variant ? ' ' + options.variant : '';
-  var kicker = options.kicker || 'I am &mdash;';
+  var kicker = options.kicker || 'Show me content for &mdash;';
   var chips = [{ slug: null, label: 'Everyone' }].concat(
     ROLE_ORDER.map(function (slug) { return { slug: slug, label: ROLE_LABELS[slug] }; })
   );
@@ -218,4 +218,170 @@ function renderListItem(a) {
     '<p class="row__meta caption">' + meta + '</p>' +
     '<p class="row__summary">' + escapeHtml(a.summary) + '</p>' +
     '</article>';
+}
+
+// --- Dynamic header (shared by every page) ----------------------------------
+// One scroll behaviour across the whole product. Scrolling down retracts the
+// black masthead and pins a compact page-title bar (.pagehead) to the top-left;
+// scrolling up brings the masthead back. The compact bar is built here from the
+// page's own title + subtitle, so no page has to duplicate its header in markup.
+//
+//   opts.scroller      — scroll source (default window). Index section fronts
+//                        pass their own overflow container.
+//   opts.root          — element that carries the .nav-hidden / .head-collapsed
+//                        state classes and hosts .pagehead (default document.body).
+//   opts.masthead      — the black ribbon to retract (default first .masthead
+//                        found under root).
+//   opts.title         — compact-bar title text.
+//   opts.sub           — compact-bar subtitle text (optional).
+//   opts.collapseAfter — element or px offset: the compact bar only appears once
+//                        the reader has scrolled past this point, so it never
+//                        doubles the full-size header (default 140px).
+// Returns { refresh } to recompute the threshold (e.g. after a resize).
+function initDynamicHeader(opts) {
+  opts = opts || {};
+  var scroller = opts.scroller || window;
+  var isWindow = scroller === window;
+  var root = opts.root || document.body;
+  var masthead = opts.masthead || root.querySelector('.masthead');
+  if (masthead) masthead.classList.add('masthead--dynamic');
+
+  // Build the compact page-title bar once.
+  var head = document.createElement('div');
+  head.className = 'pagehead';
+  head.setAttribute('aria-hidden', 'true');
+  var inner = document.createElement('div');
+  inner.className = 'pagehead__inner';
+  var tEl = document.createElement('span');
+  tEl.className = 'pagehead__title';
+  tEl.textContent = opts.title || '';
+  inner.appendChild(tEl);
+  if (opts.sub) {
+    var sEl = document.createElement('span');
+    sEl.className = 'pagehead__sub';
+    sEl.textContent = opts.sub;
+    inner.appendChild(sEl);
+  }
+  head.appendChild(inner);
+  (opts.headHost || (isWindow ? document.body : root)).appendChild(head);
+
+  function topOf() {
+    return isWindow
+      ? (window.pageYOffset || document.documentElement.scrollTop || 0)
+      : scroller.scrollTop;
+  }
+
+  // Resolve the collapse threshold to a fixed px offset (computed while the
+  // region is at rest, so the element's measured position is trustworthy).
+  function resolveThreshold() {
+    var ca = opts.collapseAfter;
+    if (typeof ca === 'number') return ca;
+    if (ca && ca.getBoundingClientRect) {
+      var scrTop = isWindow ? 0 : scroller.getBoundingClientRect().top;
+      return Math.max(60, ca.getBoundingClientRect().bottom - scrTop + topOf() - 12);
+    }
+    return 140;
+  }
+
+  var threshold = resolveThreshold();
+  var lastY = topOf();
+  var navHidden = false;
+  var collapsed = false;
+
+  function apply() {
+    root.classList.toggle('nav-hidden', navHidden);
+    root.classList.toggle('head-collapsed', collapsed);
+    head.setAttribute('aria-hidden', collapsed ? 'false' : 'true');
+  }
+
+  function onScroll() {
+    var y = topOf();
+    if (y <= 4) {
+      // Back at the top: full masthead, no compact bar.
+      navHidden = false;
+      collapsed = false;
+    } else {
+      if (y > lastY + 2) navHidden = true;        // scrolling down → retract nav
+      else if (y < lastY - 2) navHidden = false;  // scrolling up  → showcase nav
+      if (y > threshold) collapsed = true;         // past the header → pin the bar
+    }
+    lastY = y;
+    apply();
+  }
+
+  (isWindow ? window : scroller).addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', function () { threshold = resolveThreshold(); });
+  apply();
+
+  return {
+    refresh: function () { threshold = resolveThreshold(); }
+  };
+}
+
+// --- Collapsible "Read this first" disclaimer -------------------------------
+// Turns a standing .disclaimer notice into a collapsible card: it opens on load,
+// auto-collapses after `autoMs` (default 10s) down to just its lime "Read this
+// first" header, and the reader can click (or key) that header to expand it
+// again. The collapsed/expanded choice then persists — it is never reset on
+// scroll, so it rides along with the page as the reader moves down.
+//
+// The collapsible body is wrapped here from whatever follows the kicker, so both
+// the static playbook markup and the script-built usecase markup work unchanged.
+function initDisclaimer(disc, autoMs) {
+  if (!disc || disc.getAttribute('data-collapsible') === 'on') return;
+  var kicker = disc.querySelector('.disclaimer__kicker');
+  if (!kicker) return;
+  disc.setAttribute('data-collapsible', 'on');
+  if (autoMs == null) autoMs = 10000;
+
+  // Everything after the lime kicker becomes the collapsible body.
+  var body = document.createElement('div');
+  body.className = 'disclaimer__body';
+  var node = kicker.nextSibling;
+  while (node) {
+    var next = node.nextSibling;
+    body.appendChild(node);
+    node = next;
+  }
+  disc.appendChild(body);
+
+  // The kicker becomes the toggle control.
+  var region = 'disclaimer-body-' + Math.random().toString(36).slice(2, 8);
+  body.id = region;
+  kicker.setAttribute('role', 'button');
+  kicker.setAttribute('tabindex', '0');
+  kicker.setAttribute('aria-controls', region);
+  kicker.setAttribute('aria-expanded', 'true');
+
+  var timer = null;
+  function stopTimer() {
+    if (timer) { clearTimeout(timer); timer = null; }
+  }
+  function setCollapsed(collapsed) {
+    disc.classList.toggle('is-collapsed', collapsed);
+    kicker.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  }
+  function toggle() {
+    stopTimer(); // a manual choice cancels the pending auto-collapse
+    setCollapsed(!disc.classList.contains('is-collapsed'));
+  }
+
+  kicker.addEventListener('click', toggle);
+  kicker.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+      e.preventDefault();
+      toggle();
+    }
+  });
+
+  if (autoMs > 0) {
+    timer = setTimeout(function () { timer = null; setCollapsed(true); }, autoMs);
+  }
+}
+
+// Wire every standing disclaimer on the page (idempotent — safe to call again
+// after async content renders one in).
+function initDisclaimers(autoMs) {
+  var list = document.querySelectorAll('.disclaimer');
+  for (var i = 0; i < list.length; i++) initDisclaimer(list[i], autoMs);
 }

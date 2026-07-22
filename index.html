@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ALerts</title>
-  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/styles.css?v=2">
 </head>
 <body class="frontpage--gate">
 
@@ -45,31 +45,27 @@
       </span>
     </button>
 
-    <header class="masthead">
-      <nav class="masthead__inner" aria-label="Primary">
-        <span class="masthead__spacer" aria-hidden="true"></span>
-        <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
-        <span class="masthead__nav">
-          <a class="ghost-link" href="archive.html">Archive &rarr;</a>
-        </span>
-      </nav>
-    </header>
-
-    <div class="section-front__strip role-strip">
-      <div id="news-role"></div>
-    </div>
-
     <div class="section-front__scroll">
+      <header class="masthead">
+        <nav class="masthead__inner" aria-label="Primary">
+          <span class="masthead__spacer" aria-hidden="true"></span>
+          <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
+          <span class="masthead__nav">
+            <a class="ghost-link" href="archive.html">Archive &rarr;</a>
+          </span>
+        </nav>
+      </header>
+
       <div class="section-front__inner">
         <p class="panel__kicker"><span class="panel__kicker-sq" aria-hidden="true"></span>The News</p>
         <h1 class="section-front__title" id="news-title" tabindex="-1">Events</h1>
         <p class="section-front__sub" id="news-sub">Curated AI news</p>
-        <hr class="section-front__rule">
+        <div id="news-role"></div>
         <div id="news-body">
           <p class="state-loading">Setting the page&hellip;</p>
         </div>
         <div class="section-front__foot">
-          <a class="pill" href="archive.html">All events &rarr;</a>
+          <a class="pill" href="events.html">All events &rarr;</a>
           <button type="button" class="pill section-front__cross" data-open="guide">Go to the AI Guide &rarr;</button>
         </div>
         <p class="section-front__note">
@@ -88,26 +84,22 @@
       </span>
     </button>
 
-    <header class="masthead">
-      <nav class="masthead__inner" aria-label="Primary">
-        <span class="masthead__spacer" aria-hidden="true"></span>
-        <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
-        <span class="masthead__nav">
-          <a class="ghost-link" href="archive.html">Archive &rarr;</a>
-        </span>
-      </nav>
-    </header>
-
-    <div class="section-front__strip role-strip">
-      <div id="guide-role"></div>
-    </div>
-
     <div class="section-front__scroll">
+      <header class="masthead">
+        <nav class="masthead__inner" aria-label="Primary">
+          <span class="masthead__spacer" aria-hidden="true"></span>
+          <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
+          <span class="masthead__nav">
+            <a class="ghost-link" href="archive.html">Archive &rarr;</a>
+          </span>
+        </nav>
+      </header>
+
       <div class="section-front__inner">
         <p class="panel__kicker"><span class="panel__kicker-sq" aria-hidden="true"></span>The Practice</p>
         <h1 class="section-front__title" id="guide-title" tabindex="-1">AI Guide</h1>
         <p class="section-front__sub">Ways to use AI in your daily work — field-tested</p>
-        <hr class="section-front__rule">
+        <div id="guide-role"></div>
         <div id="guide-body">
           <p class="state-loading">Setting the page&hellip;</p>
         </div>
@@ -122,7 +114,7 @@
     </div>
   </section>
 
-  <script src="assets/app.js"></script>
+  <script src="assets/app.js?v=2"></script>
   <script>
     // Twin Gate front page. The gate chooses a side; each section front is a
     // full-screen panel that slides in from the edge it parks on. Both panels
@@ -406,15 +398,32 @@
     }
 
     setNewsRole = renderRoleFilter(
-      document.getElementById('news-role'), onRoleChange,
-      { variant: 'role-filter--strip', kicker: 'Show me content for &mdash;' }
+      document.getElementById('news-role'), onRoleChange
     );
     setGuideRole = renderRoleFilter(
-      document.getElementById('guide-role'), onRoleChange,
-      { variant: 'role-filter--strip', kicker: 'Show me content for &mdash;' }
+      document.getElementById('guide-role'), onRoleChange
     );
 
     show(viewFromHash(), false);
+
+    // Each section front scrolls its own column, so the dynamic header runs once
+    // per panel against that panel's scroll region and its own masthead.
+    initDynamicHeader({
+      scroller: panels.news.querySelector('.section-front__scroll'),
+      root: panels.news,
+      masthead: panels.news.querySelector('.masthead'),
+      title: 'Events',
+      sub: 'Curated AI news',
+      collapseAfter: panels.news.querySelector('.section-front__sub')
+    });
+    initDynamicHeader({
+      scroller: panels.guide.querySelector('.section-front__scroll'),
+      root: panels.guide,
+      masthead: panels.guide.querySelector('.masthead'),
+      title: 'AI Guide',
+      sub: 'Ways to use AI in your daily work — field-tested',
+      collapseAfter: panels.guide.querySelector('.section-front__sub')
+    });
 
     loadArticles()
       .then(function (articles) {
