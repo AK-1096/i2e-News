@@ -150,20 +150,29 @@ a {
    Shared components (used by article.html)
    -------------------------------------------------------------------------- */
 
-/* Slim masthead bar */
+/* Masthead ribbon — one component, identical on every page and on both of the
+   front page's section fronts. Inked band, wordmark centred, and a single nav
+   slot on the right holding Archive. The three-column grid (1fr auto 1fr) is
+   what keeps the wordmark optically centred no matter how wide the right-hand
+   link runs; a flex row with space-between would push it off-centre. */
 .masthead {
   border-bottom: 1px solid var(--color-press-black);
-  background: var(--surface-page-canvas);
+  background: var(--color-press-black);
 }
 
 .masthead__inner {
   max-width: var(--page-max-width);
   margin: 0 auto;
-  padding: var(--spacing-15) var(--spacing-30);
-  display: flex;
+  padding: var(--spacing-12) var(--spacing-30);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: var(--spacing-16);
+}
+
+/* Empty left column — it exists only to balance the nav slot on the right. */
+.masthead__spacer {
+  min-width: 0;
 }
 
 /* The wordmark is a logo: it must never break across lines. Below ~650px the
@@ -176,6 +185,16 @@ a {
   color: var(--color-press-black);
   text-decoration: none;
   white-space: nowrap;
+}
+
+/* On the inked ribbon the lettering reverses out to cream; the lime foot block
+   keeps its colour and drops its inked hairline, which would vanish on black. */
+.masthead .wordmark {
+  color: var(--color-manuscript-cream);
+}
+
+.masthead .wordmark__foot {
+  border-color: var(--color-highlighter-lime);
 }
 
 .wordmark__foot {
@@ -577,11 +596,24 @@ a {
    disclaimer banner, tool chips, and the detail field blocks.
    -------------------------------------------------------------------------- */
 
-/* Masthead can now hold more than one right-side link; group them on one line. */
+/* Right-hand nav slot. Holds Archive alone — the wordmark is the way home and
+   the section fronts are reached from the front page, so nothing else belongs
+   in the top bar. Pushed to the trailing edge of its grid column. */
 .masthead__nav {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: var(--spacing-20);
+  min-width: 0;
+}
+
+/* Nav links reverse out of the inked ribbon like the wordmark does. */
+.masthead__nav .ghost-link {
+  color: var(--color-manuscript-cream);
+}
+
+.masthead__nav .ghost-link:focus-visible {
+  outline-color: var(--color-manuscript-cream);
 }
 
 /* Active nav link carries the 1px underline (DESIGN.md top-nav rule). */
@@ -764,33 +796,298 @@ a {
 }
 
 /* --------------------------------------------------------------------------
-   index.html — "Twin Broadsheets" front page.
-   Two section fronts side by side (Alerts / AI Guide) under the inverted role
-   strip; a single hairline divides them. Each panel: kicker, display title,
-   serif sub, a lead story, up to three ruled rows, and a pinned footer pill.
-   Stacks to one column below 900px. Reuses .chip, .pill, .state-* and the
-   shared role-filter logic; these rules are the front-page-specific additions.
+   index.html — the "Twin Gate" front page.
+   A chooser gate (dot grid + two display pills) fronts two full-screen section
+   fronts, Events and AI Guide. Picking a side slides its panel in from the edge
+   it lives on; a spine portal at the opposite edge crosses to the other side.
+   Both panels stay mounted so the slide is a pure transform — inactive ones are
+   marked `inert` from script so they leave the tab order.
+   Reuses .chip, .pill, .state-* and the shared role-filter logic; the .panel__*
+   content pieces below are shared by both section fronts.
    -------------------------------------------------------------------------- */
-.twin {
-  max-width: var(--page-max-width);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
 
-.panel {
+/* Each section front is fixed and scrolls its own content column, so the
+   document behind them only ever has the masthead and the gate. Horizontal
+   overflow is clipped because the panels park off-canvas left and right.
+   The column layout lets the gate take whatever height the ribbon leaves. */
+body.frontpage--gate {
   display: flex;
   flex-direction: column;
-  min-height: 520px;
-  padding: var(--spacing-30);
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-.panel--news {
-  border-right: 1px solid var(--color-press-black);
+.gate {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-40) var(--spacing-20);
+  background: var(--surface-page-canvas);
+  opacity: 1;
+  transition: opacity 0.35s ease;
 }
 
-.panel--guide {
+/* Hidden (but still laid out) while a section front is open. */
+.gate.is-behind {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Printer's dot screen. The second layer is a larger, cornflower dot revealed
+   only in a soft circle around the cursor — the grid "focuses" under the
+   pointer. Pure decoration: masked, non-interactive, and skipped entirely for
+   reduced-motion and touch (no hover) users. */
+.gate__dots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle at center, var(--color-sage-border) 1.2px, transparent 1.4px);
+  background-size: 20px 20px;
+}
+
+.gate__dots--focus {
+  background-image: radial-gradient(circle at center, var(--color-cornflower-wash) 2.2px, transparent 2.4px);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  -webkit-mask-image: radial-gradient(circle at var(--gate-x, 50%) var(--gate-y, 50%), #000 72px, transparent 120px);
+  mask-image: radial-gradient(circle at var(--gate-x, 50%) var(--gate-y, 50%), #000 72px, transparent 120px);
+}
+
+.gate.is-tracking .gate__dots--focus {
+  opacity: 1;
+}
+
+.gate__inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-30);
+  text-align: center;
+}
+
+.gate__kicker {
+  margin: 0;
+  letter-spacing: 0.18em;
+  color: #555555;
+}
+
+.gate__choices {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-16);
+}
+
+.gate__dot {
+  font-size: 22px;
+  line-height: 1;
+  color: var(--color-smoke);
+  user-select: none;
+}
+
+/* Display-scale entry buttons — Anton, the same face the section-front titles
+   use, so the gate reads as a table of contents for them. */
+.gate__pill {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 4vw, 30px);
+  font-weight: var(--font-weight-regular);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 18px var(--spacing-40);
+  border: 1px solid var(--color-press-black);
+  border-radius: var(--radius-pills);
+  cursor: pointer;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
+}
+
+.gate__pill--ink {
+  color: var(--color-manuscript-cream);
+  background: var(--color-press-black);
+}
+
+.gate__pill--lime {
+  color: var(--color-press-black);
+  background: var(--color-highlighter-lime);
+}
+
+.gate__pill:hover,
+.gate__pill:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-sm);
+}
+
+.gate__pill:active {
+  transform: translateY(0);
+}
+
+/* --- Section fronts ------------------------------------------------------ */
+
+.section-front {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.62s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* Each panel parks off the edge it belongs to, so Events always arrives from
+   the left and the Guide from the right — the portals point the same way. */
+.section-front--news {
+  transform: translateX(-100%);
+  background: var(--surface-page-canvas);
+}
+
+.section-front--guide {
+  transform: translateX(100%);
   background: var(--color-paper-shadow);
+}
+
+.section-front.is-active {
+  transform: translateX(0);
+}
+
+/* Each section front carries the same masthead ribbon as every other page, so
+   the top bar never changes shape as you move through the product. It sits on
+   the role strip, and the two read as one black block above the page. Both need
+   to clear the spine portal, which is absolutely positioned over the panel. */
+.section-front > .masthead,
+.section-front__strip {
+  position: relative;
+  z-index: 31;
+  flex: none;
+}
+
+/* The panel's own scroll region — the document behind it stays fixed. */
+.section-front__scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+.section-front__inner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: var(--spacing-60) var(--spacing-40) var(--spacing-60);
+}
+
+.section-front__title {
+  margin: 0 0 var(--spacing-8);
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-regular);
+  font-size: clamp(42px, 6vw, 68px);
+  line-height: 0.95;
+  letter-spacing: -0.001em;
+  text-transform: uppercase;
+  color: var(--color-press-black);
+}
+
+.section-front__sub {
+  margin: 0 0 var(--spacing-30);
+  font-family: var(--font-serif);
+  font-weight: var(--font-weight-light);
+  font-size: var(--text-body-lg);
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  color: #333333;
+}
+
+.section-front__rule {
+  border: none;
+  border-top: 1px solid var(--color-press-black);
+  margin: 0 0 var(--spacing-30);
+}
+
+/* Footer actions: the section's own pill, plus the always-visible cross-link
+   that stands in for the spine portal wherever hover isn't available. */
+.section-front__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-16);
+  margin-top: var(--spacing-40);
+}
+
+.section-front__cross {
+  display: none;
+}
+
+/* --- Spine portals ------------------------------------------------------- */
+
+/* A press-black band down the outer edge — the bound spine of the other
+   section. It carries its label at rest and widens on hover/focus to add the
+   arrow, so the affordance is visible before anyone finds it with the mouse. */
+.portal {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 30;
+  width: 30px;
+  padding: 0;
+  border: none;
+  background: var(--color-press-black);
+  color: var(--color-manuscript-cream);
+  cursor: pointer;
+  overflow: hidden;
+  transition: width 0.55s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.portal--right {
+  right: 0;
+}
+
+.portal--left {
+  left: 0;
+}
+
+.portal:hover,
+.portal:focus-visible {
+  width: 170px;
+}
+
+.portal:focus-visible {
+  outline-color: var(--color-highlighter-lime);
+  outline-offset: -4px;
+}
+
+.portal__inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-16);
+}
+
+.portal__arrow {
+  font-size: 24px;
+  line-height: 1;
+  color: var(--color-highlighter-lime);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.portal:hover .portal__arrow,
+.portal:focus-visible .portal__arrow {
+  opacity: 1;
+}
+
+.portal__label {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  writing-mode: vertical-lr;
+}
+
+.portal--left .portal__label {
+  transform: rotate(180deg);
 }
 
 .panel__kicker {
@@ -815,48 +1112,7 @@ a {
   border: 1px solid var(--color-press-black);
 }
 
-.panel__title {
-  margin: 0 0 var(--spacing-5);
-  font-family: var(--font-display);
-  font-weight: var(--font-weight-regular);
-  font-size: 44px;
-  line-height: 0.95;
-  letter-spacing: -0.001em;
-  text-transform: uppercase;
-  color: var(--color-press-black);
-}
-
-/* The section title is the panel's own entry point — it goes to the same place
-   as the pill at the panel foot. Underline only on hover/focus so the display
-   type stays clean at rest. */
-.panel__title a {
-  color: inherit;
-  text-decoration: none;
-  text-underline-offset: 0.06em;
-  text-decoration-thickness: 2px;
-}
-
-.panel__title a:hover,
-.panel__title a:focus-visible {
-  text-decoration: underline;
-}
-
-.panel__sub {
-  margin: 0 0 var(--spacing-19);
-  font-family: var(--font-serif);
-  font-weight: var(--font-weight-light);
-  font-size: 15px;
-  line-height: 1.3;
-  letter-spacing: 0.01em;
-  color: #333333;
-}
-
-/* Body flexes to fill, so the footer pill pins to the panel bottom. */
-.panel__body {
-  flex: 1 1 auto;
-}
-
-/* Lead story — a top hairline sets it off from the sub. */
+/* Lead story — a top hairline sets it off from the section rule above. */
 .panel__lead {
   border-top: 1px solid var(--color-press-black);
   padding: var(--spacing-15) 0 var(--spacing-16);
@@ -980,101 +1236,91 @@ a {
   font-size: 22px;
 }
 
-/* Footer pill pinned to the panel bottom. */
-.panel__foot {
-  margin: var(--spacing-20) 0 0;
+/* Slim note pinned under each section front's content column. */
+.section-front__note {
+  margin: var(--spacing-40) 0 0;
+  padding-top: var(--spacing-20);
+  border-top: 1px solid var(--color-sage-border);
+  max-width: 52ch;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: #555555;
 }
 
-/* Slim front-page footer beneath the twin grid. */
-.twin-footer {
-  max-width: var(--page-max-width);
-  margin: 0 auto;
-  padding: var(--spacing-20) var(--spacing-30) var(--spacing-30);
-  border-top: none;
-  justify-content: flex-start;
+/* The portals are withdrawn below 1200px and the footer cross-link takes over.
+   The threshold is set by geometry, not by device class: the reading column is
+   860px centred, so an expanded 170px spine only clears it from ~1200px up.
+   Any narrower and the spine would sit on top of the text it points away from.
+   (Hover-less devices lose the portal for the same reason further down — the
+   cross-link is the affordance that always works.) */
+@media (max-width: 1200px) {
+  .portal {
+    display: none;
+  }
+
+  .section-front__cross {
+    display: inline-block;
+  }
 }
 
-/* Full-bleed + full-height front page (index.html only, scoped via the
-   body.frontpage--full class). The masthead inner, role strip, twin grid and
-   footer stretch edge-to-edge with a shared inner gutter so the wordmark, the
-   strip label/chips and each panel's content align to one left line. The page
-   is a min-height:100vh flex column so the twin grid (and thus the Guide tint
-   and center divider) always reach the footer. Other pages keep the
-   1200px-capped masthead untouched. */
-body.frontpage--full {
-  --front-gutter: 56px;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-body.frontpage--full .masthead__inner,
-body.frontpage--full .role-filter--strip,
-body.frontpage--full .twin,
-body.frontpage--full .twin-footer {
-  max-width: none;
-  margin: 0;
-}
-
-body.frontpage--full .masthead__inner,
-body.frontpage--full .role-filter--strip,
-body.frontpage--full .twin-footer,
-body.frontpage--full .panel {
-  padding-inline: var(--front-gutter);
-}
-
-/* Twin grid takes the remaining height; its single row fills, so both panels
-   stretch to the footer and each pill stays pinned at the panel foot. */
-body.frontpage--full .twin {
-  flex: 1 1 auto;
-  grid-template-rows: 1fr;
-}
-
-/* Stack to a single column; the divider moves under the news panel. */
 @media (max-width: 900px) {
-  .twin {
-    grid-template-columns: 1fr;
+  .section-front__inner {
+    padding: var(--spacing-40) var(--spacing-20) var(--spacing-40);
+  }
+}
+
+/* Touch and stylus pointers never hover, so the spine could never be opened. */
+@media (hover: none) {
+  .portal {
+    display: none;
   }
 
-  .panel {
-    min-height: 0;
-  }
-
-  .panel--news {
-    border-right: none;
-    border-bottom: 1px solid var(--color-press-black);
-  }
-
-  /* Stacked layout: drop the forced full height, natural content heights. */
-  body.frontpage--full {
-    --front-gutter: 24px;
-    display: block;
-    min-height: 0;
-  }
-
-  body.frontpage--full .twin {
-    flex: none;
-    grid-template-rows: none;
+  .section-front__cross {
+    display: inline-block;
   }
 }
 
 @media (max-width: 640px) {
-  /* Match the mobile gutter used by the panel/strip/footer rules below so the
-     masthead wordmark stays on the same left line. */
-  body.frontpage--full {
-    --front-gutter: 16px;
+  .section-front__nav {
+    padding: var(--spacing-12) var(--spacing-16);
+  }
+
+  .section-front__links {
+    gap: var(--spacing-13);
   }
 
   .role-filter--strip {
     padding: var(--spacing-10) var(--spacing-16);
   }
 
-  .panel {
-    padding: var(--spacing-20) var(--spacing-16);
+  .section-front__inner {
+    padding: var(--spacing-30) var(--spacing-16) var(--spacing-40);
   }
 
-  .twin-footer {
-    padding: var(--spacing-16) var(--spacing-16) var(--spacing-30);
+  .gate__choices {
+    flex-direction: column;
+    gap: var(--spacing-12);
+  }
+
+  /* The separator dot only reads as one between two side-by-side pills. */
+  .gate__dot {
+    display: none;
+  }
+}
+
+/* Honour reduced-motion: the panels still change, they just don't travel, and
+   the cursor-tracking dot layer never fires. */
+@media (prefers-reduced-motion: reduce) {
+  .section-front,
+  .portal,
+  .gate,
+  .gate__pill {
+    transition: none;
+  }
+
+  .gate__dots--focus {
+    display: none;
   }
 }
 

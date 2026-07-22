@@ -6,9 +6,11 @@
   <title>ALerts</title>
   <link rel="stylesheet" href="assets/styles.css">
 </head>
-<body class="frontpage--full">
+<body class="frontpage--gate">
+
   <header class="masthead">
     <nav class="masthead__inner" aria-label="Primary">
+      <span class="masthead__spacer" aria-hidden="true"></span>
       <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
       <span class="masthead__nav">
         <a class="ghost-link" href="archive.html">Archive &rarr;</a>
@@ -16,43 +18,120 @@
     </nav>
   </header>
 
-  <div class="role-strip">
-    <div id="role-filter"></div>
+  <!-- The gate: pick a side. Both section fronts stay mounted behind it. -->
+  <div class="gate" id="gate">
+    <div class="gate__dots" aria-hidden="true"></div>
+    <div class="gate__dots gate__dots--focus" aria-hidden="true"></div>
+
+    <div class="gate__inner">
+      <p class="gate__kicker caption">Select a view to explore</p>
+      <div class="gate__choices">
+        <button type="button" class="gate__pill gate__pill--ink" data-open="news">Events</button>
+        <span class="gate__dot" aria-hidden="true">&middot;</span>
+        <button type="button" class="gate__pill gate__pill--lime" data-open="guide">AI Guide</button>
+      </div>
+      <p class="frontpage__note">
+        Curated by i2e Consulting AI Labs — summaries by the ALerts curator agent.
+      </p>
+    </div>
   </div>
 
-  <main class="twin">
-    <section class="panel panel--news" aria-labelledby="news-title">
-      <p class="panel__kicker"><span class="panel__kicker-sq" aria-hidden="true"></span>The News</p>
-      <h2 class="panel__title" id="news-title"><a href="archive.html">Events</a></h2>
-      <p class="panel__sub" id="news-sub">Curated AI news</p>
-      <div class="panel__body" id="news-body">
-        <p class="state-loading">Setting the page&hellip;</p>
-      </div>
-      <p class="panel__foot"><a class="pill" href="archive.html">All events &rarr;</a></p>
-    </section>
+  <!-- ── EVENTS ─────────────────────────────────────────────────────────── -->
+  <section class="section-front section-front--news" id="panel-news" aria-label="Events" aria-hidden="true" inert>
+    <button type="button" class="portal portal--right" data-open="guide" aria-label="Go to the AI Guide">
+      <span class="portal__inner">
+        <span class="portal__arrow" aria-hidden="true">&rarr;</span>
+        <span class="portal__label">AI Guide</span>
+      </span>
+    </button>
 
-    <section class="panel panel--guide" aria-labelledby="guide-title">
-      <p class="panel__kicker"><span class="panel__kicker-sq" aria-hidden="true"></span>The Practice</p>
-      <h2 class="panel__title" id="guide-title"><a href="playbook.html">AI Guide</a></h2>
-      <p class="panel__sub">Ways to use AI in your daily work — field-tested</p>
-      <div class="panel__body" id="guide-body">
-        <p class="state-loading">Setting the page&hellip;</p>
-      </div>
-      <p class="panel__foot"><a class="pill" href="playbook.html">Open the guide &rarr;</a></p>
-    </section>
-  </main>
+    <header class="masthead">
+      <nav class="masthead__inner" aria-label="Primary">
+        <span class="masthead__spacer" aria-hidden="true"></span>
+        <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
+        <span class="masthead__nav">
+          <a class="ghost-link" href="archive.html">Archive &rarr;</a>
+        </span>
+      </nav>
+    </header>
 
-  <footer class="frontpage__footer twin-footer">
-    <p class="frontpage__note">
-      Curated by i2e Consulting AI Labs — summaries by the ALerts curator agent.
-    </p>
-  </footer>
+    <div class="section-front__strip role-strip">
+      <div id="news-role"></div>
+    </div>
+
+    <div class="section-front__scroll">
+      <div class="section-front__inner">
+        <p class="panel__kicker"><span class="panel__kicker-sq" aria-hidden="true"></span>The News</p>
+        <h1 class="section-front__title" id="news-title" tabindex="-1">Events</h1>
+        <p class="section-front__sub" id="news-sub">Curated AI news</p>
+        <hr class="section-front__rule">
+        <div id="news-body">
+          <p class="state-loading">Setting the page&hellip;</p>
+        </div>
+        <div class="section-front__foot">
+          <a class="pill" href="archive.html">All events &rarr;</a>
+          <button type="button" class="pill section-front__cross" data-open="guide">Go to the AI Guide &rarr;</button>
+        </div>
+        <p class="section-front__note">
+          Curated by i2e Consulting AI Labs — summaries by the ALerts curator agent.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── AI GUIDE ───────────────────────────────────────────────────────── -->
+  <section class="section-front section-front--guide" id="panel-guide" aria-label="AI Guide" aria-hidden="true" inert>
+    <button type="button" class="portal portal--left" data-open="news" aria-label="Go to Events">
+      <span class="portal__inner">
+        <span class="portal__arrow" aria-hidden="true">&larr;</span>
+        <span class="portal__label">Events</span>
+      </span>
+    </button>
+
+    <header class="masthead">
+      <nav class="masthead__inner" aria-label="Primary">
+        <span class="masthead__spacer" aria-hidden="true"></span>
+        <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
+        <span class="masthead__nav">
+          <a class="ghost-link" href="archive.html">Archive &rarr;</a>
+        </span>
+      </nav>
+    </header>
+
+    <div class="section-front__strip role-strip">
+      <div id="guide-role"></div>
+    </div>
+
+    <div class="section-front__scroll">
+      <div class="section-front__inner">
+        <p class="panel__kicker"><span class="panel__kicker-sq" aria-hidden="true"></span>The Practice</p>
+        <h1 class="section-front__title" id="guide-title" tabindex="-1">AI Guide</h1>
+        <p class="section-front__sub">Ways to use AI in your daily work — field-tested</p>
+        <hr class="section-front__rule">
+        <div id="guide-body">
+          <p class="state-loading">Setting the page&hellip;</p>
+        </div>
+        <div class="section-front__foot">
+          <a class="pill" href="playbook.html">Open the guide &rarr;</a>
+          <button type="button" class="pill section-front__cross" data-open="news">Go to Events &rarr;</button>
+        </div>
+        <p class="section-front__note">
+          Curated by i2e Consulting AI Labs — summaries by the ALerts curator agent.
+        </p>
+      </div>
+    </div>
+  </section>
 
   <script src="assets/app.js"></script>
   <script>
-    // Twin Broadsheets front page: one inverted role strip governs both panels.
-    // Each panel loads its own feed independently — one failing must not blank
-    // the other — and re-renders on role change (lead = newest match, then 3 rows).
+    // Twin Gate front page. The gate chooses a side; each section front is a
+    // full-screen panel that slides in from the edge it parks on. Both panels
+    // stay mounted (the slide is a pure transform) and are marked `inert` while
+    // closed so nothing off-screen holds a tab stop.
+    //
+    // One role filter is rendered per panel. They are two views of a single
+    // `currentRole`, kept in step through the setSelected handles, so crossing
+    // between panels never loses the reader's chosen role.
     var currentRole = null;
     var newsData = { status: 'loading', items: [], error: '' };
     var guideData = { status: 'loading', items: [], error: '' };
@@ -96,12 +175,12 @@
         '</div>';
     }
 
-    // --- Alerts (news) panel -------------------------------------------------
+    // --- Events (news) panel -------------------------------------------------
     function renderNewsLead(a) {
       var href = 'article.html?id=' + encodeURIComponent(a.id);
       return '<div class="panel__lead">' +
         '<p class="panel__lead-chip"><span class="chip">' + escapeHtml(a.topic) + '</span></p>' +
-        '<h3 class="panel__lead-headline"><a href="' + href + '">' + escapeHtml(a.title) + '</a></h3>' +
+        '<h2 class="panel__lead-headline"><a href="' + href + '">' + escapeHtml(a.title) + '</a></h2>' +
         '<p class="panel__lead-summary">' + escapeHtml(excerpt(a.summary, 180)) + '</p>' +
         '<p class="panel__meta">' + escapeHtml(a.source) + ' &middot; ' + formatDate(a.publishedDate) + '</p>' +
         '</div>';
@@ -152,7 +231,7 @@
       var meta = parts.join(' &middot; ');
       var html = '<div class="panel__lead">' +
         '<p class="panel__lead-chip"><span class="chip">' + escapeHtml(u.category) + '</span></p>' +
-        '<h3 class="panel__lead-headline"><a href="' + href + '">' + escapeHtml(u.title) + '</a></h3>' +
+        '<h2 class="panel__lead-headline"><a href="' + href + '">' + escapeHtml(u.title) + '</a></h2>' +
         '<p class="panel__lead-summary">' + escapeHtml(excerpt(u.whatItDoes, 180)) + '</p>';
       if (meta) html += '<p class="panel__meta">' + meta + '</p>';
       return html + '</div>';
@@ -194,16 +273,148 @@
       body.innerHTML = html;
     }
 
-    // --- Wire up the shared inverted strip + both feeds ----------------------
-    renderRoleFilter(
-      document.getElementById('role-filter'),
-      function (role) {
-        currentRole = role;
-        renderNews();
-        renderGuide();
-      },
+    // --- Gate / panel choreography ------------------------------------------
+    var gate = document.getElementById('gate');
+    var panels = {
+      news: document.getElementById('panel-news'),
+      guide: document.getElementById('panel-guide')
+    };
+    var titles = {
+      news: document.getElementById('news-title'),
+      guide: document.getElementById('guide-title')
+    };
+    // Shareable, back-button-friendly: each side owns a hash.
+    var HASHES = { news: '#events', guide: '#guide' };
+    var openView = null;
+
+    // Show `view` ('news' | 'guide' | null for the gate). `focus` moves focus
+    // into the newly shown surface, so keyboard and screen-reader users land
+    // inside the panel they just opened rather than back at the top of the
+    // document. The initial call passes false, though a deep link may still end
+    // up focused: some browsers fire popstate on a first load that carries a
+    // hash. That lands on the panel heading, which is where a deep-link reader
+    // wants to be anyway, so it is left alone.
+    function show(view, focus) {
+      if (view !== 'news' && view !== 'guide') view = null;
+      openView = view;
+
+      Object.keys(panels).forEach(function (key) {
+        var active = key === view;
+        panels[key].classList.toggle('is-active', active);
+        panels[key].setAttribute('aria-hidden', active ? 'false' : 'true');
+        if (active) {
+          panels[key].removeAttribute('inert');
+        } else {
+          panels[key].setAttribute('inert', '');
+        }
+      });
+
+      gate.classList.toggle('is-behind', view !== null);
+
+      if (focus) {
+        if (view) {
+          titles[view].focus();
+        } else {
+          var pill = gate.querySelector('.gate__pill');
+          if (pill) pill.focus();
+        }
+      }
+    }
+
+    function viewFromHash() {
+      if (location.hash === HASHES.news) return 'news';
+      if (location.hash === HASHES.guide) return 'guide';
+      return null;
+    }
+
+    // Route through history so Back closes a panel and each side is linkable.
+    // Returning to the gate uses pushState rather than setting an empty hash,
+    // which would strand a bare "#" in the address bar.
+    function go(view) {
+      var hash = view ? HASHES[view] : '';
+      if ((location.hash || '') === hash) {
+        show(view, true);
+        return;
+      }
+      if (hash) {
+        location.hash = hash;
+      } else {
+        history.pushState(null, '', location.pathname + location.search);
+        show(null, true);
+      }
+    }
+
+    // Every gate pill, portal and footer cross-link shares one hook.
+    document.addEventListener('click', function (e) {
+      var trigger = e.target.closest ? e.target.closest('[data-open]') : null;
+      if (!trigger) return;
+      e.preventDefault();
+      var target = trigger.getAttribute('data-open');
+      go(target === 'gate' ? null : target);
+    });
+
+    // The masthead wordmark is the way home on every page, and it keeps the
+    // same href here so the markup stays identical across the product. On this
+    // page "home" is the gate, which is already loaded — so intercept it and
+    // close the panel instead of reloading the document.
+    document.addEventListener('click', function (e) {
+      var mark = e.target.closest ? e.target.closest('.masthead .wordmark') : null;
+      if (!mark) return;
+      e.preventDefault();
+      go(null);
+    });
+
+    // hashchange covers hash edits; popstate covers Back over the pushState
+    // used to return to the gate.
+    window.addEventListener('hashchange', function () {
+      show(viewFromHash(), true);
+    });
+
+    window.addEventListener('popstate', function () {
+      show(viewFromHash(), true);
+    });
+
+    // Escape backs out of a panel to the gate.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && openView) go(null);
+    });
+
+    // Cursor-tracked dot magnifier. Pointer-driven decoration only, so it is
+    // skipped on touch and for readers who ask for reduced motion.
+    var fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+    var stillness = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (fine.matches && !stillness.matches) {
+      gate.addEventListener('pointermove', function (e) {
+        gate.style.setProperty('--gate-x', e.clientX + 'px');
+        gate.style.setProperty('--gate-y', e.clientY + 'px');
+        gate.classList.add('is-tracking');
+      });
+      gate.addEventListener('pointerleave', function () {
+        gate.classList.remove('is-tracking');
+      });
+    }
+
+    // --- Wire up the two synced strips + both feeds --------------------------
+    var setNewsRole, setGuideRole;
+
+    function onRoleChange(role) {
+      currentRole = role;
+      if (setNewsRole) setNewsRole(role);
+      if (setGuideRole) setGuideRole(role);
+      renderNews();
+      renderGuide();
+    }
+
+    setNewsRole = renderRoleFilter(
+      document.getElementById('news-role'), onRoleChange,
       { variant: 'role-filter--strip', kicker: 'Show me content for &mdash;' }
     );
+    setGuideRole = renderRoleFilter(
+      document.getElementById('guide-role'), onRoleChange,
+      { variant: 'role-filter--strip', kicker: 'Show me content for &mdash;' }
+    );
+
+    show(viewFromHash(), false);
 
     loadArticles()
       .then(function (articles) {

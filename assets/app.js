@@ -82,6 +82,9 @@ var ROLE_SHORT = {
 //   options.variant — extra modifier class on .role-filter (e.g. the front-page
 //                     inverted strip); options.kicker — HTML for the kicker label
 //                     (trusted caller string, defaults to "I am —").
+// Returns a setSelected(role) function that moves the selection without firing
+// onChange — the front page runs one strip per section front and uses this to
+// keep the two in step. Callers that don't need it can ignore the return value.
 function renderRoleFilter(container, onChange, options) {
   options = options || {};
   var variantClass = options.variant ? ' ' + options.variant : '';
@@ -106,16 +109,30 @@ function renderRoleFilter(container, onChange, options) {
   container.innerHTML = html;
 
   var buttons = container.querySelectorAll('.role-chip');
-  container.addEventListener('click', function (e) {
-    var btn = e.target.closest ? e.target.closest('.role-chip') : null;
-    if (!btn) return;
+
+  function mark(btn) {
     for (var i = 0; i < buttons.length; i++) {
       var sel = buttons[i] === btn;
       buttons[i].classList.toggle('is-selected', sel);
       buttons[i].setAttribute('aria-pressed', sel ? 'true' : 'false');
     }
+  }
+
+  container.addEventListener('click', function (e) {
+    var btn = e.target.closest ? e.target.closest('.role-chip') : null;
+    if (!btn) return;
+    mark(btn);
     onChange(btn.getAttribute('data-role') || null);
   });
+
+  return function setSelected(role) {
+    for (var i = 0; i < buttons.length; i++) {
+      if ((buttons[i].getAttribute('data-role') || null) === (role || null)) {
+        mark(buttons[i]);
+        return;
+      }
+    }
+  };
 }
 
 // Filter items to those relevant to `role`. Null (Everyone) shows all; items
