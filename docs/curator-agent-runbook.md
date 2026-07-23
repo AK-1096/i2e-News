@@ -123,9 +123,13 @@ Publishing is a **single POST** from the agent; the heavy lifting is repo-side (
 2. Wire it into the agent as the **"Publish article" tool**:
    - **Fixed inputs:** `Accept: application/vnd.github+json`, `X-GitHub-Api-Version: 2022-11-28`,
      `Content-Type: application/json`, and `event_type: publish-article`.
-   - **AI-filled `client_payload` fields (7):** `id, title, url, source, summary, topic,
-     publishedDate` — add format hints on `id` (slug, §5) and `publishedDate` (`YYYY-MM-DD`).
-     `addedDate` is defaulted repo-side, so the agent need not send it.
+   - **AI-filled `client_payload` fields (9):** `id, title, url, source, summary, topic,
+     publishedDate, audience, relevance` — add format hints on `id` (slug, §5) and `publishedDate`
+     (`YYYY-MM-DD`). `audience` is a **JSON array** of role slugs and `relevance` is a **JSON
+     object** of three strings; both are generated per the content-generation guidance below
+     (*Content generation guidance — titles, `audience` & `relevance`*), and both are optional
+     repo-side (omit → the record simply carries no role targeting / relevance block, and the reader
+     treats it as "for everyone"). `addedDate` is defaulted repo-side, so the agent need not send it.
    - **Confirmation:** "Ask before running" = **Yes** (FR-A4/A5). **Credentials:** maker-provided.
 3. A successful call returns **HTTP 204** and fires the `publish.yml` workflow (§4).
 - ✅ *SC-3 check:* on publish, the article's metadata appears in `data/articles.json` and the live
@@ -191,11 +195,18 @@ low-code tooling and under test.
 
 **Field contract** (validated against [`data/articles.schema.json`](../data/articles.schema.json)):
 `id, title, url, source, summary, topic, publishedDate, addedDate` — all required; dates are
-`YYYY-MM-DD`; `url` starts with `http(s)://`. Notes:
+`YYYY-MM-DD`; `url` starts with `http(s)://`. Plus two **optional** reader-facing fields carried
+through the same dispatch: `audience` (array of role slugs) and `relevance` (object of three
+strings) — see the content-generation guidance below. Notes:
 - `id` — a stable slug, e.g. `<source-slug>-<publishedDate>` (used in the article URL, §5).
 - `topic` — the topic prompt text, or defaults to `"Latest"` if omitted.
 - `publishedDate` — the article's original date; `addedDate` — defaults to today (publish date) if
   the payload omits it.
+- `audience` / `relevance` — optional; when present they must validate (`audience` slugs from the
+  fixed set below; `relevance` carries all three strings). When absent they are simply omitted from
+  the record. The dispatch → env-var → upsert glue for both fields lives in
+  [`publish.yml`](../.github/workflows/publish.yml) (`ART_AUDIENCE` / `ART_RELEVANCE`, passed via
+  `toJSON`) and [`scripts/upsert-article.mjs`](../scripts/upsert-article.mjs).
 
 **1 — Agent → GitHub (`repository_dispatch`).** The "Publish article" tool (§3 Step 6) POSTs to
 `/repos/AK-1096/i2e-News/dispatches` with `event_type: publish-article` and the 7 AI-filled fields in
