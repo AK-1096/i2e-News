@@ -4,15 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AI Guide — ALerts</title>
-  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/styles.css?v=2">
 </head>
 <body>
   <header class="masthead">
     <nav class="masthead__inner" aria-label="Primary">
+      <span class="masthead__spacer" aria-hidden="true"></span>
       <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
       <span class="masthead__nav">
-        <a class="ghost-link" href="index.html">Front Page</a>
-        <a class="ghost-link" href="playbook.html">AI Guide &rarr;</a>
+        <a class="ghost-link" href="archive.html">Archive &rarr;</a>
       </span>
     </nav>
   </header>
@@ -23,7 +23,7 @@
     </div>
   </main>
 
-  <script src="assets/app.js"></script>
+  <script src="assets/app.js?v=2"></script>
   <script>
     function getId() {
       return new URLSearchParams(window.location.search).get('id');
@@ -114,6 +114,18 @@
               '</footer>' +
             '</article>';
           container.innerHTML = html;
+
+          // Dynamic header, now that the entry's heading exists to feed the
+          // compact top-left bar and mark where it should collapse.
+          initDynamicHeader({
+            title: u.title,
+            sub: platformLabel(u.sourcePlatform) + ' · ' + formatDate(u.publishedDate),
+            collapseAfter: container.querySelector('.dateline')
+          });
+
+          // "Read this first" opens, then auto-collapses after 10s; clicking its
+          // lime header expands it again.
+          initDisclaimers(10000);
         })
         .catch(function (err) {
           container.innerHTML = stateCard(
