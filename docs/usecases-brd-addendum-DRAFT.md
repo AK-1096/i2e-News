@@ -64,8 +64,9 @@ Same split-surface model joined only by a data contract:
   fence, which otherwise banned triggers.)*
 - **FR-U3 — Selection & enrichment.** The curator picks candidates from the digest (or from an
   ad-hoc query). For each selected item the agent drafts the structured fields of §5 (tools,
-  category, what-it-does, what-it-improves, how-to-try) and shows them at a **confirmation gate**
-  ("Ask before running" = Yes), where the curator can correct them and set `curatorVerified`.
+  category, what-it-does, what-it-improves, how-to-try) — plus the optional `audience` + `relevance`
+  fields per the runbook §4 rules — and shows them at a **confirmation gate** ("Ask before running" =
+  Yes), where the curator can correct them and set `curatorVerified`.
 - **FR-U4 — Publish.** On confirmation, the agent fires **one POST** —
   `repository_dispatch`, `event_type: publish-usecase` — via the existing "Github Dispatch" custom
   connector (same PAT, same host). Success = HTTP 204.
@@ -114,6 +115,16 @@ Array of objects, newest-first. Schema enforced by `data/usecases.schema.json`.
 | `curatorVerified` | boolean | ✔ | Set at the confirmation gate; default `false`. |
 | `publishedDate` | string | ✔ | `YYYY-MM-DD` — date of the original post. |
 | `addedDate` | string | ✔ | `YYYY-MM-DD` — defaults repo-side to publish day. |
+| `audience` | string[] | – | Role slugs the entry genuinely benefits, from: `developers`, `qa`, `ba-pc`, `pm`, `non-technical`. Same field + rules as the news path (runbook §4). |
+| `relevance` | object | – | `whyRelevant` / `dailyImpact` / `practicalBenefit` — concrete, second-person framing for i2e readers. Same field + rules as the news path (runbook §4). |
+
+> **Pre-wired for `audience` + `relevance` (Jul 2026).** These two optional fields already exist in
+> `data/usecases.schema.json` and are carried end-to-end by the shared write-path
+> (`UC_AUDIENCE` / `UC_RELEVANCE` in [`publish.yml`](../.github/workflows/publish.yml) →
+> `parseList` / `parseObject` in [`scripts/upsert-article.mjs`](../scripts/upsert-article.mjs)), and
+> the reader already renders them. **When the `publish-usecase` agent tool is built (§12 step 3),
+> add `audience` + `relevance` to its `client_payload` from the start** — mirror the news path exactly
+> (the curator-agent runbook §3 Step 6 / §4 is the template). No further repo-side change is needed.
 
 Suggested-addition rationale: `howToTry` is what makes an entry *actionable* rather than trivia;
 `sourcePlatform` powers a per-platform view and keeps D2 measurable; `author` is fair credit;
