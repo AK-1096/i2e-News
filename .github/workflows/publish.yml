@@ -48,6 +48,10 @@ jobs:
           ART_TOPIC: ${{ github.event.client_payload.topic }}
           ART_PUBLISHED: ${{ github.event.client_payload.publishedDate }}
           ART_ADDED: ${{ github.event.client_payload.addedDate }}
+          # Optional reader-facing fields. audience is an array, relevance a nested object — pass
+          # both as JSON (toJSON) so the upsert script can parse them; absent → literal "null".
+          ART_AUDIENCE: ${{ toJSON(github.event.client_payload.audience) }}
+          ART_RELEVANCE: ${{ toJSON(github.event.client_payload.relevance) }}
         run: node scripts/upsert-article.mjs
 
       # Same gate as pages.yml: a bad write fails here, before commit/deploy, so the live
@@ -75,6 +79,9 @@ jobs:
           UC_CURATOR_VERIFIED: ${{ github.event.client_payload.curatorVerified }}
           UC_PUBLISHED: ${{ github.event.client_payload.publishedDate }}
           UC_ADDED: ${{ github.event.client_payload.addedDate }}
+          # Same optional reader-facing fields as the news path (see above).
+          UC_AUDIENCE: ${{ toJSON(github.event.client_payload.audience) }}
+          UC_RELEVANCE: ${{ toJSON(github.event.client_payload.relevance) }}
         run: node scripts/upsert-article.mjs
 
       - name: Validate usecases.json against schema

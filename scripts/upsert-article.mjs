@@ -37,6 +37,8 @@ const TARGETS = {
       topic: () => process.env.ART_TOPIC || "Latest",
       publishedDate: () => process.env.ART_PUBLISHED,
       addedDate: () => process.env.ART_ADDED || todayUtc(),
+      audience: () => parseList(process.env.ART_AUDIENCE),
+      relevance: () => parseObject(process.env.ART_RELEVANCE),
     },
     required: ["id", "title", "url", "source", "summary", "topic", "publishedDate", "addedDate"],
   },
@@ -59,6 +61,8 @@ const TARGETS = {
       curatorVerified: () => parseBool(process.env.UC_CURATOR_VERIFIED),
       publishedDate: () => process.env.UC_PUBLISHED,
       addedDate: () => process.env.UC_ADDED || todayUtc(),
+      audience: () => parseList(process.env.UC_AUDIENCE),
+      relevance: () => parseObject(process.env.UC_RELEVANCE),
     },
     required: [
       "id", "title", "tools", "category", "whatItDoes", "whatItImproves", "howToTry",
@@ -67,11 +71,13 @@ const TARGETS = {
   },
 };
 
-// Tools arrive as a JSON array string (["a","b"]) or a comma-separated list. Both normalise
-// to a trimmed, non-empty string[].
+// Tools / audience arrive as a JSON array string (["a","b"]) or a comma-separated list. Both
+// normalise to a trimmed, non-empty string[]. A missing repository_dispatch field is rendered by
+// `toJSON(...)` as the literal string "null" (or "undefined") — treat those as empty, not a value.
 function parseList(raw) {
-  if (raw == null || String(raw).trim() === "") return [];
+  if (raw == null) return [];
   const s = String(raw).trim();
+  if (s === "" || s === "null" || s === "undefined") return [];
   if (s.startsWith("[")) {
     try {
       const arr = JSON.parse(s);
@@ -83,6 +89,22 @@ function parseList(raw) {
   return s.split(",").map((x) => x.trim()).filter(Boolean);
 }
 
+// relevance arrives as a JSON object string ({"whyRelevant":"…",…}). Returns the parsed object,
+// or null when absent/blank/malformed (an optional field — validation of its shape happens in the
+// schema step after this script, so a bad object fails the run loudly there rather than silently).
+function parseObject(raw) {
+  if (raw == null) return null;
+  const s = String(raw).trim();
+  if (s === "" || s === "null" || s === "undefined") return null;
+  try {
+    const obj = JSON.parse(s);
+    if (obj && typeof obj === "object" && !Array.isArray(obj)) return obj;
+  } catch {
+    /* fall through — treated as absent, caught by the schema gate if it was meant to be present */
+  }
+  return null;
+}
+
 // curatorVerified is always present (default false). Only the exact string "true" is true.
 function parseBool(raw) {
   return String(raw).trim().toLowerCase() === "true";
@@ -92,6 +114,7 @@ function isEmpty(v) {
   if (v == null) return true;
   if (Array.isArray(v)) return v.length === 0;
   if (typeof v === "boolean") return false; // false is a valid value, not "missing"
+  if (typeof v === "object") return Object.keys(v).length === 0;
   return String(v).trim() === "";
 }
 
@@ -112,6 +135,7 @@ function buildRecord(target) {
     if (isEmpty(v) && !target.required.includes(key)) continue; // omit empty optional
     if (Array.isArray(v)) ordered[key] = v;
     else if (typeof v === "boolean") ordered[key] = v;
+    else if (v && typeof v === "object") ordered[key] = v; // nested object (relevance) — keep as-is
     else ordered[key] = String(v).trim();
   }
   return ordered;
