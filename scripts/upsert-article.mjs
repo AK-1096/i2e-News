@@ -97,7 +97,16 @@ function parseObject(raw) {
   const s = String(raw).trim();
   if (s === "" || s === "null" || s === "undefined") return null;
   try {
-    const obj = JSON.parse(s);
+    let obj = JSON.parse(s);
+    // Double-encoded case: the Copilot Studio connector can only expose `relevance` as a *string*
+    // input (a `type: object` with no enumerated properties is dropped from the tool inputs
+    // entirely), so the agent sends the object as JSON text. toJSON() then wraps that text again and
+    // one JSON.parse yields a string rather than the object — unwrap exactly one extra level.
+    if (typeof obj === "string") {
+      const inner = obj.trim();
+      if (inner === "" || inner === "null" || inner === "undefined") return null;
+      obj = JSON.parse(inner);
+    }
     if (obj && typeof obj === "object" && !Array.isArray(obj)) return obj;
   } catch {
     /* fall through — treated as absent, caught by the schema gate if it was meant to be present */
