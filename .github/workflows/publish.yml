@@ -29,6 +29,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        # A repository_dispatch checks out GITHUB_SHA = the default-branch tip *at dispatch-creation
+        # time*. When several publishes fire close together they share that base, so a queued run
+        # (serialised by `concurrency` below) would still commit on the STALE base and its push would
+        # be rejected non-fast-forward — silently dropping that article (the agent already got 204).
+        # `ref: main` makes the serialised run check out the LIVE branch tip (incl. the prior run's
+        # commit) instead, so its push fast-forwards cleanly.
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Set up Node
         uses: actions/setup-node@v4
