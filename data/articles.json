@@ -1,5 +1,25 @@
 [
   {
+    "id": "anthropic-cognizant-claude-enterprise-2026-07-27",
+    "title": "How Cognizant is using Claude to deliver production AI in pharma, manufacturing and insurance",
+    "url": "https://www.anthropic.com/news/cognizant-anthropic",
+    "source": "Anthropic",
+    "summary": "Cognizant has expanded its strategic partnership with Anthropic, becoming a Global Premier Partner in the Claude Partner Network and embedding Claude across its engineering platforms — including Flowsource™, Neuro® AI Engineering, and Neuro® IT Ops — with more than 30,000 associates already trained. Results in production include a biopharma agentic contract-intelligence system that cut contract review time by up to 40% while lifting extraction accuracy above 88%, and a manufacturing customer experience portal delivered within six months.",
+    "topic": "Latest",
+    "publishedDate": "2026-07-27",
+    "addedDate": "2026-07-27",
+    "audience": [
+      "developers",
+      "ba-pc",
+      "pm"
+    ],
+    "relevance": {
+      "dailyImpact": "When preparing AI tool proposals or client status updates for life-sciences accounts, you can draw on this partnership's governance-aligned patterns to demonstrate real-world feasibility in GxP environments.",
+      "practicalBenefit": "Your pharma clients gain a validated framework for embedding AI into contract review, legacy code modernization, and multi-agent workflows within regulated enterprise systems.",
+      "whyRelevant": "Cognizant's biopharma contract-intelligence deployment — cutting review time by 40% in a regulated environment — gives you a concrete, production-proven reference when advising i2e's pharma clients on AI adoption strategies."
+    }
+  },
+  {
     "id": "techcrunch-satya-nadella-ai-warning-2026-07-14",
     "title": "Satya Nadella has issued a shocking warning to companies using AI",
     "url": "https://techcrunch.com/category/artificial-intelligence/",
@@ -11,7 +31,13 @@
       "practicalBenefit": "You can cite a named Microsoft-CEO warning in proposals and steering-committee decks to justify moving a client from AI experiments to measurable, structural change."
     },
     "topic": "Latest",
-    "audience": ["developers", "qa", "ba-pc", "pm", "non-technical"],
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
     "publishedDate": "2026-07-14",
     "addedDate": "2026-07-14"
   },
@@ -27,7 +53,11 @@
       "practicalBenefit": "Concrete proof points like Insilico's rentosertib Phase IIa result give you evidence to bring into client discussions and internal opportunity assessments instead of generic 'AI is transformative' claims."
     },
     "topic": "AI in Pharma",
-    "audience": ["ba-pc", "pm", "non-technical"],
+    "audience": [
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
     "publishedDate": "2026-06-27",
     "addedDate": "2026-07-14"
   },
@@ -43,7 +73,13 @@
       "practicalBenefit": "Knowing GPT-5.6 now powers Copilot lets you set accurate expectations with clients standardizing on Microsoft's stack and re-evaluate Copilot for delivery tasks you'd stopped using it for."
     },
     "topic": "Latest",
-    "audience": ["developers", "qa", "ba-pc", "pm", "non-technical"],
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
     "publishedDate": "2026-07-09",
     "addedDate": "2026-07-10"
   },
@@ -59,7 +95,10 @@
       "practicalBenefit": "You can flag concrete upgrade opportunities on active projects — better reasoning or security handling — and give clients an informed view on whether to move their integrations to GPT-5.6."
     },
     "topic": "Latest",
-    "audience": ["developers", "qa"],
+    "audience": [
+      "developers",
+      "qa"
+    ],
     "publishedDate": "2026-07-09",
     "addedDate": "2026-07-10"
   },
@@ -75,7 +114,12 @@
       "practicalBenefit": "You can advise clients precisely on timelines — build transparency and disclosure in for August 2026 while treating high-risk classification work as a 2027 milestone — instead of reacting to vague regulatory fear."
     },
     "topic": "EU AI regulation",
-    "audience": ["developers", "ba-pc", "pm", "non-technical"],
+    "audience": [
+      "developers",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
     "publishedDate": "2026-06-16",
     "addedDate": "2026-07-05"
   },
@@ -91,7 +135,11 @@
       "practicalBenefit": "You can name a concrete, recent big-pharma AI deal when scoping or pitching discovery-adjacent work, grounding i2e's relevance in a deal your clients will recognize."
     },
     "topic": "Latest",
-    "audience": ["ba-pc", "pm", "non-technical"],
+    "audience": [
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
     "publishedDate": "2026-07-03",
     "addedDate": "2026-07-05"
   },
@@ -102,7 +150,10 @@
     "source": "TechCrunch",
     "summary": "AI chip startup Etched has reached a $5 billion valuation and reported $1 billion in sales, positioning itself as a significant challenger to Nvidia in the AI hardware market. The milestone highlights growing competition in the AI chip space as demand for specialized accelerators continues to surge.",
     "topic": "Latest",
-    "audience": ["pm", "non-technical"],
+    "audience": [
+      "pm",
+      "non-technical"
+    ],
     "publishedDate": "2026-06-30",
     "addedDate": "2026-07-05"
   },
@@ -113,7 +164,11 @@
     "source": "The Independent",
     "summary": "For the first time, an AI system autonomously carried out a cyber attack with no human oversight or intervention at any stage of the operation. The incident marks a significant milestone in AI capability and raises urgent concerns around autonomous AI security threats.",
     "topic": "Latest",
-    "audience": ["developers", "qa", "non-technical"],
+    "audience": [
+      "developers",
+      "qa",
+      "non-technical"
+    ],
     "publishedDate": "2026-07-04",
     "addedDate": "2026-07-05"
   },
@@ -124,7 +179,12 @@
     "source": "TechCrunch",
     "summary": "Microsoft has launched \"Microsoft Frontier Company,\" a $2.5 billion initiative that will embed 6,000 engineers directly inside enterprise customers to build and deploy AI systems. The move follows similar forward-deployed engineering ventures by Amazon, OpenAI, and Anthropic, and will be led by Rodrigo Kede Lima, former president of Microsoft Asia.",
     "topic": "Latest",
-    "audience": ["developers", "ba-pc", "pm", "non-technical"],
+    "audience": [
+      "developers",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
     "publishedDate": "2026-07-02",
     "addedDate": "2026-07-05"
   },
@@ -135,7 +195,9 @@
     "source": "NewsPulse Test",
     "summary": "Testing the Publish Article custom connector end-to-end.",
     "topic": "Latest",
-    "audience": ["developers"],
+    "audience": [
+      "developers"
+    ],
     "publishedDate": "2026-07-03",
     "addedDate": "2026-07-05"
   },
@@ -146,7 +208,10 @@
     "source": "Anthropic",
     "summary": "Anthropic announced the Claude 3 model family — Haiku, Sonnet, and Opus — setting new benchmarks across reasoning, math, coding, and multilingual tasks, with stronger vision capabilities and a 200K-token context window.",
     "topic": "Latest",
-    "audience": ["developers", "qa"],
+    "audience": [
+      "developers",
+      "qa"
+    ],
     "publishedDate": "2024-03-04",
     "addedDate": "2026-06-23"
   },
@@ -157,7 +222,10 @@
     "source": "Anthropic",
     "summary": "Anthropic released Claude 3.5 Sonnet, which outperforms Claude 3 Opus on key benchmarks at twice the speed and a lower cost, with notable gains in coding and visual reasoning.",
     "topic": "Latest",
-    "audience": ["developers", "qa"],
+    "audience": [
+      "developers",
+      "qa"
+    ],
     "publishedDate": "2024-06-20",
     "addedDate": "2026-06-24"
   },
@@ -168,7 +236,10 @@
     "source": "Anthropic",
     "summary": "Anthropic added a public beta for 'computer use', letting Claude operate a desktop by moving the cursor, clicking, and typing, alongside an upgraded Claude 3.5 Sonnet and the new Claude 3.5 Haiku.",
     "topic": "AI agents",
-    "audience": ["developers", "qa"],
+    "audience": [
+      "developers",
+      "qa"
+    ],
     "publishedDate": "2024-10-22",
     "addedDate": "2026-06-22"
   },
@@ -179,7 +250,10 @@
     "source": "Anthropic",
     "summary": "Anthropic introduced Claude 3.7 Sonnet, its first hybrid reasoning model with an optional extended-thinking mode, and previewed Claude Code, a command-line tool for agentic coding.",
     "topic": "Latest",
-    "audience": ["developers", "qa"],
+    "audience": [
+      "developers",
+      "qa"
+    ],
     "publishedDate": "2025-02-24",
     "addedDate": "2026-06-21"
   },
@@ -190,7 +264,10 @@
     "source": "OpenAI",
     "summary": "OpenAI unveiled GPT-4o ('omni'), a single model trained end-to-end across text, vision, and audio that enables real-time multimodal interaction at GPT-4 Turbo-level intelligence.",
     "topic": "Multimodal AI",
-    "audience": ["developers", "qa"],
+    "audience": [
+      "developers",
+      "qa"
+    ],
     "publishedDate": "2024-05-13",
     "addedDate": "2026-06-20"
   },
@@ -201,7 +278,10 @@
     "source": "OpenAI",
     "summary": "OpenAI introduced the o1 series, models trained with reinforcement learning to produce a long internal chain of thought before answering, improving performance on hard science, coding, and math problems.",
     "topic": "AI reasoning",
-    "audience": ["developers", "qa"],
+    "audience": [
+      "developers",
+      "qa"
+    ],
     "publishedDate": "2024-09-12",
     "addedDate": "2026-06-19"
   },
@@ -212,7 +292,10 @@
     "source": "OpenAI",
     "summary": "OpenAI announced Sora, a text-to-video model able to generate videos up to a minute long while maintaining visual quality and adherence to the user's prompt.",
     "topic": "Video generation",
-    "audience": ["developers", "non-technical"],
+    "audience": [
+      "developers",
+      "non-technical"
+    ],
     "publishedDate": "2024-02-15",
     "addedDate": "2026-06-18"
   },
@@ -223,7 +306,9 @@
     "source": "Meta",
     "summary": "Meta released Llama 3 as openly available 8B and 70B models with improved reasoning, positioning them as the best open-source models in their class across industry benchmarks.",
     "topic": "Open models",
-    "audience": ["developers"],
+    "audience": [
+      "developers"
+    ],
     "publishedDate": "2024-04-18",
     "addedDate": "2026-06-17"
   },
@@ -234,7 +319,9 @@
     "source": "Meta",
     "summary": "Meta released Llama 3.1, including a 405B-parameter model, with expanded 128K context, multilingual support, and capabilities competitive with leading closed models.",
     "topic": "Open models",
-    "audience": ["developers"],
+    "audience": [
+      "developers"
+    ],
     "publishedDate": "2024-07-23",
     "addedDate": "2026-06-16"
   },
@@ -245,7 +332,9 @@
     "source": "Google",
     "summary": "Google announced Gemini 1.5 Pro, a mixture-of-experts model with a breakthrough long-context window of up to 1 million tokens in private preview, matching the prior 1.0 Ultra on many tasks.",
     "topic": "Long context",
-    "audience": ["developers"],
+    "audience": [
+      "developers"
+    ],
     "publishedDate": "2024-02-15",
     "addedDate": "2026-06-15"
   },
@@ -256,7 +345,9 @@
     "source": "DeepSeek",
     "summary": "DeepSeek released DeepSeek-R1, an open MIT-licensed reasoning model trained with reinforcement learning that matches OpenAI o1 on math and reasoning benchmarks, plus six distilled smaller models.",
     "topic": "AI reasoning",
-    "audience": ["developers"],
+    "audience": [
+      "developers"
+    ],
     "publishedDate": "2025-01-20",
     "addedDate": "2026-06-13"
   },
@@ -267,7 +358,9 @@
     "source": "Mistral AI",
     "summary": "Mistral AI released Mixtral 8x7B, an Apache 2.0-licensed sparse mixture-of-experts model that matches or beats Llama 2 70B and GPT-3.5 on most benchmarks with 6x faster inference.",
     "topic": "Open models",
-    "audience": ["developers"],
+    "audience": [
+      "developers"
+    ],
     "publishedDate": "2023-12-11",
     "addedDate": "2026-06-11"
   },
@@ -278,7 +371,9 @@
     "source": "Mistral AI",
     "summary": "Mistral AI announced Mistral Large 2, a 123B-parameter model with a 128K context window, strong multilingual and code performance, and significantly improved reasoning over its predecessor.",
     "topic": "Open models",
-    "audience": ["developers"],
+    "audience": [
+      "developers"
+    ],
     "publishedDate": "2024-07-24",
     "addedDate": "2026-06-09"
   },
@@ -289,7 +384,12 @@
     "source": "European Commission",
     "summary": "The European Union's AI Act entered into force on 1 August 2024, introducing a risk-based regulatory framework for artificial intelligence with phased obligations for developers and deployers.",
     "topic": "AI regulation",
-    "audience": ["developers", "ba-pc", "pm", "non-technical"],
+    "audience": [
+      "developers",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
     "publishedDate": "2024-08-01",
     "addedDate": "2026-06-08"
   }
