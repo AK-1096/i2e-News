@@ -1,5 +1,25 @@
 [
   {
+    "id": "techcrunch-safe-superintelligence-nvidia-2026-07-27",
+    "title": "Track the AI safety compute race: Safe Superintelligence and Nvidia commit billions to aligned AI research",
+    "url": "https://techcrunch.com/2026/07/27/ilya-sutskevers-safe-superintelligence-partners-with-nvidia-to-scale-its-ai-research/",
+    "source": "TechCrunch",
+    "summary": "Safe Superintelligence (SSI), the AI lab founded by former OpenAI co-founder Ilya Sutskever, has announced a long-term partnership with Nvidia — including a reported ~$5 billion investment and access to Nvidia's Vera Rubin GPU platform — set to increase SSI's compute resources by an order of magnitude. SSI is pursuing a \"straight-shot\" approach to building safe, aligned artificial superintelligence without commercial product distractions.",
+    "topic": "Latest",
+    "publishedDate": "2026-07-27",
+    "addedDate": "2026-07-28",
+    "audience": [
+      "pm",
+      "ba-pc",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "When advising clients on AI vendor selection or contributing to AI risk sections of validation documents, you can cite this partnership as evidence that compute scale and safety-focused alignment are converging at the frontier.",
+      "practicalBenefit": "You can use this development to ground AI safety discussions in GxP-aware project documentation, noting that leading labs are investing heavily in alignment before commercial release — a factor relevant to regulated-sector AI adoption timelines.",
+      "whyRelevant": "This deal signals which frontier AI labs are likely to shape the next generation of models your pharma clients may adopt or reference in validation strategies."
+    }
+  },
+  {
     "id": "techcrunch-microsoft-mai-cyber-perception-2026-07-27",
     "title": "Use Microsoft's new AI security tools to catch and fix code vulnerabilities faster — before attackers do",
     "url": "https://techcrunch.com/2026/07/27/microsoft-launches-its-first-cyber-model-and-a-new-agentic-cybersecurity-system/",
