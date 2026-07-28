@@ -1,5 +1,25 @@
 [
   {
+    "id": "bloomberg-visa-ai-layoffs-2026-07-28",
+    "title": "Track how AI-driven workforce cuts at major firms are reshaping client expectations around team size and delivery",
+    "url": "https://aiweekly.co/ai-news-today",
+    "source": "Bloomberg",
+    "summary": "Visa is eliminating approximately 2,600 roles — roughly 7% of its headcount — with cuts concentrated in technology and product teams, as CEO Ryan McInerney cited AI as accelerating the evolution of how work gets done at the company. Freed capital will be redirected toward stablecoin, cross-border, and B2B product development.",
+    "topic": "Latest",
+    "publishedDate": "2026-07-28",
+    "addedDate": "2026-07-28",
+    "audience": [
+      "pm",
+      "ba-pc",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "When preparing client status updates or workforce planning recommendations, you can reference Visa's 7% headcount reduction as a concrete benchmark for how AI is reshaping technology and product team structures.",
+      "practicalBenefit": "Knowing the pattern of AI-driven role cuts in tech-heavy teams helps you proactively frame change-management deliverables and resource discussions when clients are evaluating AI adoption at i2e engagements.",
+      "whyRelevant": "As an i2e consultant advising pharma and life-science clients, understanding how major enterprises are restructuring teams around AI gives you data to anticipate similar conversations with your own clients about project staffing and resource planning."
+    }
+  },
+  {
     "id": "techcrunch-fish-audio-2026-07-28",
     "title": "Use HIPAA-compliant AI voice cloning in pharma projects — Fish Audio's API is free through August",
     "url": "https://techcrunch.com/2026/07/28/fish-audio-raises-50m-seed-to-build-ai-voice-models-for-creators-and-enterprises/",
