@@ -1,5 +1,25 @@
 [
   {
+    "id": "anthropic-claude-opus-5-2026-07-24",
+    "title": "Get more from long-running AI agents: Claude Opus 5 delivers step-change gains in coding and professional work",
+    "url": "https://www.anthropic.com/news/claude-opus-5",
+    "source": "Anthropic",
+    "summary": "Anthropic has launched Claude Opus 5, a significant upgrade to its Opus tier, designed to power long-running AI agents with improved performance in coding and professional work. The model targets complex, multi-step agentic workflows and is positioned as Anthropic's most capable offering for sustained, high-effort tasks.",
+    "topic": "Latest",
+    "publishedDate": "2026-07-24",
+    "addedDate": "2026-07-28",
+    "audience": [
+      "developers",
+      "ba-pc",
+      "pm"
+    ],
+    "relevance": {
+      "dailyImpact": "When scoping automation solutions for clients, you can reference Opus 5's long-running agent support to identify where multi-step document review or data-processing tasks could be handled more reliably.",
+      "practicalBenefit": "You can leverage Opus 5's stronger coding and professional-work performance to accelerate development of GxP-aware data pipelines or validation scripts, reducing manual review cycles.",
+      "whyRelevant": "Claude Opus 5's enhanced agentic capabilities are directly relevant as i2e evaluates or recommends AI tools for complex, multi-step client workflows in pharma and life sciences."
+    }
+  },
+  {
     "id": "techcrunch-safe-superintelligence-nvidia-2026-07-27",
     "title": "Track the AI safety compute race: Safe Superintelligence and Nvidia commit billions to aligned AI research",
     "url": "https://techcrunch.com/2026/07/27/ilya-sutskevers-safe-superintelligence-partners-with-nvidia-to-scale-its-ai-research/",
