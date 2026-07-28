@@ -1,5 +1,25 @@
 [
   {
+    "id": "techcrunch-nadella-ai-gateway-2026-07-28",
+    "title": "Why your pharma clients need an AI gateway strategy — not just a single AI tool",
+    "url": "https://techcrunch.com/2026/07/28/satya-nadella-says-companies-that-trust-one-ai-for-everything-may-not-survive/",
+    "source": "TechCrunch",
+    "summary": "Microsoft CEO Satya Nadella has warned that companies relying on a single AI model without their own AI infrastructure layer — such as AI gateways to separate prompts from the model itself — risk significant competitive disadvantage. Nadella argues that building model independence through gateway architecture is becoming a strategic imperative for enterprise AI resilience.",
+    "topic": "Latest",
+    "publishedDate": "2026-07-28",
+    "addedDate": "2026-07-28",
+    "audience": [
+      "pm",
+      "ba-pc",
+      "developers"
+    ],
+    "relevance": {
+      "dailyImpact": "When preparing client AI strategy documents or vendor assessments, you can use this guidance to recommend AI gateway architectures that protect clients from vendor lock-in and model deprecation risks.",
+      "practicalBenefit": "Framing AI gateway adoption in client proposals helps pharma clients build resilient, audit-ready AI infrastructure that isn't derailed by a single vendor's model changes or outages.",
+      "whyRelevant": "As an i2e consultant advising pharma clients on AI adoption, Nadella's warning about single-AI dependency is directly relevant to how you structure AI tool recommendations in GxP-regulated environments."
+    }
+  },
+  {
     "id": "anthropic-claude-opus-5-2026-07-24",
     "title": "Get more from long-running AI agents: Claude Opus 5 delivers step-change gains in coding and professional work",
     "url": "https://www.anthropic.com/news/claude-opus-5",
