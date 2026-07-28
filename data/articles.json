@@ -1,5 +1,25 @@
 [
   {
+    "id": "techcrunch-microsoft-mai-cyber-perception-2026-07-27",
+    "title": "Use Microsoft's new AI security tools to catch and fix code vulnerabilities faster — before attackers do",
+    "url": "https://techcrunch.com/2026/07/27/microsoft-launches-its-first-cyber-model-and-a-new-agentic-cybersecurity-system/",
+    "source": "TechCrunch",
+    "summary": "Microsoft launched MAI-Cyber-1-Flash, its first cybersecurity-specialized AI model, alongside Project Perception — an agentic platform that deploys red, blue, and green team AI agents to identify, triage, and remediate software vulnerabilities. The system scored 95.95% on the CyberGym benchmark, outperforming rival configurations from Google and OpenAI, with Project Perception entering public preview on August 3.",
+    "topic": "Latest",
+    "publishedDate": "2026-07-27",
+    "addedDate": "2026-07-28",
+    "audience": [
+      "developers",
+      "qa",
+      "pm"
+    ],
+    "relevance": {
+      "dailyImpact": "When preparing for a client validation cycle or security review, you can reference Microsoft's Perception platform to understand how agentic red, blue, and green team agents automate the discovery and remediation of software vulnerabilities — reducing what previously took hours of manual work to minutes.",
+      "practicalBenefit": "It reduces time spent on manual security assessments during software validation, helping your team meet compliance timelines for pharma clients while maintaining a stronger security posture.",
+      "whyRelevant": "As an i2e developer or QA engineer working on GxP-validated software, Microsoft's new AI-powered vulnerability detection tools can flag security gaps in client codebases before delivery or audit."
+    }
+  },
+  {
     "id": "bloomberg-visa-ai-layoffs-2026-07-28",
     "title": "Track how AI-driven workforce cuts at major firms are reshaping client expectations around team size and delivery",
     "url": "https://aiweekly.co/ai-news-today",
