@@ -99,6 +99,13 @@ jobs:
 
       # --- Shared commit ---------------------------------------------------
       - name: Commit the updated data contract
+        # The title is model-generated from third-party pages, so it must never be expanded into the
+        # shell by ${{ }} — a title containing a double quote breaks out of the -m argument (seen
+        # 28 Jul 2026: `"anyone with a link"` split into stray pathspecs and failed the commit AFTER
+        # a successful upsert + validate), and a crafted one would be command execution in a job with
+        # `contents: write`. Pass it through the environment instead; the shell only ever sees "$VAR".
+        env:
+          COMMIT_TITLE: ${{ github.event.client_payload.title }}
         run: |
           git config user.name "newspulse-bot"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -106,7 +113,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No change to the data contract (idempotent republish); skipping commit."
           else
-            git commit -m "Publish: ${{ github.event.client_payload.title }}"
+            git commit -m "Publish: $COMMIT_TITLE"
             git push
           fi
       # No deploy step: the push above triggers the GitHub Pages branch builder, which deploys.
