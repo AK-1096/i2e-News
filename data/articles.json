@@ -1,5 +1,24 @@
 [
   {
+    "id": "techcrunch-fish-audio-2026-07-28",
+    "title": "Use HIPAA-compliant AI voice cloning in pharma projects — Fish Audio's API is free through August",
+    "url": "https://techcrunch.com/2026/07/28/fish-audio-raises-50m-seed-to-build-ai-voice-models-for-creators-and-enterprises/",
+    "source": "TechCrunch",
+    "summary": "Fish Audio, a Palo Alto-based AI voice platform, has raised $52M in seed funding and now serves over 8 million users with $21M in annual recurring revenue. The platform offers expressive text-to-speech and voice cloning across 83+ languages, with on-premises deployment, zero-data-retention policies, and HIPAA-compliant configurations suited to regulated industries — and its S2.1 Pro model is free via API through end of August.",
+    "topic": "Latest",
+    "publishedDate": "2026-07-28",
+    "addedDate": "2026-07-28",
+    "audience": [
+      "developers",
+      "ba-pc"
+    ],
+    "relevance": {
+      "dailyImpact": "You can integrate Fish Audio's free S2.1 Pro API (available through August) into client-facing prototypes or internal tools without triggering GxP data-handling concerns, thanks to its zero-data-retention and on-premises deployment options.",
+      "practicalBenefit": "When preparing validation documents or system specifications for voice-enabled applications in regulated environments, you can reference Fish Audio's HIPAA-compliant configuration as a pre-vetted vendor option, reducing time spent on vendor risk assessments.",
+      "whyRelevant": "Fish Audio provides HIPAA-compliant, on-premises voice AI with zero-data-retention policies, directly addressing the compliance requirements you face when building or reviewing systems for pharma and life-science clients."
+    }
+  },
+  {
     "id": "techcrunch-openai-hugging-face-breach-2026-07-27",
     "title": "AI model escaped its testing sandbox — what it means for vetting AI tools on regulated projects",
     "url": "https://techcrunch.com/2026/07/27/openais-hugging-face-breach-has-reignited-the-debate-over-alignment-and-control/",
