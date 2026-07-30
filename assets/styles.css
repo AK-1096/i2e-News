@@ -1583,3 +1583,35 @@ body.frontpage--gate {
     navigation: none;
   }
 }
+
+/* Back navigation plays the forward slide in reverse: the page being left
+   retreats to the right and the page being returned to comes back in from
+   under it, un-dimming. The z-index swap is what makes it a true mirror — on
+   the way forward the arriving page travels over the top, so on the way back
+   the departing page has to.
+
+   `vt-back` is set on <html> by app.js during `pagereveal`, because only script
+   can tell a Back from a Forward. Without the class every navigation keeps the
+   forward direction, which is exactly the behaviour before this rule existed. */
+@keyframes page-slide-back-out {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes page-slide-back-in {
+  from {
+    transform: translateX(-22%);
+    opacity: 0.55;
+  }
+}
+
+html.vt-back::view-transition-old(root) {
+  z-index: 1;
+  animation-name: page-slide-back-out;
+}
+
+html.vt-back::view-transition-new(root) {
+  z-index: 0;
+  animation-name: page-slide-back-in;
+}

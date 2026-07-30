@@ -385,3 +385,34 @@ function initDisclaimers(autoMs) {
   var list = document.querySelectorAll('.disclaimer');
   for (var i = 0; i < list.length; i++) initDisclaimer(list[i], autoMs);
 }
+
+// --- Back-aware page transitions --------------------------------------------
+// The page slide in styles.css runs one way: the arriving page enters from the
+// right. That reads wrong on a Back, where the reader expects to retreat the
+// way they came. Which way a navigation went is only knowable from script, so
+// this is the one part of the transition that cannot be pure CSS.
+//
+// `pagereveal` fires on the *arriving* document before its first frame — the
+// last moment a class can still change how the transition paints. The class
+// keys the reversed keyframes, and is dropped once the transition settles so
+// nothing lingers into the next navigation.
+(function () {
+  if (!('onpagereveal' in window)) return;   // no cross-document transitions here
+
+  window.addEventListener('pagereveal', function (e) {
+    if (!e.viewTransition) return;           // reduced motion, or transition skipped
+
+    var act = window.navigation && navigation.activation;
+    if (!act || act.navigationType !== 'traverse') return;   // push/replace = forward
+
+    // A traverse runs either way, so compare positions in the history list:
+    // arriving at a lower index than we left means the reader went back.
+    var from = act.from, to = act.entry;
+    if (!from || !to || from.index <= to.index) return;
+
+    var root = document.documentElement;
+    var clear = function () { root.classList.remove('vt-back'); };
+    root.classList.add('vt-back');
+    e.viewTransition.finished.then(clear, clear);
+  });
+})();
