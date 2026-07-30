@@ -298,7 +298,7 @@ entry below for why this is not negotiable.
 > 📋 **Re-applying this?** This section is the reference for *what* the flow must look like and
 > *why*; the tool-add reset traps are in §3 Step 6 (*Rebuilding the tool*). The ordered execution
 > checklist used for the 29 Jul repair was retired once the fix was verified — recover it with
-> `git show 792ebb3:docs/teams-html-fix-checklist.md` if the flow ever has to be rebuilt.
+> `git show 0e1eb45:docs/teams-html-fix-checklist.md` if the flow ever has to be rebuilt.
 >
 > **On 29 Jul 2026 the Teams action was deleted and re-added** — not the whole flow — after its
 > connection reference proved unrecoverable (see the blocker entry below). The flow keeps its id, so
