@@ -1525,3 +1525,61 @@ body.frontpage--gate {
   color: var(--color-press-black);
   white-space: pre-line;
 }
+
+/* --- Page transitions ----------------------------------------------------- */
+
+/* Cross-document View Transitions. The incoming page slides in from the right
+   while the outgoing one drifts left and dims underneath — the same transform,
+   easing and duration as the front-page section fronts above, so clicking into
+   a story moves with the same grammar as the gate.
+
+   CSS only, deliberately. The JS alternative (intercept the link, animate out,
+   then navigate) holds the reader on the old page while it plays, so a slow
+   load feels slower still. Browsers without cross-document view transitions
+   ignore every rule below and navigate exactly as they did before. */
+@view-transition {
+  navigation: auto;
+}
+
+/* The UA default for the root pair is a crossfade over an isolated,
+   plus-lighter blended pair. Both have to go, or the slide arrives with a
+   dissolve laid over it and the overlap greys out where the pages cross. */
+::view-transition-image-pair(root) {
+  isolation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  mix-blend-mode: normal;
+}
+
+@keyframes page-slide-out {
+  to {
+    transform: translateX(-22%);
+    opacity: 0.55;
+  }
+}
+
+@keyframes page-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+/* The new snapshot paints above the old one, so the arriving page slides over a
+   page that is still visibly there — that overlap is what reads as depth. */
+::view-transition-old(root) {
+  animation: page-slide-out 0.62s cubic-bezier(0.77, 0, 0.175, 1) both;
+}
+
+::view-transition-new(root) {
+  animation: page-slide-in 0.62s cubic-bezier(0.77, 0, 0.175, 1) both;
+}
+
+/* Opt out wholesale rather than zeroing the animations: a zeroed transition
+   still snapshots both pages and can flash on the swap. */
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
