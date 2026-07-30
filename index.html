@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ALerts</title>
-  <link rel="stylesheet" href="assets/styles.css?v=2">
+  <link rel="stylesheet" href="assets/styles.css?v=3">
 </head>
 <body class="frontpage--gate">
 
@@ -13,6 +13,8 @@
       <span class="masthead__spacer" aria-hidden="true"></span>
       <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
       <span class="masthead__nav">
+        <a class="ghost-link" href="index.html#events" data-open="news">News &rarr;</a>
+        <a class="ghost-link" href="index.html#guide" data-open="guide">Guides &rarr;</a>
         <a class="ghost-link" href="archive.html">Archive &rarr;</a>
       </span>
     </nav>
@@ -26,7 +28,7 @@
     <div class="gate__inner">
       <p class="gate__kicker caption">Select a view to explore</p>
       <div class="gate__choices">
-        <button type="button" class="gate__pill gate__pill--ink" data-open="news">Events</button>
+        <button type="button" class="gate__pill gate__pill--ink" data-open="news">News</button>
         <span class="gate__dot" aria-hidden="true">&middot;</span>
         <button type="button" class="gate__pill gate__pill--lime" data-open="guide">AI Guide</button>
       </div>
@@ -36,8 +38,8 @@
     </div>
   </div>
 
-  <!-- ── EVENTS ─────────────────────────────────────────────────────────── -->
-  <section class="section-front section-front--news" id="panel-news" aria-label="Events" aria-hidden="true" inert>
+  <!-- ── NEWS ───────────────────────────────────────────────────────────── -->
+  <section class="section-front section-front--news" id="panel-news" aria-label="News" aria-hidden="true" inert>
     <button type="button" class="portal portal--right" data-open="guide" aria-label="Go to the AI Guide">
       <span class="portal__inner">
         <span class="portal__arrow" aria-hidden="true">&rarr;</span>
@@ -51,21 +53,23 @@
           <span class="masthead__spacer" aria-hidden="true"></span>
           <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
           <span class="masthead__nav">
+            <a class="ghost-link" href="index.html#events" data-open="news" aria-current="page">News &rarr;</a>
+            <a class="ghost-link" href="index.html#guide" data-open="guide">Guides &rarr;</a>
             <a class="ghost-link" href="archive.html">Archive &rarr;</a>
           </span>
         </nav>
       </header>
 
       <div class="section-front__inner">
-        <p class="panel__kicker"><span class="panel__kicker-sq" aria-hidden="true"></span>The News</p>
-        <h1 class="section-front__title" id="news-title" tabindex="-1">Events</h1>
+        <p class="panel__kicker"><span class="panel__kicker-sq" aria-hidden="true"></span>The Current</p>
+        <h1 class="section-front__title" id="news-title" tabindex="-1">News</h1>
         <p class="section-front__sub" id="news-sub">Curated AI news</p>
         <div id="news-role"></div>
         <div id="news-body">
           <p class="state-loading">Setting the page&hellip;</p>
         </div>
         <div class="section-front__foot">
-          <a class="pill" href="events.html">All events &rarr;</a>
+          <a class="pill" href="events.html">All news &rarr;</a>
           <button type="button" class="pill section-front__cross" data-open="guide">Go to the AI Guide &rarr;</button>
         </div>
         <p class="section-front__note">
@@ -77,10 +81,10 @@
 
   <!-- ── AI GUIDE ───────────────────────────────────────────────────────── -->
   <section class="section-front section-front--guide" id="panel-guide" aria-label="AI Guide" aria-hidden="true" inert>
-    <button type="button" class="portal portal--left" data-open="news" aria-label="Go to Events">
+    <button type="button" class="portal portal--left" data-open="news" aria-label="Go to News">
       <span class="portal__inner">
         <span class="portal__arrow" aria-hidden="true">&larr;</span>
-        <span class="portal__label">Events</span>
+        <span class="portal__label">News</span>
       </span>
     </button>
 
@@ -90,6 +94,8 @@
           <span class="masthead__spacer" aria-hidden="true"></span>
           <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
           <span class="masthead__nav">
+            <a class="ghost-link" href="index.html#events" data-open="news">News &rarr;</a>
+            <a class="ghost-link" href="index.html#guide" data-open="guide" aria-current="page">Guides &rarr;</a>
             <a class="ghost-link" href="archive.html">Archive &rarr;</a>
           </span>
         </nav>
@@ -105,7 +111,7 @@
         </div>
         <div class="section-front__foot">
           <a class="pill" href="playbook.html">Open the guide &rarr;</a>
-          <button type="button" class="pill section-front__cross" data-open="news">Go to Events &rarr;</button>
+          <button type="button" class="pill section-front__cross" data-open="news">Go to News &rarr;</button>
         </div>
         <p class="section-front__note">
           Curated by i2e Consulting AI Labs — summaries by the ALerts curator agent.
@@ -114,7 +120,7 @@
     </div>
   </section>
 
-  <script src="assets/app.js?v=2"></script>
+  <script src="assets/app.js?v=5"></script>
   <script>
     // Twin Gate front page. The gate chooses a side; each section front is a
     // full-screen panel that slides in from the edge it parks on. Both panels
@@ -167,7 +173,7 @@
         '</div>';
     }
 
-    // --- Events (news) panel -------------------------------------------------
+    // --- News panel -------------------------------------------------
     function renderNewsLead(a) {
       var href = 'article.html?id=' + encodeURIComponent(a.id);
       return '<div class="panel__lead">' +
@@ -191,13 +197,13 @@
       if (newsData.status === 'loading') return;
       if (newsData.status === 'error') {
         body.innerHTML = errorCard(
-          'The events couldn’t be loaded.',
+          'The news couldn’t be loaded.',
           'Could not load articles: ' + escapeHtml(newsData.error) + '. Try again in a moment.',
           'archive.html', 'Try the full archive &rarr;');
         return;
       }
       if (newsData.items.length === 0) {
-        body.innerHTML = emptyAll('The curator hasn&rsquo;t published any events yet. Check back once the next edition goes out.');
+        body.innerHTML = emptyAll('The curator hasn&rsquo;t published any news yet. Check back once the next edition goes out.');
         return;
       }
       var filtered = filterByRole(newsData.items, currentRole);
@@ -412,7 +418,7 @@
       scroller: panels.news.querySelector('.section-front__scroll'),
       root: panels.news,
       masthead: panels.news.querySelector('.masthead'),
-      title: 'Events',
+      title: 'News',
       sub: 'Curated AI news',
       collapseAfter: panels.news.querySelector('.section-front__sub')
     });

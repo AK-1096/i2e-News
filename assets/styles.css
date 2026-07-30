@@ -928,7 +928,7 @@ a {
 /* --------------------------------------------------------------------------
    index.html — the "Twin Gate" front page.
    A chooser gate (dot grid + two display pills) fronts two full-screen section
-   fronts, Events and AI Guide. Picking a side slides its panel in from the edge
+   fronts, News and AI Guide. Picking a side slides its panel in from the edge
    it lives on; a spine portal at the opposite edge crosses to the other side.
    Both panels stay mounted so the slide is a pure transform — inactive ones are
    marked `inert` from script so they leave the tab order.
@@ -1065,7 +1065,7 @@ body.frontpage--gate {
   transition: transform 0.62s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
-/* Each panel parks off the edge it belongs to, so Events always arrives from
+/* Each panel parks off the edge it belongs to, so News always arrives from
    the left and the Guide from the right — the portals point the same way. */
 .section-front--news {
   transform: translateX(-100%);
@@ -1524,4 +1524,94 @@ body.frontpage--gate {
   letter-spacing: 0.04em;
   color: var(--color-press-black);
   white-space: pre-line;
+}
+
+/* --- Page transitions ----------------------------------------------------- */
+
+/* Cross-document View Transitions. The incoming page slides in from the right
+   while the outgoing one drifts left and dims underneath — the same transform,
+   easing and duration as the front-page section fronts above, so clicking into
+   a story moves with the same grammar as the gate.
+
+   CSS only, deliberately. The JS alternative (intercept the link, animate out,
+   then navigate) holds the reader on the old page while it plays, so a slow
+   load feels slower still. Browsers without cross-document view transitions
+   ignore every rule below and navigate exactly as they did before. */
+@view-transition {
+  navigation: auto;
+}
+
+/* The UA default for the root pair is a crossfade over an isolated,
+   plus-lighter blended pair. Both have to go, or the slide arrives with a
+   dissolve laid over it and the overlap greys out where the pages cross. */
+::view-transition-image-pair(root) {
+  isolation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  mix-blend-mode: normal;
+}
+
+@keyframes page-slide-out {
+  to {
+    transform: translateX(-22%);
+    opacity: 0.55;
+  }
+}
+
+@keyframes page-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+/* The new snapshot paints above the old one, so the arriving page slides over a
+   page that is still visibly there — that overlap is what reads as depth. */
+::view-transition-old(root) {
+  animation: page-slide-out 0.62s cubic-bezier(0.77, 0, 0.175, 1) both;
+}
+
+::view-transition-new(root) {
+  animation: page-slide-in 0.62s cubic-bezier(0.77, 0, 0.175, 1) both;
+}
+
+/* Opt out wholesale rather than zeroing the animations: a zeroed transition
+   still snapshots both pages and can flash on the swap. */
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+
+/* Back navigation plays the forward slide in reverse: the page being left
+   retreats to the right and the page being returned to comes back in from
+   under it, un-dimming. The z-index swap is what makes it a true mirror — on
+   the way forward the arriving page travels over the top, so on the way back
+   the departing page has to.
+
+   `vt-back` is set on <html> by app.js during `pagereveal`, because only script
+   can tell a Back from a Forward. Without the class every navigation keeps the
+   forward direction, which is exactly the behaviour before this rule existed. */
+@keyframes page-slide-back-out {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes page-slide-back-in {
+  from {
+    transform: translateX(-22%);
+    opacity: 0.55;
+  }
+}
+
+html.vt-back::view-transition-old(root) {
+  z-index: 1;
+  animation-name: page-slide-back-out;
+}
+
+html.vt-back::view-transition-new(root) {
+  z-index: 0;
+  animation-name: page-slide-back-in;
 }
