@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "NewsPulse AI articles.json",
+  "title": "ALerts articles.json",
   "description": "The data contract between the curator agent (write) and the static reader (read).",
   "type": "array",
   "items": {
