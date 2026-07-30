@@ -283,7 +283,25 @@ function initDynamicHeader(opts) {
     return 140;
   }
 
-  var threshold = resolveThreshold();
+  // How far this region can actually be scrolled.
+  function maxScrollOf() {
+    return isWindow
+      ? Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
+      : Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+  }
+
+  // A page whose header is tall relative to its body can run out of scroll
+  // before the threshold is ever reached — a news article on a tall window is
+  // the usual case. The masthead would still retract on the first scroll down
+  // and nothing would replace it, leaving the reader with no header at all. So
+  // the retract is only allowed when the compact bar can actually take over.
+  var threshold, canCollapse;
+  function measure() {
+    threshold = resolveThreshold();
+    canCollapse = maxScrollOf() >= threshold;
+  }
+  measure();
+
   var lastY = topOf();
   var navHidden = false;
   var collapsed = false;
@@ -296,6 +314,22 @@ function initDynamicHeader(opts) {
 
   function onScroll() {
     var y = topOf();
+    if (!canCollapse) {
+      // Several pages call this before their list has been fetched, so the
+      // region was genuinely short when first measured and has grown since.
+      // Re-measure while that verdict stands — it costs a layout read only on
+      // pages still judged too short, and stops once one is tall enough.
+      measure();
+    }
+    if (!canCollapse) {
+      // Too short for the hand-off: keep the masthead rather than stranding the
+      // reader with no header at all.
+      navHidden = false;
+      collapsed = false;
+      lastY = y;
+      apply();
+      return;
+    }
     if (y <= 4) {
       // Back at the top: full masthead, no compact bar.
       navHidden = false;
@@ -310,11 +344,19 @@ function initDynamicHeader(opts) {
   }
 
   (isWindow ? window : scroller).addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', function () { threshold = resolveThreshold(); });
+  window.addEventListener('resize', function () { measure(); onScroll(); });
+
+  // The first measurement is taken before the web fonts settle, and the display
+  // face changes both where the dateline sits and how tall the page is — the
+  // two numbers canCollapse is decided from. Re-measure once they land.
+  if (document.fonts && document.fonts.ready && document.fonts.ready.then) {
+    document.fonts.ready.then(function () { measure(); onScroll(); });
+  }
+
   apply();
 
   return {
-    refresh: function () { threshold = resolveThreshold(); }
+    refresh: function () { measure(); onScroll(); }
   };
 }
 
