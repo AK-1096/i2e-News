@@ -295,9 +295,10 @@ entry below for why this is not negotiable.
    link**, and that link opens the per-article view, which links out to the original source.
    Verify from the **published Teams agent**, never from the Test pane (see below).
 
-> 📋 **Applying this?** Follow [`teams-html-fix-checklist.md`](teams-html-fix-checklist.md) — the
-> ordered execution steps, including the tool-add reset traps. This section stays the reference for
-> *what* the flow must look like and *why*.
+> 📋 **Re-applying this?** This section is the reference for *what* the flow must look like and
+> *why*; the tool-add reset traps are in §3 Step 6 (*Rebuilding the tool*). The ordered execution
+> checklist used for the 29 Jul repair was retired once the fix was verified — recover it with
+> `git show 792ebb3:docs/teams-html-fix-checklist.md` if the flow ever has to be rebuilt.
 >
 > **On 29 Jul 2026 the Teams action was deleted and re-added** — not the whole flow — after its
 > connection reference proved unrecoverable (see the blocker entry below). The flow keeps its id, so
