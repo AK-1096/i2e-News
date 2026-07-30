@@ -1,5 +1,25 @@
 [
   {
+    "id": "techcrunch-microsoft-competing-openai-anthropic-2026-07-29",
+    "title": "Keep your AI vendor options open: what Microsoft's new model strategy means for client work",
+    "url": "https://techcrunch.com/2026/07/29/microsoft-is-openly-competing-with-openai-anthropic-more-than-ever/",
+    "source": "TechCrunch",
+    "summary": "During its Q4 FY2026 earnings call, Microsoft CEO Satya Nadella publicly pitched the company's own MAI model family and AI harnesses as lower-cost alternatives to OpenAI and Anthropic, urging enterprises to keep their AI model layer separate from their agentic harness to avoid vendor lock-in. Microsoft now offers over 11,000 models in its cloud catalog, with its MAI models running on proprietary Maya chips at 40% better performance per watt.",
+    "topic": "Latest",
+    "publishedDate": "2026-07-29",
+    "addedDate": "2026-07-30",
+    "audience": [
+      "pm",
+      "ba-pc",
+      "developers"
+    ],
+    "relevance": {
+      "dailyImpact": "When building or reviewing AI tool recommendations for a client status update, you can now reference Microsoft's MAI model family as a cost-competitive alternative to OpenAI and Anthropic.",
+      "practicalBenefit": "Understanding Microsoft's multi-model pitch helps you advise clients on avoiding single-vendor lock-in when specifying AI components in validation documents or system design.",
+      "whyRelevant": "As i2e advises pharma clients on AI tooling, Microsoft's shift toward selling its own models and harnesses means your clients may start asking about multi-model strategies and vendor independence."
+    }
+  },
+  {
     "id": "techcrunch-nadella-ai-gateway-2026-07-28",
     "title": "Why your pharma clients need an AI gateway strategy — not just a single AI tool",
     "url": "https://techcrunch.com/2026/07/28/satya-nadella-says-companies-that-trust-one-ai-for-everything-may-not-survive/",
