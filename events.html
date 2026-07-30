@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Events — ALerts</title>
+  <title>News — ALerts</title>
   <link rel="stylesheet" href="assets/styles.css?v=2">
 </head>
 <body>
@@ -12,6 +12,8 @@
       <span class="masthead__spacer" aria-hidden="true"></span>
       <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
       <span class="masthead__nav">
+        <a class="ghost-link" href="index.html#events" data-open="news">News</a>
+        <a class="ghost-link" href="index.html#guide" data-open="guide">Guides</a>
         <a class="ghost-link" href="archive.html">Archive &rarr;</a>
       </span>
     </nav>
@@ -19,7 +21,7 @@
 
   <main class="frontpage">
     <section class="hero">
-      <h1 class="headline">Events</h1>
+      <h1 class="headline">News</h1>
       <p class="caption" id="dateline">Curated AI news, newest first</p>
     </section>
 
@@ -47,13 +49,13 @@
         if (articles.length === 0) {
           list.innerHTML =
             '<h2 class="state-card__title">Nothing has been filed yet.</h2>' +
-            '<p class="state-card__body">The curator hasn&rsquo;t published any events. Check back once the next edition goes out.</p>';
+            '<p class="state-card__body">The curator hasn&rsquo;t published any news. Check back once the next edition goes out.</p>';
           return;
         }
 
         if (dateline) {
           dateline.innerHTML =
-            'Curated AI news, newest first &middot; ' + articles.length + ' events';
+            'Curated AI news, newest first &middot; ' + articles.length + ' articles';
         }
 
         function render(role) {
@@ -61,7 +63,7 @@
           if (filtered.length === 0) {
             list.innerHTML =
               '<h2 class="state-card__title">Nothing filed for this role yet.</h2>' +
-              '<p class="state-card__body">No events match that role right now. Try another role, or pick &ldquo;Everyone&rdquo; to see them all.</p>';
+              '<p class="state-card__body">No articles match that role right now. Try another role, or pick &ldquo;Everyone&rdquo; to see them all.</p>';
             return;
           }
           list.innerHTML = '<div class="contents">' + filtered.map(renderListItem).join('') + '</div>';
@@ -73,16 +75,16 @@
       .catch(function (err) {
         document.getElementById('list').innerHTML =
           '<div class="card">' +
-            '<h2 class="state-card__title">The events couldn&rsquo;t be loaded.</h2>' +
+            '<h2 class="state-card__title">The news couldn&rsquo;t be loaded.</h2>' +
             '<p class="state-card__body">Could not load articles: ' + escapeHtml(err.message) + '. Try again in a moment.</p>' +
             '<a class="ghost-link" href="index.html">Back to the front page &rarr;</a>' +
           '</div>';
       });
 
     // Dynamic header: retract the masthead on scroll-down, pin the compact
-    // "Events" bar top-left, restore the masthead on scroll-up.
+    // "News" bar top-left, restore the masthead on scroll-up.
     initDynamicHeader({
-      title: 'Events',
+      title: 'News',
       sub: 'Curated AI news',
       collapseAfter: document.querySelector('.hero')
     });

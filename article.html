@@ -12,6 +12,8 @@
       <span class="masthead__spacer" aria-hidden="true"></span>
       <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
       <span class="masthead__nav">
+        <a class="ghost-link" href="index.html#events" data-open="news">News</a>
+        <a class="ghost-link" href="index.html#guide" data-open="guide">Guides</a>
         <a class="ghost-link" href="archive.html">Archive &rarr;</a>
       </span>
     </nav>
@@ -34,7 +36,7 @@
       return '<div class="card">' +
         '<h2 class="state-card__title">' + title + '</h2>' +
         '<p class="state-card__body">' + body + '</p>' +
-        '<a class="ghost-link" href="events.html">Back to all events &rarr;</a>' +
+        '<a class="ghost-link" href="events.html">Back to all news &rarr;</a>' +
         '</div>';
     }
 
@@ -69,7 +71,7 @@
                 '<a class="btn-accent" href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener noreferrer">' +
                   'Read the original at ' + escapeHtml(a.source) + ' &rarr;</a>' +
               '</p>' +
-              '<p class="clipping__secondary"><a class="ghost-link" href="events.html">Browse all events</a></p>' +
+              '<p class="clipping__secondary"><a class="ghost-link" href="events.html">Browse all news</a></p>' +
               '<footer class="clipping__footnote">' +
                 'Curated by i2e Consulting AI Labs — summaries by the ALerts curator agent.' +
               '</footer>' +

@@ -928,7 +928,7 @@ a {
 /* --------------------------------------------------------------------------
    index.html — the "Twin Gate" front page.
    A chooser gate (dot grid + two display pills) fronts two full-screen section
-   fronts, Events and AI Guide. Picking a side slides its panel in from the edge
+   fronts, News and AI Guide. Picking a side slides its panel in from the edge
    it lives on; a spine portal at the opposite edge crosses to the other side.
    Both panels stay mounted so the slide is a pure transform — inactive ones are
    marked `inert` from script so they leave the tab order.
@@ -1065,7 +1065,7 @@ body.frontpage--gate {
   transition: transform 0.62s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
-/* Each panel parks off the edge it belongs to, so Events always arrives from
+/* Each panel parks off the edge it belongs to, so News always arrives from
    the left and the Guide from the right — the portals point the same way. */
 .section-front--news {
   transform: translateX(-100%);
