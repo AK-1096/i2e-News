@@ -278,9 +278,14 @@ function renderListItem(a) {
 // and free, and anyone who works out the URL can inflate a count. This is
 // PoC-grade social proof, not an audited number. See the README.
 //
-// Only totals are ever sent or stored: the request carries the item's key and
-// nothing else — no name, no id, no account. Whether *this browser* has already
-// voted is kept in localStorage and never leaves the device.
+// What "anonymous" does and doesn't mean here. The request body carries the
+// item's key and nothing else: no name, no account, no reader id, and this site
+// never learns or stores who voted. But the browser calls Abacus directly, so
+// Abacus receives the reader's IP address and user agent the way any web server
+// would. So: anonymous with respect to i2e and to other readers, not with
+// respect to the counter service. The reader-facing note and the README both say
+// only what that supports. Whether *this browser* has voted is kept in
+// localStorage and never leaves the device.
 //
 // The whole feature degrades to nothing. The count is read before the control is
 // built, so if the service is unreachable, blocked, or returns junk, the page
@@ -288,16 +293,47 @@ function renderListItem(a) {
 
 var UPVOTE_API = 'https://abacus.jasoncameron.dev';
 var UPVOTE_NS = 'alerts-i2e-7f3a9c2e';
+var UPVOTE_NOTE = 'No sign-in — only the total is counted.';
+var UPVOTE_RETRY = 'That didn’t go through. Try again.';
 
-// Counter keys are capped at 64 characters and limited to a URL-safe alphabet.
-// Every id in the contract fits today (the longest is 59), but ids are written
-// by the curator, so a long one folds down to a truncated slug plus a hash of
-// the full id rather than silently 400-ing and losing the control.
-function upvoteKey(id) {
-  if (id.length <= 64 && /^[A-Za-z0-9_-]+$/.test(id)) return id;
+// Counter keys are scoped by collection. Articles and use-cases are separate
+// contracts with separately-assigned ids, and nothing in either schema stops the
+// two from colliding; an unscoped key would merge a colliding pair's totals and
+// voted state into one counter.
+var UPVOTE_KINDS = { article: 'a', usecase: 'g' };
+
+// The counter key for one item: a collection prefix plus its id. Returns null
+// for an unknown collection, which leaves the control unrendered rather than
+// guessing a prefix and silently sharing someone else's counter.
+//
+// Keys are capped at 64 characters and limited to a URL-safe alphabet. Every id
+// in the contract fits today (the longest is 59, plus the 2-character prefix),
+// but ids are written by the curator, so a long one folds down to a truncated
+// slug plus a hash of the whole key rather than 400-ing and losing the control.
+function upvoteKey(kind, id) {
+  var prefix = UPVOTE_KINDS[kind];
+  if (!prefix) return null;
+  var k = prefix + '-' + id;
+  if (k.length <= 64 && /^[A-Za-z0-9_-]+$/.test(k)) return k;
   var h = 5381;
-  for (var i = 0; i < id.length; i++) h = ((h * 33) ^ id.charCodeAt(i)) >>> 0;
-  return id.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 50) + '-' + h.toString(36);
+  for (var i = 0; i < k.length; i++) h = ((h * 33) ^ k.charCodeAt(i)) >>> 0;
+  return k.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 50) + '-' + h.toString(36);
+}
+
+// Read a total out of a counter response. A 200 carrying a payload we can't read
+// is a broken dependency, not a zero — mounting "0" would invent a number the
+// service never reported — so an unreadable body throws and the control hides.
+// A numeric string is accepted so a benign change in how the service formats its
+// JSON doesn't blank the control, but null, undefined and anything unparseable
+// are rejected outright — Number(null) is 0, and reporting that as a total is
+// exactly the invented number this guard exists to prevent.
+function upvoteCount(d) {
+  var v = d && d.value;
+  var usable = typeof v === 'number' ||
+    (typeof v === 'string' && v.trim() !== '' && isFinite(Number(v)));
+  var n = usable ? Number(v) : NaN;
+  if (!isFinite(n) || n < 0) throw new Error('unreadable counter payload');
+  return Math.floor(n);
 }
 
 // localStorage is unavailable in some privacy modes; a reader there simply gets
@@ -312,9 +348,10 @@ function upvoteWrite(k) {
 // Mount the upvote control for `id` into `host`. Renders nothing at all unless
 // the current total comes back, so the control never appears in a state where
 // pressing it would fail.
-function initUpvotes(host, id) {
+function initUpvotes(host, kind, id) {
   if (!host || !id) return;
-  var key = upvoteKey(id);
+  var key = upvoteKey(kind, id);
+  if (!key) return;
   var seen = 'alerts:upvoted:' + key;
 
   fetch(UPVOTE_API + '/get/' + UPVOTE_NS + '/' + encodeURIComponent(key))
@@ -323,7 +360,7 @@ function initUpvotes(host, id) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
     })
-    .then(function (d) { mount(Number(d.value) || 0); })
+    .then(function (d) { mount(upvoteCount(d)); })
     .catch(function () { /* counter unavailable — leave the page as it was */ });
 
   function mount(count) {
@@ -334,11 +371,12 @@ function initUpvotes(host, id) {
         '<span class="upvote__label">' + (voted ? 'Upvoted' : 'Upvote') + '</span>' +
         '<span class="upvote__count">' + count + '</span>' +
       '</button>' +
-      '<p class="upvote__note caption">Anonymous &mdash; only the total is recorded.</p>';
+      '<p class="upvote__note caption">' + escapeHtml(UPVOTE_NOTE) + '</p>';
 
     var btn = host.querySelector('.upvote');
     var label = host.querySelector('.upvote__label');
     var num = host.querySelector('.upvote__count');
+    var note = host.querySelector('.upvote__note');
     if (voted) btn.disabled = true;
     setLabel(count, voted);
 
@@ -346,10 +384,10 @@ function initUpvotes(host, id) {
       if (btn.disabled) return;
       // Optimistic: the reader sees their vote land immediately, and the
       // authoritative total from the response replaces it a moment later.
+      var previous = count;
       btn.disabled = true;
-      var optimistic = count + 1;
-      paint(optimistic, true);
-      upvoteWrite(seen);
+      paint(previous + 1, true);
+      note.textContent = UPVOTE_NOTE;
 
       fetch(UPVOTE_API + '/hit/' + UPVOTE_NS + '/' + encodeURIComponent(key))
         .then(function (r) {
@@ -357,13 +395,21 @@ function initUpvotes(host, id) {
           return r.json();
         })
         .then(function (d) {
-          count = Number(d.value) || optimistic;
+          count = upvoteCount(d);
+          // Only now is the vote real. Recording it any earlier would lock the
+          // reader out of retrying a vote that never actually landed: the next
+          // load would read back the unchanged total and still disable the
+          // button as "Upvoted".
+          upvoteWrite(seen);
           paint(count, true);
         })
         .catch(function () {
-          // The vote didn't reach the service. Keep the optimistic number
-          // rather than yanking it back — the reader did press the button, and
-          // the count reconciles on the next page load anyway.
+          // Nothing was recorded, so put the control back exactly as it was and
+          // say so — an unexplained number sliding back down reads as a glitch.
+          count = previous;
+          paint(count, false);
+          btn.disabled = false;
+          note.textContent = UPVOTE_RETRY;
         });
     });
 

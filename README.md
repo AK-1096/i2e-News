@@ -86,12 +86,22 @@ A static site has nowhere to keep shared state, so the totals live in **Abacus**
 | `/get/<ns>/<key>` | Reads the total, `404` when nobody has voted yet. |
 
 The namespace and the whole implementation are in `initUpvotes()` in `assets/app.js`. The key is the
-item's `id` (folded to a hash if one ever exceeds the service's 64-character limit).
+item's `id` behind a one-character collection prefix (`a-` for articles, `g-` for use-cases), folded
+to a hash if it ever exceeds the service's 64-character limit. The prefix matters: the two contracts
+assign ids independently and neither schema forbids a collision, so unprefixed keys would silently
+merge a colliding pair's totals.
 
-**What this is and isn't.** Only totals are sent — the request carries the item's key and nothing
-else, so there is no way to learn who voted. Whether *this browser* has voted is kept in
-`localStorage` and never leaves the device; it stops accidental double-taps and nothing more, since
-clearing site data or opening a private window resets it.
+**What "anonymous" means here — precisely.** The request carries the item's key and nothing else: no
+name, no account, no reader id, and this site never learns or stores who voted. But the browser
+calls Abacus *directly*, so Abacus receives the reader's IP address and user agent, exactly as any
+web server does. These upvotes are therefore anonymous with respect to i2e and to other readers —
+**not** with respect to the counter service. If that distinction matters for your audience, the
+tenant-controlled replacement below is the answer, not a wording change.
+
+Whether *this browser* has voted is kept in `localStorage` and never leaves the device. It stops
+accidental double-taps and nothing more — clearing site data or opening a private window resets it.
+The flag is written only after the increment is confirmed, so a vote that fails to reach the service
+leaves the button live and retryable rather than locking the reader out of a vote that never landed.
 
 Be clear-eyed about the trade-off that bought the low effort: the namespace ships in public
 JavaScript on a public site, the service is unofficial and free with no SLA, and anyone who works
@@ -100,8 +110,13 @@ they ever need to be trustworthy, the replacement is a tenant-controlled endpoin
 or a Power Automate flow writing to a SharePoint list) behind the same `initUpvotes()` seam.
 
 The feature degrades to nothing: the count is read *before* the control is built, so if the service
-is unreachable or blocked, the button is never inserted and the page renders exactly as it did
-before.
+is unreachable, blocked, or answers with a body that isn't a number, the button is never inserted
+and the page renders exactly as it did before. An unreadable `200` counts as a failure, not as a
+zero — showing "0" would invent a total the service never reported.
+
+When editing `assets/app.js` or `assets/styles.css`, bump the `?v=` on every page that loads them
+(`grep -n 'app\.js?v=' *.html`). Returning readers are otherwise served the cached old asset and can
+see a missing or unstyled control after a deploy.
 
 ## Local development
 
