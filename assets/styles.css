@@ -435,6 +435,71 @@ a {
   text-align: left;
 }
 
+/* Upvote control. Sits above the link-out so the reader meets it while still on
+   the page. Script-mounted and empty until the count loads, so it must not
+   reserve space of its own — the margin rides on the button instead. */
+.clipping__upvote:empty {
+  display: none;
+}
+
+/* Bordered pill, not a filled one: the lime .btn-accent below it is the page's
+   primary action and this must not compete with it. Once pressed it inverts to
+   solid ink, the same "committed" state .role-chip.is-selected uses. */
+.upvote {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.04em;
+  color: var(--color-press-black);
+  background: transparent;
+  border: 1px solid var(--color-press-black);
+  border-radius: var(--radius-buttons);
+  padding: 10px 16px;
+  min-height: 44px;
+  margin-bottom: var(--spacing-8);
+  cursor: pointer;
+}
+
+.upvote:hover:not(:disabled) {
+  background: var(--color-highlighter-lime);
+}
+
+.upvote__mark {
+  font-size: 9px;
+  line-height: 1;
+}
+
+/* The count is the payload — set it apart from the label with a hairline. */
+.upvote__count {
+  padding-left: var(--spacing-8);
+  border-left: 1px solid var(--color-smoke);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-bold);
+}
+
+.upvote[aria-pressed='true'] {
+  background: var(--color-press-black);
+  color: var(--color-manuscript-cream);
+}
+
+.upvote[aria-pressed='true'] .upvote__count {
+  border-left-color: var(--color-manuscript-cream);
+}
+
+/* Already voted — the control stays legible, it just isn't a target any more. */
+.upvote:disabled {
+  cursor: default;
+}
+
+.upvote__note {
+  margin-bottom: var(--spacing-16);
+  color: var(--color-press-black);
+  opacity: 0.6;
+}
+
 .clipping__action {
   margin-bottom: var(--spacing-16);
 }

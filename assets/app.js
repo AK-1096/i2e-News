@@ -268,6 +268,223 @@ function renderListItem(a) {
     '</article>';
 }
 
+// --- Upvotes (detail pages only) --------------------------------------------
+// The one place the reader writes anything. A static site has nowhere to keep
+// shared state, so the totals live in a free hosted counter service (Abacus):
+//   GET /hit/<ns>/<key> → increments, returns {"value": n}
+//   GET /get/<ns>/<key> → reads it, 404 when nobody has voted yet
+// No account, no key, no backend — and correspondingly no guarantees. The
+// namespace below is public (it ships in this file), the service is unofficial
+// and free, and anyone who works out the URL can inflate a count. This is
+// PoC-grade social proof, not an audited number. See the README.
+//
+// What "anonymous" does and doesn't mean here. The request body carries the
+// item's key and nothing else: no name, no account, no reader id, and this site
+// never learns or stores who voted. But the browser calls Abacus directly, so
+// Abacus receives the reader's IP address and user agent the way any web server
+// would. So: anonymous with respect to i2e and to other readers, not with
+// respect to the counter service. The reader-facing note and the README both say
+// only what that supports. Whether *this browser* has voted is kept in
+// localStorage and never leaves the device.
+//
+// The whole feature degrades to nothing. The count is read before the control is
+// built, so if the service is unreachable, blocked, or returns junk, the page
+// renders exactly as it did before — a dead dependency costs one failed fetch.
+
+var UPVOTE_API = 'https://abacus.jasoncameron.dev';
+var UPVOTE_NS = 'alerts-i2e-7f3a9c2e';
+var UPVOTE_NOTE = 'No sign-in — only the total is counted.';
+var UPVOTE_RETRY = 'That didn’t go through. Try again.';
+var UPVOTE_UNSURE = 'We couldn’t confirm your upvote. Reload to see the current total.';
+
+// Counter keys are scoped by collection. Articles and use-cases are separate
+// contracts with separately-assigned ids, and nothing in either schema stops the
+// two from colliding; an unscoped key would merge a colliding pair's totals and
+// voted state into one counter.
+var UPVOTE_KINDS = { article: 'a', usecase: 'g' };
+
+// The counter key for one item: a collection prefix plus its id. Returns null
+// for an unknown collection, which leaves the control unrendered rather than
+// guessing a prefix and silently sharing someone else's counter.
+//
+// Keys are capped at 64 characters and limited to a URL-safe alphabet. Every id
+// in the contract fits today (the longest is 59, plus the 2-character prefix),
+// but ids are written by the curator, so a long one folds down to a truncated
+// slug plus a hash of the whole key rather than 400-ing and losing the control.
+function upvoteKey(kind, id) {
+  // Own-property check, not a plain lookup: `toString` and `constructor` resolve
+  // through the prototype chain and would otherwise pass for real collections.
+  if (!Object.prototype.hasOwnProperty.call(UPVOTE_KINDS, kind)) return null;
+  var prefix = UPVOTE_KINDS[kind];
+  var k = prefix + '-' + id;
+  if (k.length <= 64 && /^[A-Za-z0-9_-]+$/.test(k)) return k;
+  var h = 5381;
+  for (var i = 0; i < k.length; i++) h = ((h * 33) ^ k.charCodeAt(i)) >>> 0;
+  return k.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 50) + '-' + h.toString(36);
+}
+
+// Read a total out of a counter response. A 200 carrying a payload we can't read
+// is a broken dependency, not a zero — mounting "0" would invent a number the
+// service never reported — so an unreadable body throws and the control hides.
+// A numeric string is accepted so a benign change in how the service formats its
+// JSON doesn't blank the control, but null, undefined and anything unparseable
+// are rejected outright — Number(null) is 0, and reporting that as a total is
+// exactly the invented number this guard exists to prevent.
+//
+// A total is a count of votes, so only a safe non-negative integer will do.
+// Rounding 1.9 down to 1, or accepting a value past Number.MAX_SAFE_INTEGER
+// where arithmetic silently stops being exact, would each display a number the
+// service did not report — the same defect in a quieter form.
+function upvoteCount(d) {
+  var v = d && d.value;
+  var usable = typeof v === 'number' ||
+    (typeof v === 'string' && v.trim() !== '' && isFinite(Number(v)));
+  var n = usable ? Number(v) : NaN;
+  if (!Number.isSafeInteger(n) || n < 0) throw new Error('unreadable counter payload');
+  return n;
+}
+
+// localStorage is unavailable in some privacy modes; a reader there simply gets
+// an un-guarded button rather than a broken page.
+function upvoteRead(k) {
+  try { return localStorage.getItem(k) === '1'; } catch (e) { return false; }
+}
+function upvoteWrite(k) {
+  try { localStorage.setItem(k, '1'); } catch (e) { /* nothing to do */ }
+}
+
+// Mount the upvote control for `id` into `host`. Renders nothing at all unless
+// the current total comes back, so the control never appears in a state where
+// pressing it would fail.
+function initUpvotes(host, kind, id) {
+  if (!host || !id) return;
+  var key = upvoteKey(kind, id);
+  if (!key) return;
+  var seen = 'alerts:upvoted:' + key;
+
+  fetch(UPVOTE_API + '/get/' + UPVOTE_NS + '/' + encodeURIComponent(key))
+    .then(function (r) {
+      if (r.status === 404) return { value: 0 };   // created on first upvote
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function (d) { mount(upvoteCount(d)); })
+    .catch(function () { /* counter unavailable — leave the page as it was */ });
+
+  function mount(count) {
+    var voted = upvoteRead(seen);
+    host.innerHTML =
+      '<button type="button" class="upvote" aria-pressed="' + (voted ? 'true' : 'false') + '">' +
+        '<span class="upvote__mark" aria-hidden="true">&#9650;</span>' +
+        '<span class="upvote__label">' + (voted ? 'Upvoted' : 'Upvote') + '</span>' +
+        '<span class="upvote__count">' + count + '</span>' +
+      '</button>' +
+      // The note doubles as the control's status line: it starts as the standing
+      // privacy line and is overwritten when a vote fails or can't be confirmed.
+      // role=status makes those swaps reach assistive tech, which would otherwise
+      // get the sighted reader's explanation and nothing else. It is in the DOM
+      // before any mutation, which is what makes the announcement reliable.
+      '<p class="upvote__note caption" role="status" aria-live="polite">' +
+        escapeHtml(UPVOTE_NOTE) +
+      '</p>';
+
+    var btn = host.querySelector('.upvote');
+    var label = host.querySelector('.upvote__label');
+    var num = host.querySelector('.upvote__count');
+    var note = host.querySelector('.upvote__note');
+    if (voted) btn.disabled = true;
+    setLabel(count, voted);
+
+    btn.addEventListener('click', function () {
+      if (btn.disabled) return;
+      // Optimistic: the reader sees their vote land immediately, and the
+      // authoritative total from the response replaces it a moment later.
+      var previous = count;
+      btn.disabled = true;
+      paint(previous + 1, true);
+      note.textContent = UPVOTE_NOTE;
+
+      fetch(UPVOTE_API + '/hit/' + UPVOTE_NS + '/' + encodeURIComponent(key))
+        .then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(function (d) {
+          count = upvoteCount(d);
+          // Only now is the vote real. Recording it any earlier would lock the
+          // reader out of retrying a vote that never actually landed: the next
+          // load would read back the unchanged total and still disable the
+          // button as "Upvoted".
+          upvoteWrite(seen);
+          paint(count, true);
+        })
+        .catch(function () { reconcile(previous); });
+    });
+
+    // A failed /hit does not mean nothing happened. The increment may well have
+    // landed and only the response been lost, and the service offers no
+    // idempotency key to settle it — so simply rolling back and inviting a retry
+    // would count a single intended vote twice.
+    //
+    // Re-read the total instead and let the number decide. This narrows the
+    // window rather than closing it: a different reader voting during the
+    // reconcile is indistinguishable from our own, and that ambiguity is
+    // deliberately resolved towards under-counting. Losing one upvote off a soft
+    // popularity signal is the cheaper error than inflating it.
+    function reconcile(previous) {
+      fetch(UPVOTE_API + '/get/' + UPVOTE_NS + '/' + encodeURIComponent(key))
+        .then(function (r) {
+          if (r.status === 404) return { value: 0 };
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(function (d) {
+          var now = upvoteCount(d);
+          if (now > previous) {
+            // Something landed. Treat it as this reader's vote and stop here —
+            // the button stays spent, so no retry can double it.
+            count = now;
+            upvoteWrite(seen);
+            paint(count, true);
+          } else {
+            // The total never moved: the vote genuinely didn't reach the
+            // service. Restore the control and say so, rather than letting an
+            // unexplained number slide back down.
+            count = previous;
+            paint(count, false);
+            btn.disabled = false;
+            note.textContent = UPVOTE_RETRY;
+          }
+        })
+        .catch(function () {
+          // Both calls failed, so which happened is unknowable from here. Show
+          // the last total we trust and leave the button spent — offering a
+          // blind retry is how the double-count gets in. Nothing is persisted,
+          // so a reload re-reads the real total and hands the reader a working
+          // button again.
+          count = previous;
+          paint(count, false);
+          note.textContent = UPVOTE_UNSURE;
+        });
+    }
+
+    function paint(n, isVoted) {
+      num.textContent = n;
+      label.textContent = isVoted ? 'Upvoted' : 'Upvote';
+      btn.setAttribute('aria-pressed', isVoted ? 'true' : 'false');
+      setLabel(n, isVoted);
+    }
+
+    // The visible text is three separate spans, so give assistive tech one
+    // sentence that says what the control does and what the number means.
+    function setLabel(n, isVoted) {
+      btn.setAttribute('aria-label',
+        (isVoted ? 'Upvoted. ' : 'Upvote this. ') +
+        n + (n === 1 ? ' upvote' : ' upvotes') + ' so far.');
+    }
+  }
+}
+
 // --- Dynamic header (shared by every page) ----------------------------------
 // One scroll behaviour across the whole product. Scrolling down retracts the
 // black masthead and pins a compact page-title bar (.pagehead) to the top-left;

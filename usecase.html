@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AI Guide — ALerts</title>
-  <link rel="stylesheet" href="assets/styles.css?v=3">
+  <link rel="stylesheet" href="assets/styles.css?v=4">
 </head>
 <body>
   <header class="masthead">
@@ -25,7 +25,7 @@
     </div>
   </main>
 
-  <script src="assets/app.js?v=5"></script>
+  <script src="assets/app.js?v=7"></script>
   <script>
     function getId() {
       return new URLSearchParams(window.location.search).get('id');
@@ -106,6 +106,7 @@
               field('How to try it', u.howToTry) +
               (u.difficulty ? field('Difficulty', u.difficulty) : '') +
               renderRelevance(u.relevance) +
+              '<div class="clipping__upvote" id="upvote"></div>' +
               '<p class="clipping__action">' +
                 '<a class="btn-accent" href="' + escapeHtml(u.sourceUrl) + '" target="_blank" rel="noopener noreferrer">' +
                   'View the original source &rarr;</a>' +
@@ -116,6 +117,8 @@
               '</footer>' +
             '</article>';
           container.innerHTML = html;
+
+          initUpvotes(document.getElementById('upvote'), 'usecase', u.id);
 
           // Dynamic header, now that the entry's heading exists to feed the
           // compact top-left bar and mark where it should collapse.
