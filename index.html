@@ -177,7 +177,7 @@
     function renderNewsLead(a) {
       var href = 'article.html?id=' + encodeURIComponent(a.id);
       return '<div class="panel__lead">' +
-        '<p class="panel__lead-chip"><span class="chip">' + escapeHtml(a.topic) + '</span></p>' +
+        renderTags('panel__lead-chip', a.addedDate, a.topic) +
         '<h2 class="panel__lead-headline"><a href="' + href + '">' + escapeHtml(a.title) + '</a></h2>' +
         '<p class="panel__lead-summary">' + escapeHtml(excerpt(a.summary, 180)) + '</p>' +
         '<p class="panel__meta">' + escapeHtml(a.source) + ' &middot; ' + formatDate(a.publishedDate) + '</p>' +
@@ -228,7 +228,7 @@
       if (aud) parts.push(escapeHtml(aud));
       var meta = parts.join(' &middot; ');
       var html = '<div class="panel__lead">' +
-        '<p class="panel__lead-chip"><span class="chip">' + escapeHtml(u.category) + '</span></p>' +
+        renderTags('panel__lead-chip', u.addedDate, u.category) +
         '<h2 class="panel__lead-headline"><a href="' + href + '">' + escapeHtml(u.title) + '</a></h2>' +
         '<p class="panel__lead-summary">' + escapeHtml(excerpt(u.whatItDoes, 180)) + '</p>';
       if (meta) html += '<p class="panel__meta">' + meta + '</p>';

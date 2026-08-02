@@ -181,6 +181,54 @@ function renderRelevance(rel) {
     '</section>';
 }
 
+// --- Item tags: freshness + subject -----------------------------------------
+// Two independent tags share the chip slot on every surface:
+//
+//   "Latest"  — a freshness badge, computed here from `addedDate` (when the
+//               curator filed the item on the site). Nothing in the data says
+//               "Latest", so the badge ages out on its own after RECENT_DAYS.
+//   subject   — what the item is about: an article's `topic`, a use-case's
+//               `category`. Only some items carry one, so it only sometimes shows.
+//
+// The curator writes the literal "Latest" into `topic` when an article came off
+// the plain feed rather than a topic prompt. That is a placeholder, not a
+// subject, and rendering it as one is what used to leave every archived article
+// tagged "Latest" years after it was filed.
+
+var RECENT_DAYS = 7;
+
+// True when `addedDate` (YYYY-MM-DD) falls within the last RECENT_DAYS days.
+// Both sides are pinned to UTC midnight so the comparison counts whole days and
+// doesn't flip depending on the reader's timezone. A date in the future counts
+// as recent — it can only be newer than now.
+function isRecent(addedDate) {
+  var t = Date.parse(addedDate);
+  if (isNaN(t)) return false;
+  var now = new Date();
+  var todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  return (todayUtc - t) / 86400000 < RECENT_DAYS;
+}
+
+// The subject tag's text, or '' when the item has no real subject — blank, or
+// the "Latest" placeholder described above.
+function subjectLabel(s) {
+  var v = (s == null ? '' : String(s)).trim();
+  if (!v || v.toLowerCase() === 'latest') return '';
+  return v;
+}
+
+// The tag row for one item, wrapped in `cls` (each surface has its own spacing
+// class). Returns '' when the item has neither tag, so callers drop the line
+// entirely rather than printing an empty one.
+function renderTags(cls, addedDate, subject) {
+  var tags = '';
+  if (isRecent(addedDate)) tags += '<span class="chip chip--latest">Latest</span>';
+  var subj = subjectLabel(subject);
+  if (subj) tags += '<span class="chip">' + escapeHtml(subj) + '</span>';
+  if (!tags) return '';
+  return '<p class="' + cls + ' tag-row">' + tags + '</p>';
+}
+
 // Human-readable label for a sourcePlatform enum value.
 function platformLabel(p) {
   var map = { reddit: 'Reddit', hackernews: 'Hacker News', blog: 'Blog', newsletter: 'Newsletter', youtube: 'YouTube', other: 'Other' };
@@ -197,7 +245,7 @@ function renderUsecaseItem(u) {
   var aud = audienceMeta(u.audience);
   if (aud) meta += ' &middot; ' + escapeHtml(aud);
   return '<article class="row">' +
-    '<p class="row__chip"><span class="chip">' + escapeHtml(u.category) + '</span></p>' +
+    renderTags('row__chip', u.addedDate, u.category) +
     '<h2 class="row__headline"><a href="' + href + '">' + escapeHtml(u.title) + '</a></h2>' +
     '<p class="row__meta caption">' + meta + '</p>' +
     '<p class="row__summary">' + escapeHtml(u.whatItDoes) + '</p>' +
@@ -213,7 +261,7 @@ function renderListItem(a) {
   var aud = audienceMeta(a.audience);
   if (aud) meta += ' &middot; ' + escapeHtml(aud);
   return '<article class="row">' +
-    '<p class="row__chip"><span class="chip">' + escapeHtml(a.topic) + '</span></p>' +
+    renderTags('row__chip', a.addedDate, a.topic) +
     '<h2 class="row__headline"><a href="' + href + '">' + escapeHtml(a.title) + '</a></h2>' +
     '<p class="row__meta caption">' + meta + '</p>' +
     '<p class="row__summary">' + escapeHtml(a.summary) + '</p>' +

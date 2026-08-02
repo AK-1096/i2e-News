@@ -310,7 +310,16 @@ a {
   text-decoration: underline;
 }
 
-/* Topic / category chip */
+/* An item's tag row: the "Latest" freshness badge, the subject chip, or both.
+   Rendered by renderTags() in app.js and never printed empty, so the surface's
+   own spacing class rides on the same element. */
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-8);
+}
+
+/* Topic / category chip — the subject tag */
 .chip {
   display: inline-block;
   font-family: var(--font-sans);
@@ -323,6 +332,14 @@ a {
   border: 1px solid var(--color-press-black);
   border-radius: var(--radius-buttons);
   padding: 6px 10px;
+}
+
+/* Freshness badge. Inked fill so it reads as a different axis from the lime
+   subject chip it sits beside — the same separation .tool-chip makes with
+   cornflower. Set from addedDate at render time, never from the data. */
+.chip--latest {
+  background: var(--color-press-black);
+  color: var(--color-manuscript-cream);
 }
 
 /* Accent filled button — the one place --shadow-sm is allowed */

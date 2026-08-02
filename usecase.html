@@ -80,7 +80,7 @@
 
           var html =
             '<article class="clipping">' +
-              '<p class="clipping__chip"><span class="chip">' + escapeHtml(u.category) + '</span></p>' +
+              renderTags('clipping__chip', u.addedDate, u.category) +
               '<h1 class="headline">' + escapeHtml(u.title) + '</h1>' +
               '<p class="dateline caption">' + meta + '</p>' +
               '<aside class="disclaimer" role="note" aria-label="Important notice">' +

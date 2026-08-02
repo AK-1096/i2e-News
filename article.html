@@ -62,7 +62,7 @@
           document.title = a.title + ' — ALerts';
           container.innerHTML =
             '<article class="clipping">' +
-              '<p class="clipping__chip"><span class="chip">' + escapeHtml(a.topic) + '</span></p>' +
+              renderTags('clipping__chip', a.addedDate, a.topic) +
               '<h1 class="headline">' + escapeHtml(a.title) + '</h1>' +
               '<p class="dateline caption">' + escapeHtml(a.source) + ' &middot; ' + formatDate(a.publishedDate) + '</p>' +
               '<p class="excerpt">' + escapeHtml(a.summary) + '</p>' +
