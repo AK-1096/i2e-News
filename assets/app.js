@@ -295,6 +295,7 @@ var UPVOTE_API = 'https://abacus.jasoncameron.dev';
 var UPVOTE_NS = 'alerts-i2e-7f3a9c2e';
 var UPVOTE_NOTE = 'No sign-in — only the total is counted.';
 var UPVOTE_RETRY = 'That didn’t go through. Try again.';
+var UPVOTE_UNSURE = 'We couldn’t confirm your upvote. Reload to see the current total.';
 
 // Counter keys are scoped by collection. Articles and use-cases are separate
 // contracts with separately-assigned ids, and nothing in either schema stops the
@@ -311,8 +312,10 @@ var UPVOTE_KINDS = { article: 'a', usecase: 'g' };
 // but ids are written by the curator, so a long one folds down to a truncated
 // slug plus a hash of the whole key rather than 400-ing and losing the control.
 function upvoteKey(kind, id) {
+  // Own-property check, not a plain lookup: `toString` and `constructor` resolve
+  // through the prototype chain and would otherwise pass for real collections.
+  if (!Object.prototype.hasOwnProperty.call(UPVOTE_KINDS, kind)) return null;
   var prefix = UPVOTE_KINDS[kind];
-  if (!prefix) return null;
   var k = prefix + '-' + id;
   if (k.length <= 64 && /^[A-Za-z0-9_-]+$/.test(k)) return k;
   var h = 5381;
@@ -327,13 +330,18 @@ function upvoteKey(kind, id) {
 // JSON doesn't blank the control, but null, undefined and anything unparseable
 // are rejected outright — Number(null) is 0, and reporting that as a total is
 // exactly the invented number this guard exists to prevent.
+//
+// A total is a count of votes, so only a safe non-negative integer will do.
+// Rounding 1.9 down to 1, or accepting a value past Number.MAX_SAFE_INTEGER
+// where arithmetic silently stops being exact, would each display a number the
+// service did not report — the same defect in a quieter form.
 function upvoteCount(d) {
   var v = d && d.value;
   var usable = typeof v === 'number' ||
     (typeof v === 'string' && v.trim() !== '' && isFinite(Number(v)));
   var n = usable ? Number(v) : NaN;
-  if (!isFinite(n) || n < 0) throw new Error('unreadable counter payload');
-  return Math.floor(n);
+  if (!Number.isSafeInteger(n) || n < 0) throw new Error('unreadable counter payload');
+  return n;
 }
 
 // localStorage is unavailable in some privacy modes; a reader there simply gets
@@ -371,7 +379,14 @@ function initUpvotes(host, kind, id) {
         '<span class="upvote__label">' + (voted ? 'Upvoted' : 'Upvote') + '</span>' +
         '<span class="upvote__count">' + count + '</span>' +
       '</button>' +
-      '<p class="upvote__note caption">' + escapeHtml(UPVOTE_NOTE) + '</p>';
+      // The note doubles as the control's status line: it starts as the standing
+      // privacy line and is overwritten when a vote fails or can't be confirmed.
+      // role=status makes those swaps reach assistive tech, which would otherwise
+      // get the sighted reader's explanation and nothing else. It is in the DOM
+      // before any mutation, which is what makes the announcement reliable.
+      '<p class="upvote__note caption" role="status" aria-live="polite">' +
+        escapeHtml(UPVOTE_NOTE) +
+      '</p>';
 
     var btn = host.querySelector('.upvote');
     var label = host.querySelector('.upvote__label');
@@ -403,15 +418,55 @@ function initUpvotes(host, kind, id) {
           upvoteWrite(seen);
           paint(count, true);
         })
+        .catch(function () { reconcile(previous); });
+    });
+
+    // A failed /hit does not mean nothing happened. The increment may well have
+    // landed and only the response been lost, and the service offers no
+    // idempotency key to settle it — so simply rolling back and inviting a retry
+    // would count a single intended vote twice.
+    //
+    // Re-read the total instead and let the number decide. This narrows the
+    // window rather than closing it: a different reader voting during the
+    // reconcile is indistinguishable from our own, and that ambiguity is
+    // deliberately resolved towards under-counting. Losing one upvote off a soft
+    // popularity signal is the cheaper error than inflating it.
+    function reconcile(previous) {
+      fetch(UPVOTE_API + '/get/' + UPVOTE_NS + '/' + encodeURIComponent(key))
+        .then(function (r) {
+          if (r.status === 404) return { value: 0 };
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(function (d) {
+          var now = upvoteCount(d);
+          if (now > previous) {
+            // Something landed. Treat it as this reader's vote and stop here —
+            // the button stays spent, so no retry can double it.
+            count = now;
+            upvoteWrite(seen);
+            paint(count, true);
+          } else {
+            // The total never moved: the vote genuinely didn't reach the
+            // service. Restore the control and say so, rather than letting an
+            // unexplained number slide back down.
+            count = previous;
+            paint(count, false);
+            btn.disabled = false;
+            note.textContent = UPVOTE_RETRY;
+          }
+        })
         .catch(function () {
-          // Nothing was recorded, so put the control back exactly as it was and
-          // say so — an unexplained number sliding back down reads as a glitch.
+          // Both calls failed, so which happened is unknowable from here. Show
+          // the last total we trust and leave the button spent — offering a
+          // blind retry is how the double-count gets in. Nothing is persisted,
+          // so a reload re-reads the real total and hands the reader a working
+          // button again.
           count = previous;
           paint(count, false);
-          btn.disabled = false;
-          note.textContent = UPVOTE_RETRY;
+          note.textContent = UPVOTE_UNSURE;
         });
-    });
+    }
 
     function paint(n, isVoted) {
       num.textContent = n;

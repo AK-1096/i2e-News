@@ -112,7 +112,21 @@ or a Power Automate flow writing to a SharePoint list) behind the same `initUpvo
 The feature degrades to nothing: the count is read *before* the control is built, so if the service
 is unreachable, blocked, or answers with a body that isn't a number, the button is never inserted
 and the page renders exactly as it did before. An unreadable `200` counts as a failure, not as a
-zero — showing "0" would invent a total the service never reported.
+zero — showing "0" would invent a total the service never reported. A total must be a safe
+non-negative integer; a fractional or out-of-range value is rejected rather than rounded.
+
+**When a vote's outcome is unknown.** A failed `/hit` does not prove nothing happened — the
+increment may have landed and only the response been lost. Abacus has no idempotency key, so this
+cannot be settled perfectly from the browser. `reconcile()` re-reads the total and lets the number
+decide: if it moved, the vote is treated as counted and the button stays spent; if it didn't, the
+control is restored and offers a retry; if the re-read also fails, the button stays spent with
+"we couldn't confirm" and nothing is persisted, so a reload hands back a working button against the
+true total.
+
+That narrows the window rather than closing it. Another reader voting during the reconcile is
+indistinguishable from this one, and the ambiguity is deliberately resolved towards **under**-counting
+— losing an upvote off a soft popularity signal is the cheaper error than inflating it. A count that
+must be exact needs the tenant-controlled endpoint, where the vote can carry a request id.
 
 When editing `assets/app.js` or `assets/styles.css`, bump the `?v=` on every page that loads them
 (`grep -n 'app\.js?v=' *.html`). Returning readers are otherwise served the cached old asset and can
