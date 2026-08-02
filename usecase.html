@@ -106,6 +106,7 @@
               field('How to try it', u.howToTry) +
               (u.difficulty ? field('Difficulty', u.difficulty) : '') +
               renderRelevance(u.relevance) +
+              '<div class="clipping__upvote" id="upvote"></div>' +
               '<p class="clipping__action">' +
                 '<a class="btn-accent" href="' + escapeHtml(u.sourceUrl) + '" target="_blank" rel="noopener noreferrer">' +
                   'View the original source &rarr;</a>' +
@@ -116,6 +117,8 @@
               '</footer>' +
             '</article>';
           container.innerHTML = html;
+
+          initUpvotes(document.getElementById('upvote'), u.id);
 
           // Dynamic header, now that the entry's heading exists to feed the
           // compact top-left bar and mark where it should collapse.

@@ -67,6 +67,7 @@
               '<p class="dateline caption">' + escapeHtml(a.source) + ' &middot; ' + formatDate(a.publishedDate) + '</p>' +
               '<p class="excerpt">' + escapeHtml(a.summary) + '</p>' +
               renderRelevance(a.relevance) +
+              '<div class="clipping__upvote" id="upvote"></div>' +
               '<p class="clipping__action">' +
                 '<a class="btn-accent" href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener noreferrer">' +
                   'Read the original at ' + escapeHtml(a.source) + ' &rarr;</a>' +
@@ -76,6 +77,8 @@
                 'Curated by i2e Consulting AI Labs — summaries by the ALerts curator agent.' +
               '</footer>' +
             '</article>';
+
+          initUpvotes(document.getElementById('upvote'), a.id);
 
           // Dynamic header, now that the clipping's own heading exists to feed
           // the compact top-left bar and mark where it should collapse.

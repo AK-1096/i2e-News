@@ -268,6 +268,122 @@ function renderListItem(a) {
     '</article>';
 }
 
+// --- Upvotes (detail pages only) --------------------------------------------
+// The one place the reader writes anything. A static site has nowhere to keep
+// shared state, so the totals live in a free hosted counter service (Abacus):
+//   GET /hit/<ns>/<key> → increments, returns {"value": n}
+//   GET /get/<ns>/<key> → reads it, 404 when nobody has voted yet
+// No account, no key, no backend — and correspondingly no guarantees. The
+// namespace below is public (it ships in this file), the service is unofficial
+// and free, and anyone who works out the URL can inflate a count. This is
+// PoC-grade social proof, not an audited number. See the README.
+//
+// Only totals are ever sent or stored: the request carries the item's key and
+// nothing else — no name, no id, no account. Whether *this browser* has already
+// voted is kept in localStorage and never leaves the device.
+//
+// The whole feature degrades to nothing. The count is read before the control is
+// built, so if the service is unreachable, blocked, or returns junk, the page
+// renders exactly as it did before — a dead dependency costs one failed fetch.
+
+var UPVOTE_API = 'https://abacus.jasoncameron.dev';
+var UPVOTE_NS = 'alerts-i2e-7f3a9c2e';
+
+// Counter keys are capped at 64 characters and limited to a URL-safe alphabet.
+// Every id in the contract fits today (the longest is 59), but ids are written
+// by the curator, so a long one folds down to a truncated slug plus a hash of
+// the full id rather than silently 400-ing and losing the control.
+function upvoteKey(id) {
+  if (id.length <= 64 && /^[A-Za-z0-9_-]+$/.test(id)) return id;
+  var h = 5381;
+  for (var i = 0; i < id.length; i++) h = ((h * 33) ^ id.charCodeAt(i)) >>> 0;
+  return id.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 50) + '-' + h.toString(36);
+}
+
+// localStorage is unavailable in some privacy modes; a reader there simply gets
+// an un-guarded button rather than a broken page.
+function upvoteRead(k) {
+  try { return localStorage.getItem(k) === '1'; } catch (e) { return false; }
+}
+function upvoteWrite(k) {
+  try { localStorage.setItem(k, '1'); } catch (e) { /* nothing to do */ }
+}
+
+// Mount the upvote control for `id` into `host`. Renders nothing at all unless
+// the current total comes back, so the control never appears in a state where
+// pressing it would fail.
+function initUpvotes(host, id) {
+  if (!host || !id) return;
+  var key = upvoteKey(id);
+  var seen = 'alerts:upvoted:' + key;
+
+  fetch(UPVOTE_API + '/get/' + UPVOTE_NS + '/' + encodeURIComponent(key))
+    .then(function (r) {
+      if (r.status === 404) return { value: 0 };   // created on first upvote
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function (d) { mount(Number(d.value) || 0); })
+    .catch(function () { /* counter unavailable — leave the page as it was */ });
+
+  function mount(count) {
+    var voted = upvoteRead(seen);
+    host.innerHTML =
+      '<button type="button" class="upvote" aria-pressed="' + (voted ? 'true' : 'false') + '">' +
+        '<span class="upvote__mark" aria-hidden="true">&#9650;</span>' +
+        '<span class="upvote__label">' + (voted ? 'Upvoted' : 'Upvote') + '</span>' +
+        '<span class="upvote__count">' + count + '</span>' +
+      '</button>' +
+      '<p class="upvote__note caption">Anonymous &mdash; only the total is recorded.</p>';
+
+    var btn = host.querySelector('.upvote');
+    var label = host.querySelector('.upvote__label');
+    var num = host.querySelector('.upvote__count');
+    if (voted) btn.disabled = true;
+    setLabel(count, voted);
+
+    btn.addEventListener('click', function () {
+      if (btn.disabled) return;
+      // Optimistic: the reader sees their vote land immediately, and the
+      // authoritative total from the response replaces it a moment later.
+      btn.disabled = true;
+      var optimistic = count + 1;
+      paint(optimistic, true);
+      upvoteWrite(seen);
+
+      fetch(UPVOTE_API + '/hit/' + UPVOTE_NS + '/' + encodeURIComponent(key))
+        .then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(function (d) {
+          count = Number(d.value) || optimistic;
+          paint(count, true);
+        })
+        .catch(function () {
+          // The vote didn't reach the service. Keep the optimistic number
+          // rather than yanking it back — the reader did press the button, and
+          // the count reconciles on the next page load anyway.
+        });
+    });
+
+    function paint(n, isVoted) {
+      num.textContent = n;
+      label.textContent = isVoted ? 'Upvoted' : 'Upvote';
+      btn.setAttribute('aria-pressed', isVoted ? 'true' : 'false');
+      setLabel(n, isVoted);
+    }
+
+    // The visible text is three separate spans, so give assistive tech one
+    // sentence that says what the control does and what the number means.
+    function setLabel(n, isVoted) {
+      btn.setAttribute('aria-label',
+        (isVoted ? 'Upvoted. ' : 'Upvote this. ') +
+        n + (n === 1 ? ' upvote' : ' upvotes') + ' so far.');
+    }
+  }
+}
+
 // --- Dynamic header (shared by every page) ----------------------------------
 // One scroll behaviour across the whole product. Scrolling down retracts the
 // black masthead and pins a compact page-title bar (.pagehead) to the top-left;

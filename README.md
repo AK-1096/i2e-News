@@ -32,7 +32,7 @@ Two surfaces, joined by a single data contract — they never call each other di
 | `index.html` | Front page — the most recent articles (capped, see below). |
 | `archive.html` | Full published history, newest first. |
 | `article.html` | Per-article view, reached by `?id=<id>` — the Teams-ping target. |
-| `assets/app.js` | Shared logic: loads/sorts `articles.json`, renders rows and tags, `RECENT_LIMIT`. |
+| `assets/app.js` | Shared logic: loads/sorts `articles.json`, renders rows, tags and upvotes, `RECENT_LIMIT`. |
 | `assets/styles.css` | Shared styling. |
 | `data/articles.json` | **The data contract** — the site's only data source. |
 | `data/articles.schema.json` | JSON Schema for the contract, enforced in CI. |
@@ -71,6 +71,38 @@ Every list row and detail page can carry up to two tags, both worked out at rend
   prompt; that placeholder is not a subject and is never rendered as a tag. An item with no real
   subject and no recent `addedDate` simply shows no tag line.
 
+## Upvotes
+
+The article and use-case detail pages carry an upvote button with a running total. It is the only
+place a reader writes anything, and it deliberately sits outside the data contract — no count is
+ever stored in `articles.json` or `usecases.json`.
+
+A static site has nowhere to keep shared state, so the totals live in **Abacus**
+(`abacus.jasoncameron.dev`), a free hosted counter service. Two GETs, no account, no key, no backend:
+
+| Call | Effect |
+|------|--------|
+| `/hit/<ns>/<key>` | Increments and returns `{"value": n}`; creates the counter on first use. |
+| `/get/<ns>/<key>` | Reads the total, `404` when nobody has voted yet. |
+
+The namespace and the whole implementation are in `initUpvotes()` in `assets/app.js`. The key is the
+item's `id` (folded to a hash if one ever exceeds the service's 64-character limit).
+
+**What this is and isn't.** Only totals are sent — the request carries the item's key and nothing
+else, so there is no way to learn who voted. Whether *this browser* has voted is kept in
+`localStorage` and never leaves the device; it stops accidental double-taps and nothing more, since
+clearing site data or opening a private window resets it.
+
+Be clear-eyed about the trade-off that bought the low effort: the namespace ships in public
+JavaScript on a public site, the service is unofficial and free with no SLA, and anyone who works
+out the URL can inflate a count. **Treat these as PoC-grade social proof, not audited numbers.** If
+they ever need to be trustworthy, the replacement is a tenant-controlled endpoint (an Azure Function
+or a Power Automate flow writing to a SharePoint list) behind the same `initUpvotes()` seam.
+
+The feature degrades to nothing: the count is read *before* the control is built, so if the service
+is unreachable or blocked, the button is never inserted and the page renders exactly as it did
+before.
+
 ## Local development
 
 The pages fetch `data/articles.json` over HTTP, so serve the folder (don't open the files via
@@ -96,5 +128,9 @@ GitHub Pages. A malformed write therefore fails the build instead of corrupting 
 ## Scope
 
 This is a Proof of Concept governed by the BRD's PoC Fence. **Out of scope** for the static reader:
-search, filtering, tags, reactions, analytics, access gating, and any AI processing on the site
-itself. Those are Phase 2 / change-request items.
+search, filtering, analytics, access gating, and any AI processing on the site itself. Those are
+Phase 2 / change-request items.
+
+Two items have since been brought in on the Product Owner's call, and both stay inside the
+no-backend model: the **tags** described above, and **upvotes** (see the section above — a
+third-party counter, no server of ours, nothing added to the data contract).
