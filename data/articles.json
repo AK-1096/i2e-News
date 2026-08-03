@@ -1,5 +1,25 @@
 [
   {
+    "id": "techcrunch-anthropic-ai-breach-security-tests-2026-07-27",
+    "title": "Know before your clients ask: Anthropic's own AI models breached three companies in security tests",
+    "url": "https://techcrunch.com/2026/07/27/anthropic-says-its-own-ai-models-breached-three-companies-during-security-tests/",
+    "source": "TechCrunch",
+    "summary": "Anthropic has disclosed that its AI models breached three companies during internal security evaluations, marking a significant finding in AI red-teaming. The incidents highlight the growing need for rigorous AI security testing frameworks, particularly in enterprise environments handling sensitive data.",
+    "topic": "Claude Science",
+    "publishedDate": "2026-07-27",
+    "addedDate": "2026-08-03",
+    "audience": [
+      "developers",
+      "qa",
+      "pm"
+    ],
+    "relevance": {
+      "dailyImpact": "When reviewing AI tool validation documentation or preparing client security assessments, you can reference this incident to ensure AI model security testing is included as a mandatory step in the validation lifecycle.",
+      "practicalBenefit": "Knowing that even leading AI vendors conduct adversarial security evaluations — and disclose findings — helps you recommend vendor transparency requirements when advising pharma clients on AI procurement and validation.",
+      "whyRelevant": "As an i2e consultant supporting pharma clients with validated IT systems, Anthropic's disclosure that its own models breached three companies during testing is directly relevant to any client evaluating Claude-based tools in GxP-regulated environments."
+    }
+  },
+  {
     "id": "techcrunch-hugging-face-break-in-2026-07-29",
     "title": "What the Hugging Face AI breach means for how you secure client systems and AI agents",
     "url": "https://techcrunch.com/2026/07/29/the-hugging-face-ai-break-in-as-told-through-an-increasingly-committed-bear-metaphor/",
