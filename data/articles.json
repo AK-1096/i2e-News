@@ -1,5 +1,25 @@
 [
   {
+    "id": "techcrunch-nvidia-osaa-2026-08-04",
+    "title": "Get ahead of AI agent security standards: 120-company industry group publishes its first proposals",
+    "url": "https://techcrunch.com/2026/08/04/nvidia-doesnt-mess-around-a-week-after-open-ai-industry-group-formed-its-already-showing-progress/",
+    "source": "TechCrunch",
+    "summary": "The Open Secure AI Alliance (OSAA), an Nvidia-led industry group that grew to over 120 companies in one week, has published its first proposals through the Shared AI Findings Exchange (SAFE) working group, covering confidential AI cybersecurity incident reporting and open-source tooling to defend against rogue AI agents. Members include Adobe, Cisco, Microsoft, Visa, and Hugging Face, though Anthropic, OpenAI, and Google have not yet joined.",
+    "topic": "Latest",
+    "publishedDate": "2026-08-04",
+    "addedDate": "2026-08-05",
+    "audience": [
+      "developers",
+      "pm",
+      "ba-pc"
+    ],
+    "relevance": {
+      "dailyImpact": "When reviewing a client's AI deployment plan or validation documentation, you can reference the OSAA's SAFE proposals as an emerging benchmark for incident reporting and open-source agent governance.",
+      "practicalBenefit": "You gain early visibility into open-source security tools — including Nvidia's Garak LLM vulnerability scanner and Okta's agent identity work — that could be cited in client risk assessments or technical validation documents.",
+      "whyRelevant": "This new industry framework for reporting and remediating AI agent security incidents may directly affect how you advise pharma clients on deploying AI tools in GxP-sensitive environments."
+    }
+  },
+  {
     "id": "techcrunch-anthropic-ai-breach-security-tests-2026-07-27",
     "title": "Know before your clients ask: Anthropic's own AI models breached three companies in security tests",
     "url": "https://techcrunch.com/2026/07/27/anthropic-says-its-own-ai-models-breached-three-companies-during-security-tests/",
