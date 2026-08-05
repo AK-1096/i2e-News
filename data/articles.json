@@ -1,5 +1,25 @@
 [
   {
+    "id": "vision-lifesciences-lilly-nvidia-ai-supercomputer-2026-06-27",
+    "title": "Eli Lilly's $1B NVIDIA deal shows pharma clients must own AI infrastructure, not just license it",
+    "url": "https://visionlifesciences.com/insights/drug-discovery-ai-news",
+    "source": "Vision Life Sciences",
+    "summary": "Eli Lilly has committed up to $1 billion with NVIDIA to build a dedicated AI R&D supercomputer, signalling a strategic shift in how top pharma companies approach AI — moving from buying AI-generated outputs to owning the infrastructure that produces them.",
+    "topic": "AI in Pharma",
+    "publishedDate": "2026-06-27",
+    "addedDate": "2026-08-05",
+    "audience": [
+      "pm",
+      "ba-pc",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "When preparing client AI strategy documents or vendor assessments, you can use Lilly's move as a benchmark to help clients evaluate whether their current AI approach — buying outputs versus owning infrastructure — aligns with industry direction.",
+      "practicalBenefit": "Referencing a concrete $1B industry investment helps you build a data-backed case for clients considering longer-term AI infrastructure decisions, particularly in GxP-regulated R&D environments.",
+      "whyRelevant": "As an i2e consultant advising pharma clients on AI strategy, Lilly's $1B infrastructure commitment signals that leading pharma companies are internalising AI compute — a shift that directly affects how you frame AI roadmap recommendations for clients."
+    }
+  },
+  {
     "id": "techcrunch-nvidia-osaa-2026-08-04",
     "title": "Get ahead of AI agent security standards: 120-company industry group publishes its first proposals",
     "url": "https://techcrunch.com/2026/08/04/nvidia-doesnt-mess-around-a-week-after-open-ai-industry-group-formed-its-already-showing-progress/",
