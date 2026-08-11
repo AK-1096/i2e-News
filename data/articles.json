@@ -1,5 +1,25 @@
 [
   {
+    "id": "anthropic-fable5-biology-safeguards-2026-08-07",
+    "title": "Ask Claude Fable 5 health questions with 85% fewer model downgrades",
+    "url": "https://www.anthropic.com/news/improving-fable-5-s-biology-safeguards",
+    "source": "Anthropic",
+    "summary": "Anthropic updated Claude Fable 5's biology safety classifiers, cutting biology-related fallbacks to the less capable Opus 5 model by approximately 85%. Everyday health and educational queries — such as interpreting lab results and understanding symptoms — will now reach Fable 5 directly, though dual-use topics like virology, toxicology, and molecular design remain blocked.",
+    "topic": "Latest",
+    "publishedDate": "2026-08-07",
+    "addedDate": "2026-08-11",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc"
+    ],
+    "relevance": {
+      "dailyImpact": "When reviewing validation documents or protocol summaries that reference lab results or pharmacology terms, you will less often see Claude silently downgrade to a weaker model mid-task, keeping your document reviews consistent and faster.",
+      "practicalBenefit": "You can now rely on Fable 5 for routine health and educational biology queries in client deliverables — such as interpreting lab parameters in a clinical data report — without worrying that the model will fall back to a less capable version mid-response.",
+      "whyRelevant": "If your project uses Claude Fable 5 for biology-adjacent queries — such as reviewing clinical study terminology or checking drug interaction references — the 85% reduction in false fallbacks means your workflows will reach the more capable model far more often."
+    }
+  },
+  {
     "id": "artificialintelligence-news-siemens-physics-ai-2026-08-10",
     "title": "Know when to trust AI simulation outputs — and when only human sign-off will do",
     "url": "https://www.artificialintelligence-news.com/news/siemens-physics-ai-simulation-human-oversight/",
