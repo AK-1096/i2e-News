@@ -1,5 +1,25 @@
 [
   {
+    "id": "techcrunch-meta-muse-glimmer-2026-08-10",
+    "title": "Run a capable AI agent locally on your laptop — Meta's Muse Glimmer is free to download",
+    "url": "https://techcrunch.com/2026/08/10/metas-new-glimmer-ai-model-offers-a-hint-at-zuckerbergs-personal-intelligence-vision/",
+    "source": "TechCrunch",
+    "summary": "Meta released Muse Glimmer, a 30-billion-parameter open-weight AI model under the Apache 2.0 license, designed to run agentic tasks — such as managing schedules, drafting messages, and handling files — locally on a consumer GPU without an internet connection. The release highlights a growing divide between AI models users can own and run privately versus cloud-only systems from competitors.",
+    "topic": "Latest",
+    "publishedDate": "2026-08-10",
+    "addedDate": "2026-08-11",
+    "audience": [
+      "developers",
+      "ba-pc",
+      "pm"
+    ],
+    "relevance": {
+      "dailyImpact": "You can deploy Glimmer on your own machine to draft validation document summaries, generate meeting notes, or manage file workflows without routing sensitive client data through a third-party API.",
+      "practicalBenefit": "Running an open-weight model locally removes per-token API costs and cloud data-residency concerns, letting you test AI-assisted workflows on real project data before proposing them to pharma clients.",
+      "whyRelevant": "Meta's Muse Glimmer can run locally on your laptop without sending data to the cloud, which matters when you work with confidential pharma client documents under GxP or NDA constraints."
+    }
+  },
+  {
     "id": "vision-lifesciences-lilly-nvidia-ai-supercomputer-2026-06-27",
     "title": "Eli Lilly's $1B NVIDIA deal shows pharma clients must own AI infrastructure, not just license it",
     "url": "https://visionlifesciences.com/insights/drug-discovery-ai-news",
