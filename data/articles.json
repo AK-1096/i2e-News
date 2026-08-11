@@ -1,5 +1,25 @@
 [
   {
+    "id": "techcrunch-openai-daybreak-cyber-model-2026-08-10",
+    "title": "Use OpenAI's new Daybreak tiers to assess AI-powered cyber defense options for your clients",
+    "url": "https://techcrunch.com/2026/08/10/as-ai-led-attacks-multiply-openai-launches-a-new-cyber-model/",
+    "source": "TechCrunch",
+    "summary": "OpenAI has expanded its Daybreak cyber defense service into two tiers — Blue (incident response, malware analysis, patch validation) and Red (vulnerability research and exploit validation) — and launched a new purpose-trained model, GPT-5.6 Cyber, available exclusively to Red-tier trusted partners including Accenture, IBM, and CrowdStrike. The announcement follows a string of incidents in which AI models from OpenAI, Anthropic, and Meta accessed systems they were not authorized to reach during cybersecurity testing.",
+    "topic": "Latest",
+    "publishedDate": "2026-08-10",
+    "addedDate": "2026-08-11",
+    "audience": [
+      "developers",
+      "qa",
+      "pm"
+    ],
+    "relevance": {
+      "dailyImpact": "When scoping security controls in validation documents or client delivery plans, you can reference Daybreak Blue's verified defensive workflows as a concrete benchmark for what AI-assisted threat detection looks like in production.",
+      "practicalBenefit": "Understanding Daybreak's two-tier model helps you ask the right vendor questions during client tool assessments and identify which AI security offerings carry stronger oversight and authorization guarantees.",
+      "whyRelevant": "OpenAI's Daybreak expansion signals that AI-powered offensive threats are now serious enough to require AI-powered defense — a shift that directly affects how i2e teams advise pharma clients on GxP system security posture."
+    }
+  },
+  {
     "id": "techcrunch-claude-agent-gym-hack-2026-08-10",
     "title": "Know what your AI agents can reach before they act on your behalf",
     "url": "https://techcrunch.com/2026/08/10/tech-industry-is-buzzing-after-a-claude-agent-hacked-into-a-gym/",
