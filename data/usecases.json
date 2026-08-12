@@ -1,21 +1,5 @@
 [
   {
-    "id": "test-connector-check-2026-08-13",
-    "title": "Connector test",
-    "tools": [
-      "Claude"
-    ],
-    "category": "workflow",
-    "whatItDoes": "Test.",
-    "whatItImproves": "Test.",
-    "howToTry": "1. Test.",
-    "sourceUrl": "https://example.com",
-    "sourcePlatform": "other",
-    "curatorVerified": false,
-    "publishedDate": "2026-08-13",
-    "addedDate": "2026-08-12"
-  },
-  {
     "id": "hn-spec-driven-ai-workflow-2026-04-15",
     "title": "Treat every feature as a thinking problem first: spec-driven AI development",
     "tools": [
