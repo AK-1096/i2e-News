@@ -1,5 +1,33 @@
 [
   {
+    "id": "aihero-to-tickets-2026-08-12",
+    "title": "Break a spec into ready-to-run tickets with /to-tickets — skip the manual issue-writing step",
+    "tools": [
+      "Claude Code",
+      "GitHub Copilot",
+      "Codex"
+    ],
+    "category": "workflow",
+    "whatItDoes": "The /to-tickets skill takes a completed spec and breaks it into discrete, actionable tickets published directly to your configured issue tracker. Each ticket is scoped to a tracer-bullet increment; the skill produces the artefact — running tickets one session at a time, or fanning them out to a fleet of agents in parallel, is your choice.",
+    "whatItImproves": "Before /to-tickets, converting a spec into a backlog of well-scoped issues was a manual, time-consuming step that often produced tickets too vague or too large for an agent to execute reliably. After running it, you have a ready-to-action backlog with edges defined in each ticket, closing the planning-to-execution gap.",
+    "howToTry": "1. Complete a /grill-with-docs session and run /to-spec to publish your spec to the issue tracker.\n2. In your Claude Code session, run /to-tickets — it synthesises the spec into a set of scoped, actionable tickets.\n3. Review the generated tickets and verify each one is discrete and executable in a single agent session.\n4. For wide refactors (e.g. renaming a column or retyping a shared symbol), allow the skill to group them into a single mechanical-change ticket rather than splitting them.\n5. Run the tickets one at a time, or fan them out to a fleet of parallel agents, depending on your project structure.",
+    "sourceUrl": "https://www.aihero.dev/skills-to-tickets",
+    "sourcePlatform": "blog",
+    "author": "Matt Pocock",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-08-12",
+    "addedDate": "2026-08-12",
+    "audience": [
+      "developers"
+    ],
+    "relevance": {
+      "dailyImpact": "After finalising a spec with a client, you can run /to-tickets to generate a structured backlog in your tracker in seconds, rather than spending time manually writing and scoping each ticket.",
+      "practicalBenefit": "Each auto-generated ticket contains the edges and context needed for an agent to execute it reliably, cutting rework from under-specified issues and giving you cleaner audit evidence for validation reviews.",
+      "whyRelevant": "When delivering a validated software feature for a pharma client, running /to-tickets after /to-spec gives you a GxP-traceable backlog where every work item maps back to a documented requirement — reducing the gap between spec and implementation evidence."
+    }
+  },
+  {
     "id": "hn-spec-driven-ai-workflow-2026-04-15",
     "title": "Treat every feature as a thinking problem first: spec-driven AI development",
     "tools": [
