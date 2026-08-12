@@ -1,5 +1,27 @@
 [
   {
+    "id": "aiapps-eu-ai-act-california-sb942-2026-08-04",
+    "title": "New EU and California AI rules are live — check your vendors' disclosure and labelling compliance now",
+    "url": "https://www.aiapps.com/blog/august-2026-ai-mega-update-major-breakthroughs-launches/",
+    "source": "AIApps",
+    "summary": "The EU AI Act Article 50 duties and California SB 942 both took effect on August 2, 2026, requiring AI vendors to embed provenance data in generated content and offer disclosure labelling. Non-compliance with the EU rules carries penalties of up to 3% of global annual turnover, making vendor review a procurement priority for any organisation using AI tools that serve global markets.",
+    "topic": "Latest",
+    "publishedDate": "2026-08-04",
+    "addedDate": "2026-08-12",
+    "audience": [
+      "pm",
+      "ba-pc",
+      "developers",
+      "qa",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "When reviewing AI vendor contracts or preparing client procurement recommendations, you now need to verify that any AI tool your clients use embeds C2PA provenance data and supports disclosure labelling as required by law.",
+      "practicalBenefit": "Having a clear checklist of what Article 50 and SB 942 require — provenance data, content marking, audit logs, and kill switches — gives you a concrete compliance framework to apply to client AI tool evaluations in GxP settings.",
+      "whyRelevant": "As an i2e consultant advising pharma clients on AI tool adoption, these new EU and California rules directly affect the vendor assessments and compliance documentation you prepare for clients using AI in regulated environments."
+    }
+  },
+  {
     "id": "techcrunch-openai-daybreak-cyber-model-2026-08-10",
     "title": "Use OpenAI's new Daybreak tiers to assess AI-powered cyber defense options for your clients",
     "url": "https://techcrunch.com/2026/08/10/as-ai-led-attacks-multiply-openai-launches-a-new-cyber-model/",
