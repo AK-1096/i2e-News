@@ -56,12 +56,12 @@ const TARGETS = {
       whatItDoes: () => ucContent().whatItDoes || process.env.UC_WHAT_IT_DOES,
       whatItImproves: () => ucContent().whatItImproves || process.env.UC_WHAT_IT_IMPROVES,
       howToTry: () => ucContent().howToTry || process.env.UC_HOW_TO_TRY,
-      sourceUrl: () => ucSource().url || process.env.UC_SOURCE_URL,
-      sourcePlatform: () => ucSource().platform || process.env.UC_SOURCE_PLATFORM,
-      author: () => ucSource().author || process.env.UC_AUTHOR,
+      sourceUrl: () => ucOrigin().url || process.env.UC_SOURCE_URL,
+      sourcePlatform: () => ucOrigin().platform || process.env.UC_SOURCE_PLATFORM,
+      author: () => ucOrigin().author || process.env.UC_AUTHOR,
       difficulty: () => process.env.UC_DIFFICULTY,
       curatorVerified: () => parseBool(process.env.UC_CURATOR_VERIFIED),
-      publishedDate: () => ucSource().publishedDate || process.env.UC_PUBLISHED,
+      publishedDate: () => ucOrigin().publishedDate || process.env.UC_PUBLISHED,
       addedDate: () => process.env.UC_ADDED || todayUtc(),
       audience: () => parseList(process.env.UC_AUDIENCE),
       relevance: () => parseObject(process.env.UC_RELEVANCE),
@@ -125,12 +125,16 @@ function parseBool(raw) {
 // whole dispatch with 422 "Invalid request." before any workflow run starts. The use-case contract
 // has 14 fields, so the agent groups its long-form and provenance fields into two nested objects:
 //   content = { whatItDoes, whatItImproves, howToTry }
-//   source  = { url, platform, author, publishedDate }
+//   origin  = { url, platform, author, publishedDate }
 // which keeps the payload at 9 top-level keys. parseObject already tolerates both a real object and
 // the double-encoded JSON string Copilot Studio sends, so both wire shapes land here identically.
 // Missing group → {} so each field falls back to its flat UC_* variable.
+//
+// The second group is `origin`, not `source`: the news path already uses a top-level `source` STRING,
+// and the workflow evaluates every step's `env:` block regardless of its `if:` condition, so reusing
+// that key fails the whole run at template evaluation ("A mapping was not expected").
 const ucContent = () => parseObject(process.env.UC_CONTENT) || {};
-const ucSource = () => parseObject(process.env.UC_SOURCE) || {};
+const ucOrigin = () => parseObject(process.env.UC_ORIGIN) || {};
 
 function isEmpty(v) {
   if (v == null) return true;

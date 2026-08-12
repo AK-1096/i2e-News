@@ -86,9 +86,13 @@ jobs:
           UC_TOOLS: ${{ toJSON(github.event.client_payload.tools) }}
           UC_CATEGORY: ${{ github.event.client_payload.category }}
           # Grouped: content = {whatItDoes, whatItImproves, howToTry}
-          #          source  = {url, platform, author, publishedDate}
+          #          origin  = {url, platform, author, publishedDate}
+          # ⚠️ The group is named `origin`, NOT `source`: the news branch above reads
+          # `client_payload.source` as a STRING, and GitHub evaluates a step's `env:` block even when
+          # its `if:` skips the step — so an object under that key fails the whole run at template
+          # evaluation with "A mapping was not expected" (hit 12 Aug 2026).
           UC_CONTENT: ${{ toJSON(github.event.client_payload.content) }}
-          UC_SOURCE: ${{ toJSON(github.event.client_payload.source) }}
+          UC_ORIGIN: ${{ toJSON(github.event.client_payload.origin) }}
           UC_DIFFICULTY: ${{ github.event.client_payload.difficulty }}
           UC_CURATOR_VERIFIED: ${{ github.event.client_payload.curatorVerified }}
           UC_ADDED: ${{ github.event.client_payload.addedDate }}
