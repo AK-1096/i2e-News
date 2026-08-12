@@ -293,7 +293,7 @@ function renderListItem(a) {
 
 var UPVOTE_API = 'https://abacus.jasoncameron.dev';
 var UPVOTE_NS = 'alerts-i2e-7f3a9c2e';
-var UPVOTE_NOTE = 'No sign-in — only the total is counted.';
+var UPVOTE_NOTE = 'Upvote if you found it useful!';
 var UPVOTE_RETRY = 'That didn’t go through. Try again.';
 var UPVOTE_UNSURE = 'We couldn’t confirm your upvote. Reload to see the current total.';
 
