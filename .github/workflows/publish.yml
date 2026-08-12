@@ -44,6 +44,29 @@ jobs:
         with:
           node-version: 20
 
+      # The agent reports success on HTTP 204, which only means the dispatch was accepted — so when a
+      # publish silently fails to land, this log is the only record of what the model actually sent.
+      # Printing the top-level key list first makes two recurring faults obvious at a glance: the ten
+      # top-level property cap, and a group arriving under the wrong key or with the wrong inner keys.
+      # Passed through env (never ${{ }} inside run:) — the payload is model-generated from
+      # third-party pages and this job holds contents: write.
+      - name: Log the dispatch payload
+        env:
+          PAYLOAD: ${{ toJSON(github.event.client_payload) }}
+        run: |
+          echo "event_type: ${{ github.event.action }}"
+          node -e '
+            const p = JSON.parse(process.env.PAYLOAD || "{}");
+            const keys = Object.keys(p);
+            console.log(`top-level keys (${keys.length}/10 allowed): ${keys.join(", ")}`);
+            for (const [k, v] of Object.entries(p)) {
+              if (v && typeof v === "object" && !Array.isArray(v)) {
+                console.log(`  ${k} -> object keys: ${Object.keys(v).join(", ")}`);
+              }
+            }
+            console.log(JSON.stringify(p, null, 2));
+          '
+
       # --- News path (publish-article) -------------------------------------
       - name: Upsert article into the data contract
         if: github.event.action == 'publish-article'
