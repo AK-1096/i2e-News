@@ -1,5 +1,25 @@
 [
   {
+    "id": "aiapps-claude-opus5-pricing-math-olympiad-2026-08-04",
+    "title": "Cut your AI reasoning costs in half: Claude Opus 5 matches top-tier quality at half the price of Fable 5",
+    "url": "https://www.aiapps.com/blog/august-2026-ai-mega-update-major-breakthroughs-launches/",
+    "source": "AIApps",
+    "summary": "Anthropic's Claude Opus 5 costs half as much as Claude Fable 5 ($5/$25 vs $10/$50 per million tokens) and scored a perfect 42/42 on the 2026 International Math Olympiad, making it a strong candidate for high-volume reasoning and analytical workloads that previously required the more expensive Fable 5.",
+    "topic": "Latest",
+    "publishedDate": "2026-08-04",
+    "addedDate": "2026-08-12",
+    "audience": [
+      "developers",
+      "pm",
+      "ba-pc"
+    ],
+    "relevance": {
+      "dailyImpact": "When scoping AI-assisted workflows for pharma clients — such as protocol review, validation document drafting, or data analysis — you can now recommend Opus 5 as a cost-efficient alternative to Fable 5 without sacrificing reasoning quality.",
+      "practicalBenefit": "Halving the per-token cost for a top-tier reasoning model means client AI pilots and internal tools can scale further before hitting budget limits, particularly in high-volume GxP document processing scenarios.",
+      "whyRelevant": "As an i2e consultant using Claude for document analysis, regulatory review, or client reporting, Claude Opus 5's half-price positioning means you can run more complex reasoning tasks within the same AI budget."
+    }
+  },
+  {
     "id": "aiapps-eu-ai-act-california-sb942-2026-08-04",
     "title": "New EU and California AI rules are live — check your vendors' disclosure and labelling compliance now",
     "url": "https://www.aiapps.com/blog/august-2026-ai-mega-update-major-breakthroughs-launches/",
