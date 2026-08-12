@@ -70,6 +70,13 @@ jobs:
         run: npx --yes ajv-cli@5 validate -s data/articles.schema.json -d data/articles.json
 
       # --- Playbook path (publish-usecase) ---------------------------------
+      # ⚠️ GitHub caps `client_payload` at TEN top-level properties; an 11th makes the dispatch fail
+      # with 422 "Invalid request." before any run starts. The use-case contract has 14 fields, so its
+      # long-form and provenance fields travel as two nested objects (`content`, `source`), keeping
+      # the payload at 9 top-level keys. Both are passed whole via toJSON and destructured in
+      # upsert-article.mjs, which also still accepts the flat UC_* form. (Found 12 Aug 2026: the
+      # agent 422'd while a hand-built 10-key connector test returned 204 — the count was the only
+      # difference. The news path sends 9 keys, which is why it was never affected.)
       - name: Upsert use-case into the data contract
         if: github.event.action == 'publish-usecase'
         env:
@@ -78,15 +85,12 @@ jobs:
           UC_TITLE: ${{ github.event.client_payload.title }}
           UC_TOOLS: ${{ toJSON(github.event.client_payload.tools) }}
           UC_CATEGORY: ${{ github.event.client_payload.category }}
-          UC_WHAT_IT_DOES: ${{ github.event.client_payload.whatItDoes }}
-          UC_WHAT_IT_IMPROVES: ${{ github.event.client_payload.whatItImproves }}
-          UC_HOW_TO_TRY: ${{ github.event.client_payload.howToTry }}
-          UC_SOURCE_URL: ${{ github.event.client_payload.sourceUrl }}
-          UC_SOURCE_PLATFORM: ${{ github.event.client_payload.sourcePlatform }}
-          UC_AUTHOR: ${{ github.event.client_payload.author }}
+          # Grouped: content = {whatItDoes, whatItImproves, howToTry}
+          #          source  = {url, platform, author, publishedDate}
+          UC_CONTENT: ${{ toJSON(github.event.client_payload.content) }}
+          UC_SOURCE: ${{ toJSON(github.event.client_payload.source) }}
           UC_DIFFICULTY: ${{ github.event.client_payload.difficulty }}
           UC_CURATOR_VERIFIED: ${{ github.event.client_payload.curatorVerified }}
-          UC_PUBLISHED: ${{ github.event.client_payload.publishedDate }}
           UC_ADDED: ${{ github.event.client_payload.addedDate }}
           # Same optional reader-facing fields as the news path (see above).
           UC_AUDIENCE: ${{ toJSON(github.event.client_payload.audience) }}

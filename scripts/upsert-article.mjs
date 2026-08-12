@@ -46,20 +46,22 @@ const TARGETS = {
     file: join(ROOT, "data", "usecases.json"),
     label: "use-case",
     // Contract field order — matches data/usecases.schema.json (additionalProperties: false).
+    // Long-form and provenance fields arrive grouped (see ucContent/ucSource above); the flat
+    // UC_* variables stay supported so a hand-built dispatch still works.
     fields: {
       id: () => process.env.UC_ID,
       title: () => process.env.UC_TITLE,
       tools: () => parseList(process.env.UC_TOOLS),
       category: () => process.env.UC_CATEGORY,
-      whatItDoes: () => process.env.UC_WHAT_IT_DOES,
-      whatItImproves: () => process.env.UC_WHAT_IT_IMPROVES,
-      howToTry: () => process.env.UC_HOW_TO_TRY,
-      sourceUrl: () => process.env.UC_SOURCE_URL,
-      sourcePlatform: () => process.env.UC_SOURCE_PLATFORM,
-      author: () => process.env.UC_AUTHOR,
+      whatItDoes: () => ucContent().whatItDoes || process.env.UC_WHAT_IT_DOES,
+      whatItImproves: () => ucContent().whatItImproves || process.env.UC_WHAT_IT_IMPROVES,
+      howToTry: () => ucContent().howToTry || process.env.UC_HOW_TO_TRY,
+      sourceUrl: () => ucSource().url || process.env.UC_SOURCE_URL,
+      sourcePlatform: () => ucSource().platform || process.env.UC_SOURCE_PLATFORM,
+      author: () => ucSource().author || process.env.UC_AUTHOR,
       difficulty: () => process.env.UC_DIFFICULTY,
       curatorVerified: () => parseBool(process.env.UC_CURATOR_VERIFIED),
-      publishedDate: () => process.env.UC_PUBLISHED,
+      publishedDate: () => ucSource().publishedDate || process.env.UC_PUBLISHED,
       addedDate: () => process.env.UC_ADDED || todayUtc(),
       audience: () => parseList(process.env.UC_AUDIENCE),
       relevance: () => parseObject(process.env.UC_RELEVANCE),
@@ -118,6 +120,17 @@ function parseObject(raw) {
 function parseBool(raw) {
   return String(raw).trim().toLowerCase() === "true";
 }
+
+// GitHub caps a repository_dispatch `client_payload` at TEN top-level properties — an 11th fails the
+// whole dispatch with 422 "Invalid request." before any workflow run starts. The use-case contract
+// has 14 fields, so the agent groups its long-form and provenance fields into two nested objects:
+//   content = { whatItDoes, whatItImproves, howToTry }
+//   source  = { url, platform, author, publishedDate }
+// which keeps the payload at 9 top-level keys. parseObject already tolerates both a real object and
+// the double-encoded JSON string Copilot Studio sends, so both wire shapes land here identically.
+// Missing group → {} so each field falls back to its flat UC_* variable.
+const ucContent = () => parseObject(process.env.UC_CONTENT) || {};
+const ucSource = () => parseObject(process.env.UC_SOURCE) || {};
 
 function isEmpty(v) {
   if (v == null) return true;

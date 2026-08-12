@@ -1,31 +1,7 @@
 {
-  "description": "Admin-definable registry of AI Playbook discovery sources (BRD addendum §6). Mirrors the website knowledge sources configured on the curator agent; keep the two in sync (see runbook). 'enabled: false' entries are the documented reserve bench, not discovered by default.",
-  "updated": "2026-07-14",
+  "description": "Admin-definable registry of AI Playbook discovery sources (BRD addendum §6). Mirrors the website knowledge sources configured on the curator agent; keep the two in sync (see runbook). 'enabled: true' means the source is actually configured on the agent today; 'enabled: false' entries are planned or reserve-bench sources that are NOT currently indexed. The agent shares one knowledge pool across both modes, so its news-mode sources (TechCrunch AI, OpenAI News, Anthropic News, blog.google/technology/ai) are also present on the agent but are listed in the curator-agent runbook §6, not here.",
+  "updated": "2026-08-13",
   "sources": [
-    {
-      "platform": "reddit",
-      "name": "r/ChatGPT (top-weekly)",
-      "url": "https://www.reddit.com/r/ChatGPT/top/?t=week",
-      "enabled": true
-    },
-    {
-      "platform": "hackernews",
-      "name": "Hacker News front page + Algolia search",
-      "url": "https://news.ycombinator.com",
-      "enabled": true
-    },
-    {
-      "platform": "blog",
-      "name": "Simon Willison's Weblog",
-      "url": "https://simonwillison.net",
-      "enabled": true
-    },
-    {
-      "platform": "newsletter",
-      "name": "Ben's Bites (web archive)",
-      "url": "https://www.bensbites.com",
-      "enabled": true
-    },
     {
       "platform": "youtube",
       "name": "AI Engineer",
@@ -34,14 +10,50 @@
     },
     {
       "platform": "youtube",
-      "name": "Matt Pocock",
-      "url": "https://www.youtube.com/@mattpocockuk",
+      "name": "Stanford Online",
+      "url": "https://www.youtube.com/@stanfordonline",
+      "enabled": true
+    },
+    {
+      "platform": "blog",
+      "name": "AI Hero — Learn (Matt Pocock)",
+      "url": "https://www.aihero.dev/learn",
       "enabled": true
     },
     {
       "platform": "reddit",
       "name": "r/ClaudeAI",
       "url": "https://www.reddit.com/r/ClaudeAI/",
+      "enabled": true
+    },
+    {
+      "platform": "reddit",
+      "name": "r/ChatGPT (top-weekly)",
+      "url": "https://www.reddit.com/r/ChatGPT/top/?t=week",
+      "enabled": false
+    },
+    {
+      "platform": "hackernews",
+      "name": "Hacker News front page + Algolia search",
+      "url": "https://news.ycombinator.com",
+      "enabled": false
+    },
+    {
+      "platform": "blog",
+      "name": "Simon Willison's Weblog",
+      "url": "https://simonwillison.net",
+      "enabled": false
+    },
+    {
+      "platform": "newsletter",
+      "name": "Ben's Bites (web archive)",
+      "url": "https://www.bensbites.com",
+      "enabled": false
+    },
+    {
+      "platform": "youtube",
+      "name": "Matt Pocock",
+      "url": "https://www.youtube.com/@mattpocockuk",
       "enabled": false
     },
     {
