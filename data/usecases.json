@@ -1,5 +1,36 @@
 [
   {
+    "id": "devto-meta-prompting-2026-04-09",
+    "title": "Let the AI write your prompt — meta-prompting gets better outputs by asking the model what it needs first",
+    "tools": [
+      "ChatGPT",
+      "Claude"
+    ],
+    "category": "prompting-technique",
+    "whatItDoes": "Meta-prompting asks the model to generate the optimal prompt for your task before writing anything. You describe your goal, the model identifies the context, constraints, and examples it needs, and you use that output as the actual prompt — essentially letting the AI tell you how to ask for what you want.",
+    "whatItImproves": "Before meta-prompting, crafting a good prompt required guessing what information the model needed, often producing vague outputs on the first attempt. After applying it, the model self-generates a prompt that captures the right context and constraints up front — reducing the number of refinement rounds needed to reach a usable result.",
+    "howToTry": "1. Open ChatGPT or Claude and describe your goal without writing the full prompt — e.g. \"I want to create a comprehensive API documentation page for a REST API.\"\n2. Add the meta-prompting instruction: \"Before you write anything, ask me the 10 most important questions you'd need answered to create excellent documentation.\"\n3. Answer the model's questions, then ask it to generate the optimal prompt: \"Generate the optimal prompt that I should give you to get the best possible result. Include what context, constraints, and examples I should provide.\"\n4. Use the model's generated prompt as your actual prompt for the task.\n5. Optionally combine with Role + Context, Chain-of-Thought, or Constraint techniques in the generated prompt for maximum output quality.",
+    "sourceUrl": "https://dev.to/honestai/7-prompt-engineering-techniques-that-actually-work-in-2026-with-real-examples-3aj1",
+    "sourcePlatform": "blog",
+    "author": "HonestAI",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2026-04-09",
+    "addedDate": "2026-08-14",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "Before drafting a validation plan section or a process description for a pharma client, run a meta-prompt session first; the model's questions will surface gaps in your brief that would otherwise produce a generic first draft needing heavy revision.",
+      "practicalBenefit": "Cuts the prompt-refinement cycle from three or four rounds to one by front-loading the clarification step — freeing review time for content accuracy rather than prompt iteration.",
+      "whyRelevant": "When starting a new deliverable — such as a validation summary report or a client-facing status update — meta-prompting lets you ask Claude or ChatGPT what it needs before spending time writing a detailed prompt that misses key context."
+    }
+  },
+  {
     "id": "devto-role-context-task-format-prompting-2026-04-09",
     "title": "Get sharper AI outputs with the Role-Context-Task-Format prompt structure",
     "tools": [
