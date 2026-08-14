@@ -1,5 +1,35 @@
 [
   {
+    "id": "youtube-llm-knowledge-base-2026-08-12",
+    "title": "Turn raw notes into a self-updating wiki — use voice dictation and agent skills to build a second brain",
+    "tools": [
+      "Claude Code",
+      "Codex"
+    ],
+    "category": "workflow",
+    "whatItDoes": "A structured workflow that turns unorganized voice-dictated notes into a self-updating, browsable knowledge base. An /enrich-note agent skill stamps each note with tags, source URLs, and backlinks; a wiki skill compounds those notes into entity and concept pages; and scheduled automations keep everything refreshed — locally via Codex or in the cloud via a headless Obsidian sync.",
+    "whatItImproves": "Before this workflow, raw notes stayed fragmented and unsearchable. After setting it up, agents maintain a compounding artefact — entity pages, topic syntheses, an index — rather than re-discovering your knowledge from scratch on every query, as with RAG-style retrieval.",
+    "howToTry": "1. Install the skills with npx skills add bholmesdev/llm-knowledge-base-skills and store all notes as markdown files in a raw/ directory.\n2. Capture thoughts by voice dictation rather than typing — talking runs at 200 words a minute; tools like Voice Ink or Handy.computer work on-device with no subscription.\n3. Run /enrich-note — the agent assigns tags from a fixed registry, researches source URLs, and adds backlinks to related notes via a Related section.\n4. Run the wiki skill to generate a persistent, interlinked knowledge base from your enriched notes, seeded from Andrej Karpathy's llm-wiki gist.\n5. Schedule /enrich-notes-loop and /refresh-wiki to run overnight — locally via Codex's Scheduled tab, or in the cloud via Oz connected to Obsidian Sync.",
+    "sourceUrl": "https://www.youtube.com/watch?v=I3bpdgFJCUY",
+    "sourcePlatform": "youtube",
+    "author": "Ben Holmes",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-08-12",
+    "addedDate": "2026-08-14",
+    "audience": [
+      "developers",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "After a client call or document review, you can dictate your observations on the way back to your desk and let the overnight enrichment cycle tag, link, and wiki-fy them — so your notes are structured and retrievable before you start work the next morning.",
+      "practicalBenefit": "The resulting wiki gives agents a compounding knowledge base to draw from when drafting status updates, validation plan sections, or client-facing summaries, cutting the time spent re-briefing the AI on project context.",
+      "whyRelevant": "When tracking evolving requirements and client feedback across multiple pharma projects, this workflow turns scattered voice notes and meeting rambles into a searchable, agent-navigable wiki — reducing the effort of re-explaining context at the start of every session."
+    }
+  },
+  {
     "id": "aihero-to-tickets-2026-08-12",
     "title": "Break a spec into ready-to-run tickets with /to-tickets — skip the manual issue-writing step",
     "tools": [
