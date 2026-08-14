@@ -1,5 +1,36 @@
 [
   {
+    "id": "devto-role-context-task-format-prompting-2026-04-09",
+    "title": "Get sharper AI outputs with the Role-Context-Task-Format prompt structure",
+    "tools": [
+      "ChatGPT",
+      "Claude"
+    ],
+    "category": "prompting-technique",
+    "whatItDoes": "A four-part prompt structure — Role, Context, Task, Format — that gives the AI clear signals instead of a vague request. The guide also covers six complementary techniques: Chain-of-Thought, Few-Shot, Constraint-Based, Iterative Refinement, Negative Prompting, and Meta-Prompting.",
+    "whatItImproves": "Replaces open-ended prompts with a reliable structure that reduces hallucinations and back-and-forth, producing better-quality outputs in fewer attempts.",
+    "howToTry": "1. Open ChatGPT or Claude.\n2. Structure your prompt with four parts: Role (who the AI should be), Context (the situation), Task (what to do), Format (how to present the output).\n3. For reasoning tasks, add 'Think step by step' to trigger Chain-of-Thought.\n4. For structured outputs, include 2–3 examples of your desired format (Few-Shot).\n5. Iterate: refine the first response with a follow-up that adds constraints or addresses edge cases.",
+    "sourceUrl": "https://dev.to/honestai/7-prompt-engineering-techniques-that-actually-work-in-2026-with-real-examples-3aj1",
+    "sourcePlatform": "blog",
+    "author": "HonestAI",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2026-04-09",
+    "addedDate": "2026-08-14",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "When preparing a client status update or summarising a validation report, use Role+Context+Task+Format to get a formatted, audience-ready draft in one pass instead of multiple correction rounds.",
+      "practicalBenefit": "Applying Few-Shot and Iterative Refinement to pharma document reviews lets you supply the AI with two examples of an acceptable summary or redaction, then harden the output with targeted follow-ups — cutting review cycles significantly.",
+      "whyRelevant": "You regularly draft prompts for validation documents, client deliverables, and GxP-aware data tasks — a structured framework ensures the AI output matches the required tone, format, and accuracy standard on the first attempt."
+    }
+  },
+  {
     "id": "youtube-llm-knowledge-base-2026-08-12",
     "title": "Turn raw notes into a self-updating wiki — use voice dictation and agent skills to build a second brain",
     "tools": [
