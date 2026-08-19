@@ -1,5 +1,36 @@
 [
   {
+    "id": "aihero-grill-me-skill-2026-05-20",
+    "title": "Let the agent interview you before any task — the /grill-me skill stops misaligned output before it starts",
+    "tools": [
+      "Claude Code",
+      "Codex"
+    ],
+    "category": "prompting-technique",
+    "whatItDoes": "The /grill-me skill runs a structured agent interview before any non-code task — writing, planning, analysis, or design. The agent asks targeted questions to expose gaps and assumptions before it writes a single word of output. It is the lightweight version of /grill-with-docs: no domain document required, just a conversation that turns vague intent into clear scope.",
+    "whatItImproves": "The most common failure mode in AI-assisted work is misalignment — you think the agent knows what you want, then you see what it produced and realise it didn't understand you at all. With /grill-me, the communication gap closes before work begins, so the first draft is already aligned rather than needing expensive correction cycles.",
+    "howToTry": "1. Install via the Claude Code marketplace: run /plugin install mattpocock-skills inside a Claude Code session, or via CLI: npx skills@latest add mattpocock/skills.\n2. Run /setup-matt-pocock-skills once per repo to configure your issue tracker and preferences.\n3. Before any non-code task — writing, planning, analysis — type /grill-me and describe your goal in one sentence.\n4. Answer the agent's questions actively: push back, add constraints, and correct assumptions. The failure mode is passivity — nodding along produces a plan the agent wrote and you rubber-stamped.\n5. When the grilling ends, the agent has the context to produce a first draft that is already scoped and aligned.",
+    "sourceUrl": "https://www.aihero.dev/skills-grill-me",
+    "sourcePlatform": "blog",
+    "author": "Matt Pocock",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2026-05-20",
+    "addedDate": "2026-08-19",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "Before asking Claude to draft a GxP-compliant document or project summary, run /grill-me first; the structured interview will expose missing scope, unstated assumptions, and format preferences that would otherwise appear as feedback comments two drafts later.",
+      "practicalBenefit": "Replaces the back-and-forth correction cycle that follows an under-specified prompt with a single upfront conversation — so first-draft quality is high enough to send to a colleague for review rather than revision.",
+      "whyRelevant": "When kicking off a deliverable like a validation test plan, a requirements document, or a client status update, /grill-me surfaces the questions you haven't asked yourself yet — before the AI writes anything — saving the revision time that follows a vague first draft."
+    }
+  },
+  {
     "id": "devto-meta-prompting-2026-04-09",
     "title": "Let the AI write your prompt — meta-prompting gets better outputs by asking the model what it needs first",
     "tools": [
