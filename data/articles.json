@@ -1,5 +1,27 @@
 [
   {
+    "id": "github-claude-language-regression-2026-07-13",
+    "title": "Claude's default tone has regressed since v4.7 — use these prompt fixes while Anthropic investigates",
+    "url": "https://github.com/anthropics/claude-code/issues/77136",
+    "source": "GitHub",
+    "summary": "A high-signal community bug report — backed by 450+ Reddit upvotes, 113 GitHub reactions, and 175+ comments — documents that Claude Opus 4.7 through Fable 5 increasingly defaults to verbose, jargon-heavy output filled with invented terms and rhetorical tics that persist even after explicit style instructions. Reliable workarounds include banning classes of phrasing rather than asking for \"concise,\" using per-project CLAUDE.md output profiles, and applying output styles modelled on a clear technical communicator.",
+    "topic": "Claude",
+    "publishedDate": "2026-07-13",
+    "addedDate": "2026-08-21",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "If Claude fills a validation plan section or client status update with invented terms like 'load-bearing' or opaque metaphors, reviewers will push back — knowing the workarounds now prevents that from happening on a live deliverable.",
+      "practicalBenefit": "The bug report documents three reliable workarounds — banning specific phrase classes, per-project CLAUDE.md style profiles, and output-style instructions — that keep Claude's output clean and professional on client-facing or GxP documents today.",
+      "whyRelevant": "Claude is the primary AI tool used across i2e for drafting validation documents, client updates, and GxP-aware deliverables — this regression affects the readability and quality of AI-assisted output across all roles."
+    }
+  },
+  {
     "id": "techcrunch-anthropic-text-watermarking-2026-08-11",
     "title": "Anthropic will watermark Claude's text outputs — use this to verify AI-generated content in client deliverables",
     "url": "https://techcrunch.com/2026/08/11/anthropic-says-it-will-watermark-text-generated-by-its-ai-models/",
