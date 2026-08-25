@@ -1,17 +1,17 @@
 [
   {
     "id": "openai-zero-data-retention-2026-08-19",
-    "title": "Use OpenAI's frontier models on sensitive client data without triggering retention concerns",
+    "title": "Use OpenAI's API with sensitive client data: prompts are not retained after processing",
     "url": "https://openai.com/index/offering-zero-data-retention-for-frontier-models/",
     "source": "OpenAI",
-    "summary": "OpenAI has reaffirmed Zero Data Retention for eligible API customers using frontier models, guaranteeing that prompts and responses are not stored after processing and are not used to train models unless the customer opts in. It also previewed Private Safety Processing, an automated system that monitors for abuse patterns across related interactions without granting OpenAI personnel access to the underlying customer content, with broader rollout and a technical white paper planned for September 2026.",
+    "summary": "OpenAI has reaffirmed its Zero Data Retention (ZDR) policy for eligible API customers, guaranteeing that prompts and model responses are not stored after processing and that enterprise data is not used to train models unless customers explicitly opt in. The company also previewed Private Safety Processing, an automated system that detects misuse patterns across related interactions without exposing underlying customer content to OpenAI personnel.",
     "topic": "Latest",
     "publishedDate": "2026-08-19",
-    "addedDate": "2026-08-24",
+    "addedDate": "2026-08-25",
     "relevance": {
-      "dailyImpact": "When preparing or reviewing validation documents that reference confidential client trial data, you can cite Zero Data Retention as the governance control that enables frontier-model assistance without breaching client confidentiality agreements.",
-      "practicalBenefit": "Private Safety Processing lets you pass sensitive client materials through OpenAI's frontier models and benefit from cross-interaction safety monitoring without those materials ever being readable by OpenAI personnel.",
-      "whyRelevant": "OpenAI's Zero Data Retention guarantee is directly relevant when you are evaluating whether the API can be used on pharma client deliverables subject to data confidentiality and GxP obligations."
+      "dailyImpact": "When reviewing or drafting GxP-compliant documents with AI assistance via the OpenAI API, you can now do so knowing sensitive content is not stored or accessible to OpenAI personnel, reducing a key compliance risk you would otherwise need to escalate to your client.",
+      "practicalBenefit": "You can reference ZDR and Private Safety Processing as concrete, provider-confirmed data-governance controls when advising pharma clients on enterprise AI adoption, closing one of the most common objections to using frontier models in regulated environments.",
+      "whyRelevant": "OpenAI's ZDR guarantee means client data you send through the API — including draft validation documents or clinical trial summaries — is not retained on OpenAI servers after each request, directly supporting your data confidentiality obligations to pharma clients."
     }
   },
   {
