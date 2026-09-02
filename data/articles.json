@@ -1,5 +1,25 @@
 [
   {
+    "id": "techcrunch-hiddenlayer-ai-security-2026-09-02",
+    "title": "Add AI runtime security to your client deployment checklist — enterprises now spend $2.83B a year protecting AI agents",
+    "url": "https://techcrunch.com/2026/09/02/hiddenlayer-nabs-100m-as-enterprises-rush-to-secure-their-ai-deployments/",
+    "source": "TechCrunch",
+    "summary": "HiddenLayer has raised $100 million in a Series B round to expand its AI security platform, which protects models, agents, and workflows from adversarial attacks, prompt injection, and malicious tool use — with pharmaceutical companies among its named customer base. Gartner estimates enterprise spending on AI security tools will reach $2.83 billion in 2026, up 83% year-on-year, as agentic deployments multiply and runtime protection becomes a recognised security category distinct from traditional cybersecurity.",
+    "topic": "Latest",
+    "publishedDate": "2026-09-02",
+    "addedDate": "2026-09-02",
+    "audience": [
+      "developers",
+      "qa",
+      "pm"
+    ],
+    "relevance": {
+      "dailyImpact": "When specifying or reviewing an AI agent deployment for a pharma client, you can now reference runtime AI security — covering prompt injection prevention, tool-use monitoring, and supply chain scanning of open-weight models — as a concrete, industry-standard control to include in your validation documentation.",
+      "practicalBenefit": "Adding AI runtime security requirements to your agent deployment checklist gives pharma clients a defensible control framework for GxP-regulated systems, and positions i2e to recommend or assess specialist vendors during AI tool procurement and risk-assessment reviews.",
+      "whyRelevant": "As i2e deploys AI agents and coding assistants for pharma clients, unprotected agentic workflows are now a named security category — HiddenLayer's customers explicitly include pharmaceutical companies, and Gartner's $2.83B spending figure signals that clients and regulators will expect runtime AI security controls in validated environments."
+    }
+  },
+  {
     "id": "techcrunch-air-agent-security-2026-09-01",
     "title": "Vet every skill and add-on your AI agents use before they reach client systems",
     "url": "https://techcrunch.com/2026/09/01/air-raises-50m-to-help-companies-vet-the-skills-and-add-ons-ai-agents-use/",
