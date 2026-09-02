@@ -1,5 +1,25 @@
 [
   {
+    "id": "techcrunch-air-agent-security-2026-09-01",
+    "title": "Vet every skill and add-on your AI agents use before they reach client systems",
+    "url": "https://techcrunch.com/2026/09/01/air-raises-50m-to-help-companies-vet-the-skills-and-add-ons-ai-agents-use/",
+    "source": "TechCrunch",
+    "summary": "AI security startup AIR has launched from stealth with $50 million in funding, offering a platform that discovers AI agents running inside an organisation, continuously vets the skills, MCP servers, plug-ins, and add-ons those agents use, and blocks components that fail security criteria — currently filtering out roughly 27% of publicly available add-ons. The startup reports its strongest early demand from heavily regulated industries, including pharmaceutical companies, where an unvetted agent supply chain represents a new class of compliance and security risk.",
+    "topic": "Latest",
+    "publishedDate": "2026-09-01",
+    "addedDate": "2026-09-02",
+    "audience": [
+      "developers",
+      "qa",
+      "pm"
+    ],
+    "relevance": {
+      "dailyImpact": "When building or reviewing agentic workflows for a client, you can use AIR's finding that roughly 27% of publicly available agent add-ons fail basic security vetting as a concrete benchmark for the supply-chain security section of your validation documentation.",
+      "practicalBenefit": "Referencing continuous re-verification of every skill and plug-in an agent loads — rather than a one-time scan — gives you a defensible standard to include in client risk assessments and architecture reviews before any agent reaches a production system.",
+      "whyRelevant": "As i2e deploys AI agents with MCP servers and skills for pharma clients, an unvetted skill or add-on can introduce a security flaw or compliance gap into a GxP-regulated environment — AIR's launch signals this is now a recognised risk category that clients in your sector are already asking about."
+    }
+  },
+  {
     "id": "anthropic-claude-fable-5-1-2026-09-01",
     "title": "Claude Fable 5.1 is out: run it at up to 45% lower cost with zero data retention for sensitive client work",
     "url": "https://www.anthropic.com/claude-fable-and-mythos-5-1",
