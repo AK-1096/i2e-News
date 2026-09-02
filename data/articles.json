@@ -1,5 +1,25 @@
 [
   {
+    "id": "techcrunch-chatgpt-health-epic-integration-2026-09-01",
+    "title": "ChatGPT can now pull patient records from Epic EHR — and stay HIPAA-compliant",
+    "url": "https://techcrunch.com/2026/09/01/chatgpt-health-adds-epic-integration-for-clinicians-to-import-patient-data/",
+    "source": "TechCrunch",
+    "summary": "OpenAI has integrated ChatGPT Health with Epic's EHR system — covering over 325 million patients — letting clinicians import appointment notes, lab results, medications, and specialist documentation directly into ChatGPT or within Epic workflows. A new Healthcare Public Data plugin connects to ClinicalTrials.gov, PubMed, RxNorm, and other official sources, while organisations holding a Business Associate Agreement can now use ChatGPT Work and Codex in the same workspace for HIPAA-compliant workflows.",
+    "topic": "Latest",
+    "publishedDate": "2026-09-01",
+    "addedDate": "2026-09-02",
+    "audience": [
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "When drafting client status updates or steering-committee decks for healthcare engagements, you can cite this integration's 99.1% physician-rated safety score and its GxP-adjacent BAA compliance structure to frame AI adoption risks and governance requirements with concrete evidence.",
+      "practicalBenefit": "The Healthcare Public Data plugin's access to ClinicalTrials.gov, DailyMed, and PubMed lets you quickly synthesise clinical background on trial eligibility criteria or drug identifiers during pharma client discovery phases, cutting manual research time on regulated-data steps.",
+      "whyRelevant": "Your pharma and life-sciences clients are actively evaluating AI integrations with Epic EHR, and knowing the scope of this rollout — including its read-only access model and BAA compliance path — lets you advise them accurately during discovery and requirements workshops."
+    }
+  },
+  {
     "id": "techcrunch-nvidia-hugging-face-acquisition-2026-08-26",
     "title": "Nvidia's $12.9B Hugging Face bid could reshape open-model access — watch for platform neutrality changes",
     "url": "https://techcrunch.com/2026/08/26/nvidia-closes-in-on-hugging-face-acquisition/",
