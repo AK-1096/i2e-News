@@ -1,5 +1,27 @@
 [
   {
+    "id": "anthropic-claude-fable-5-1-2026-09-01",
+    "title": "Claude Fable 5.1 is out: run it at up to 45% lower cost with zero data retention for sensitive client work",
+    "url": "https://www.anthropic.com/claude-fable-and-mythos-5-1",
+    "source": "Anthropic",
+    "summary": "Anthropic released Claude Fable 5.1 on September 1, 2026 — a new frontier model for coding, knowledge work, and research that costs approximately 25% less than Fable 5 for typical workloads and up to 45% less for highly agentic tasks, driven by a 75% reduction in cache-read pricing. The release also introduces Enterprise Frontier Safeguards, which store session data in customer-controlled cloud infrastructure rather than on Anthropic servers, and reduces cybersecurity safeguard false positives by 60%.",
+    "topic": "Latest",
+    "publishedDate": "2026-09-01",
+    "addedDate": "2026-09-02",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "When you run long agentic tasks in Claude Code or draft validation reports in Claude Cowork, Fable 5.1's reduced cache-read pricing (up to 45% cheaper for repeated context) and 60% fewer safeguard false positives mean fewer mid-task interruptions and lower token spend on every client project.",
+      "practicalBenefit": "Enterprise Frontier Safeguards store your session data in customer-controlled cloud infrastructure, giving pharma clients a verifiable zero-data-retention equivalent for GxP-sensitive document work — so you can prompt with real project content without routing it through Anthropic's own servers.",
+      "whyRelevant": "Claude Fable 5.1 is the upgraded version of the model i2e employees use daily for drafting validation documents, client deliverables, and code — and it now costs less, fires fewer safeguard blocks on legitimate requests, and keeps your data in your own cloud infrastructure rather than on Anthropic servers."
+    }
+  },
+  {
     "id": "techcrunch-chatgpt-health-epic-integration-2026-09-01",
     "title": "ChatGPT can now pull Epic EHR patient data into clinical workflows — what it means for pharma clients",
     "url": "https://techcrunch.com/2026/09/01/chatgpt-health-adds-epic-integration-for-clinicians-to-import-patient-data/",
