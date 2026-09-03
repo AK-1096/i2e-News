@@ -1,5 +1,26 @@
 [
   {
+    "id": "techcrunch-openai-astra-recurrent-depth-2026-09-02",
+    "title": "Ask vendors about chain-of-thought visibility before deploying OpenAI's next model on client systems",
+    "url": "https://techcrunch.com/2026/09/02/openais-new-reasoning-technique-alarms-ai-safety-experts/",
+    "source": "TechCrunch",
+    "summary": "OpenAI's upcoming Astra model uses a technique called 'recurrent depth' that processes queries in a loop rather than sequentially, leaving fewer legible traces than conventional chain-of-thought reasoning. AI safety experts warn this could make model behaviour harder to monitor and audit, with concerns that further scaling of the technique could eventually eliminate visible reasoning from AI outputs entirely.",
+    "topic": "Latest",
+    "publishedDate": "2026-09-02",
+    "addedDate": "2026-09-03",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm"
+    ],
+    "relevance": {
+      "dailyImpact": "When completing AI tool validation documentation for a client, you can now reference chain-of-thought legibility as a concrete evaluation criterion and flag whether a vendor's model maintains it — Astra's recurrent depth is the first frontier example of a model deliberately reducing this property.",
+      "practicalBenefit": "Adding a chain-of-thought monitorability requirement to your AI vendor assessment checklist gives pharma clients a defensible audit criterion for model explainability, and this article provides the first real-world case to cite when justifying that requirement in a validation document.",
+      "whyRelevant": "When assessing AI tools for pharma clients, chain-of-thought monitorability is a named control for GxP-compliant AI governance — OpenAI's shift toward opaque recurrence in Astra directly affects how much visibility you can claim over model reasoning in a validated environment."
+    }
+  },
+  {
     "id": "explainx-fable-5-1-benchmarks-tips-2026-09-02",
     "title": "Get more from Fable 5.1 for less: confirmed benchmarks, real pricing math, and effort-level tips",
     "url": "https://www.explainx.ai/blog/claude-fable-5-1-mythos-5-1-launch-benchmarks-pricing-2026",
