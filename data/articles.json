@@ -1,5 +1,25 @@
 [
   {
+    "id": "mckesson-ventures-pharma-tech-ai-2026-08-25",
+    "title": "Back your AI proposals with pharma-sector data: 63% of investors are increasing pharma tech bets in 2026",
+    "url": "https://markets.businessinsider.com/news/stocks/investors-and-entrepreneurs-agree-ai-enterprise-demand-and-investor-confidence-are-reshaping-pharma-tech-according-to-new-mckesson-ventures-report-1036490158",
+    "source": "McKesson Ventures",
+    "summary": "A McKesson Ventures survey of more than 100 healthcare investors and entrepreneurs finds that 63% of investors have increased their interest in pharma tech relative to other healthcare sectors, with AI cited as the primary driver. Entrepreneurs report a notably easier sales environment, attributing it to stronger executive sponsorship, growing urgency around AI, and faster movement from pilots to full production.",
+    "topic": "Latest",
+    "publishedDate": "2026-08-25",
+    "addedDate": "2026-09-03",
+    "audience": [
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "When preparing a client status update or scoping an AI initiative, you can cite the survey's finding that nearly half of pharma tech entrepreneurs now report faster movement from pilot to production, giving your recommendations a concrete, third-party-validated urgency rather than a generic push for adoption.",
+      "practicalBenefit": "The survey identifies clinical trial design, trial operations, and drug discovery tools as the three most attractive investment areas for pharma tech in 2026, giving you a ranked shortlist to prioritise when structuring AI roadmap recommendations or pitching i2e's capabilities to life-sciences clients.",
+      "whyRelevant": "When advising a pharma client on AI adoption readiness, this survey gives you investor and entrepreneur-sourced evidence that 63% of pharma tech investors are increasing their allocations and that executive sponsorship is now the leading factor accelerating AI budgets at pharma companies — replacing the speculative framing you would otherwise have to rely on."
+    }
+  },
+  {
     "id": "anthropic-enterprise-ai-services-2026-05-04",
     "title": "Anthropic is building its own AI services firm for mid-sized pharma and healthcare clients — know how it shifts the competitive landscape",
     "url": "https://www.anthropic.com/news/enterprise-ai-services-company",
