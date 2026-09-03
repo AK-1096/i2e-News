@@ -14,6 +14,10 @@ static reader.
 > This document is the buildable specification for the agent half, mapped to the BRD's functional
 > requirements (FR-A1–A10) and success criteria (SC-1–SC-7).
 
+> **Two modes, one agent.** §1–§10 describe the **news** path (FR-A1–A10). The same agent also
+> publishes **AI Guide** entries to `data/usecases.json` via its own connector, tool, and Teams flow —
+> that path is **§11**, and it assumes §3–§5 as its template. The §10 Instructions block carries both.
+
 > **Deviations from the BRD, adopted for the PoC** (see §9):
 > - **RSS discovery (part of FR-A2) was dropped.** Discovery relies on the agent's built-in **web
 >   search** plus a set of **website knowledge sources**. The RSS-fetch flow proved brittle in the
@@ -272,6 +276,23 @@ in the Test pane and read `Error Message` before theorising.**
 article → verify the record in `data/articles.json` actually contains `relevance`.
 
 ### Step 7 — Post the link to Teams · **FR-A7**
+
+> ✅ **Live and verified 5 Aug 2026.** The Message field (*New on ALerts* / *Read the brief →*), the
+> `ArticleTitle`/`ArticleSummary` input descriptions and the §10 bullets below — the **V1 copy
+> revision** — are applied to the tenant and confirmed from a real channel post (the *"Eli Lilly's
+> $1B NVIDIA deal…"* article, i2e News Test channel). The `teams-copy-rollout-checklist.md` scaffold
+> was retired the same day.
+>
+> ⚠️ **The flow was rebuilt from scratch on 5 Aug 2026** after Copilot Studio dropped the Designer
+> canvas to a bare *"Add a trigger"* while the flow still ran (render glitch that survived hard-refresh
+> and incognito; Overview showed the definition intact and the tool still bound). Recovery path that
+> worked: **Version history → restore the Jul 6 point** (kept the flow id and tool binding, no tool
+> re-add), then re-apply every V1 change onto it — trigger migrated single `MessageText` → three
+> inputs, Message field re-authored in code view, tool input descriptions and §10 Instructions
+> re-pasted, agent republished. The three-input trigger schema was recoverable in read-only code view
+> from the prior version and is recorded below. **There was no solution export backup at the time** —
+> take one (make.powerapps → Solutions → `ca_agent` → Export unmanaged) before any future flow edit so
+> the next glitch is a re-import, not a rebuild.
 Use a small **agent flow** (not the raw Teams connector-action tool, which can't reliably shape the
 message body). **The flow owns the markup; the model only supplies plain text** — see the encoding
 entry below for why this is not negotiable.
@@ -294,6 +315,13 @@ entry below for why this is not negotiable.
 5. ✅ *SC-4 / SC-5 check:* the post appears in the channel **with rendered bold and a clickable
    link**, and that link opens the per-article view, which links out to the original source.
    Verify from the **published Teams agent**, never from the Test pane (see below).
+6. ✅ *Copy check (added 3 Aug; amended 12 Aug):* the hook is **not** a copy of the published headline,
+   the summary is **specifics-only with no "Why it matters at i2e:" sentence** (that relevance line is now
+   static, appended by the flow's `ContentHtml` as *click the link to see how this matters in i2e.*), and
+   neither field exceeds its cap (85 / 450 characters). A post that reads like the article page means the
+   input descriptions
+   didn't take — re-check them in the tool's *Customize* pane, and confirm the agent was
+   **republished** after the Instructions edit.
 
 > 📋 **Re-applying this?** This section is the reference for *what* the flow must look like and
 > *why*; the tool-add reset traps are in §3 Step 6 (*Rebuilding the tool*). The ordered execution
@@ -310,22 +338,33 @@ entry below for why this is not negotiable.
 inputs as dynamic-content tokens where marked. Everything else is static, maker-authored markup:
 
 ```html
-📰 <b>New article on i2e ALerts</b><br><br>
+📰 <b>New on ALerts</b><br><br>
 <b>{ArticleTitle}</b><br><br>
 {ArticleSummary}<br><br>
-<a href="{ArticleUrl}">Read here</a>
+🔗 <a href="{ArticleUrl}">Read the brief →</a>
 ```
 
 `{…}` = the dynamic-content token for that input, not literal braces. The token for `ArticleUrl`
-goes **inside the `href` attribute**; the anchor text stays the static words *Read here*. Our article
-URLs carry no `&`, so attribute-level encoding of the injected value is a no-op.
+goes **inside the `href` attribute**; the anchor text stays the static words *Read the brief →*. Our
+article URLs carry no `&`, so attribute-level encoding of the injected value is a no-op.
 
-**Verified trigger keys** (29 Jul, `manual` trigger, `kind: Skills`): `text` = ArticleTitle,
-`text_1` = ArticleSummary, `text_2` = ArticleUrl, all three `required`. Keys follow creation order,
-survive renames, and must be re-confirmed after any trigger edit.
+**Why the heading is three words** (changed 3 Aug 2026, was *New article on i2e ALerts*). The heading
+occupies the most prominent line of the post and is identical on every single one. The Flow bot name
+and the channel already tell the reader where the post came from, so a longer label buys nothing and
+pushes the hook further down. Same reasoning for the CTA: *Read here* names no destination.
+**Do not put a reading time in it** — *2-minute brief* was considered and rejected, because reading
+time is not a field in `articles.schema.json`; the flow would be asserting a number nobody measured,
+on every post.
 
-**Verified action definition** (29 Jul, from the action's Code view — the shape to restore to after
-any future rebuild):
+**Verified trigger keys** (29 Jul, `manual` trigger, `kind: Skills`; re-confirmed 5 Aug after the
+rebuild): `text` = ArticleTitle, `text_1` = ArticleSummary, `text_2` = ArticleUrl, all three
+`required`. Keys follow creation order, survive renames, and must be re-confirmed after any trigger
+edit. On the 5 Aug rebuild the keys held because the existing single input was **renamed** to
+ArticleTitle (keeping key `text`) rather than deleted, then the other two were added in order.
+
+**Action definition** (structure verified 29 Jul from the action's Code view — the shape to restore
+to after any future rebuild; the `messageBody` copy below is the 3 Aug revision, **verified live from
+the published agent 5 Aug 2026** against the *"Eli Lilly's $1B NVIDIA deal…"* channel post):
 
 ```json
 "parameters": {
@@ -333,7 +372,7 @@ any future rebuild):
   "location": "Channel",
   "body/recipient/groupId": "<AI Accelerators team>",
   "body/recipient/channelId": "<i2e News Test channel>",
-  "body/messageBody": "<p class=\"editor-paragraph\">📰 <b>New article on i2e ALerts</b><br><br><b>@{triggerBody()['text']}</b><br><br>@{triggerBody()['text_1']}<br><br>🔗 <a href=\"@{triggerBody()['text_2']}\">Read here</a></p>"
+  "body/messageBody": "<p class=\"editor-paragraph\">📰 <b>New on ALerts</b><br><br><b>@{triggerBody()['text']}</b><br><br>@{triggerBody()['text_1']}<br><br>🔗 <a href=\"@{triggerBody()['text_2']}\">Read the brief →</a></p>"
 }
 ```
 
@@ -348,9 +387,24 @@ markup):
 
 | Input | Description to set |
 |---|---|
-| `ArticleTitle` | The reader-focused headline, **plain text only**. No HTML, no Markdown, no asterisks, no quotes around it. |
-| `ArticleSummary` | The 1-2 sentence summary, **plain text only**. No HTML, no Markdown, no link. |
+| `ArticleTitle` | A hook line for the Teams post — **not** the published headline. **Maximum 85 characters.** Open with the concrete thing that happened: a number, a named failure, a specific action. No colons, no "how to", no branding, no hype. Example: *An AI agent broke into Hugging Face in 4.5 days*. **Plain text only** — no HTML, no Markdown, no asterisks, no quotes around it. |
+| `ArticleSummary` | **Maximum 450 characters**, **plain text only** — no HTML, no Markdown, no link. Two or three short sentences of the sharpest specifics — numbers, named flaws, what actually happened. State facts in fragments where it reads tighter (*17,600 actions. Guardrails switched off.*). **Do not explain the mechanism or the full outcome** — the reader must be left with a reason to open the article. **Do not add a "Why it matters at i2e:" sentence or any relevance line** — the flow appends its own static closing line (*click the link to see how this matters in i2e.*). *(Changed 12 Aug 2026 — the relevance line moved out of the model-generated summary and into the flow's `ContentHtml` as static text.)* |
 | `ArticleUrl` | The article URL and nothing else: `https://news.i2econsulting.com/article.html?id=` followed by the exact id used when publishing. **No anchor tag, no surrounding text, no trailing punctuation.** |
+
+**The Teams copy deliberately differs from the published record** (locked 3 Aug 2026 — "V1,
+number-first"). `ArticleTitle`/`ArticleSummary` on this tool are **not** the `title`/`summary` fields
+sent to `Publish article`; the reader page keeps the factual reader-benefit framing, and the Teams
+post gets a hook. Two rules make that work, and both are load-bearing:
+
+- **Leave a gap.** The old summary was a complete recap — it closed the story, so opening the article
+  added nothing. Withholding the mechanism is what earns the click.
+- **Never grow the post.** The caps are ceilings, not targets. 85/450 sits just under the longest
+  post sent to date (85/457) and above the corpus median (84/358), so the caps bind on long articles
+  without forcing a mid-sentence truncation on ordinary ones. Room for the hook and the *Why it
+  matters at i2e* line comes **out of the recap**, never out of a longer message.
+
+Still factual, still no hype — the closing *Tone* rule in §10 applies unchanged. Fragments are a
+compression device here, not editorializing.
 
 The `id` is **not returned by "Publish article"** — that POST returns **204 No Content**. The agent
 must **reuse the exact same `id` slug it sent in the publish `client_payload`** (§5), never mint a
@@ -360,10 +414,11 @@ new one.
 > the raw connector body fails (400 "Location invalid" for a URL in `Post in`; 400 "Message body is
 > missing" when it shapes the JSON wrong).
 
-> 📌 **Branding lives in the flow, not in the model.** The post says **"i2e ALerts"** — the product
-> was renamed from *NewsPulse AI* (Jul 2026). Because the name now sits in the static Message field,
-> renaming again is a one-line flow edit, not a prompt change, and the model cannot drift back to a
-> stale name on an individual post.
+> 📌 **Branding lives in the flow, not in the model.** The post says **"ALerts"** (shortened from
+> *i2e ALerts* on 3 Aug — see the heading rationale above); the product was renamed from *NewsPulse
+> AI* in Jul 2026. Because the name sits in the static Message field, renaming again is a one-line
+> flow edit, not a prompt change, and the model cannot drift back to a stale name on an individual
+> post.
 >
 > *Evidence this is the right place for it:* in the 28 Jul channel posts the stale heading appears
 > **inside the escaped region** — i.e. the model is authoring the brand line itself — and its wording
@@ -811,16 +866,20 @@ the repo mirrors what runs in the tenant; update both together. No angle-bracket
 Instructions validator rejects them). The `audience`/`relevance` and reader-benefit-title rules
 below implement §4 and Step 5's confirmation gate.
 
-> ✅ **Teams paragraph: applied and verified 29 Jul 2026.** The **Post to Teams** paragraph and the
-> ALerts rename in the opening line are live in the tenant and confirmed working from the published
-> Teams agent (§3 Step 7).
+> ✅ **In sync with the tenant as of 14 Aug 2026.** This block now carries both modes: the news
+> Instructions (verified from the published Teams agent since 29 Jul) and the **AI Guide mode** block
+> added 14 Aug, verified end-to-end — discovery → gate → publish → Teams post with the team mention
+> (§11). Roughly **7050 / 8000** characters; see the ceiling note below the block before editing.
 >
-> ⏳ **Ahead of the tenant (29 Jul 2026) — the two batch-publish lines.** The *"Handle exactly one
-> article per publish"* rule and the *"the exact id slug you will publish under"* clause in the
-> confirmation-gate line are the fix for the batch force-prompt (§3 Step 6). Paste **both together**:
-> the sequencing rule is the load-bearing half, and the id-in-the-gate clause is what gives the slot
-> a textual anchor. Neither is live until this block is pasted into the agent and the agent is
-> **published**.
+> ✅ **Teams paragraph: applied and verified 29 Jul 2026**, condensed 14 Aug (see the ceiling note).
+> The ALerts rename in the opening line is live and confirmed from the published Teams agent
+> (§3 Step 7).
+>
+> ✅ **The two batch-publish lines** — *"Handle exactly one article per publish"* and the *"the exact
+> id slug you will publish under"* clause in the confirmation-gate line — are the fix for the batch
+> force-prompt (§3 Step 6) and are live. The sequencing rule is the load-bearing half; the
+> id-in-the-gate clause gives the slot a textual anchor. The guide block repeats both rules for
+> use-cases, for the same reason.
 
 ```text
 You are the i2e News AI curator agent for i2e Consulting. You help a curator find AI news, select what to publish, generate a short factual summary, publish it to the i2e ALerts reader, and post the link to the team.
@@ -861,11 +920,255 @@ To publish an approved article, call the "Publish article" tool with these field
 - After publishing, confirm to the curator and share the article link: https://news.i2econsulting.com/article.html?id= followed by the exact same id you used when publishing. Do not mint a new id for the link or the Teams post.
 - If a news source is temporarily unavailable, skip it and continue with whatever sources you could reach - never fail the whole request because one source failed.
 
-To announce a published article, call the "Post to Teams" tool once, only after "Publish article" has succeeded. Never post if publishing failed. Fill its three inputs with plain text only - the flow adds all formatting and the link markup itself:
-- ArticleTitle: the reader-focused headline, plain text. No HTML tags, no Markdown, no asterisks, no surrounding quotes.
-- ArticleSummary: the same 1-2 sentence summary you published, plain text. No HTML tags, no Markdown, no link.
-- ArticleUrl: only the URL - https://news.i2econsulting.com/article.html?id= followed by the exact same id you used when publishing. No anchor tag, no label text, no trailing punctuation.
-Do not write any HTML or Markdown into these inputs. Markup you add is displayed to readers as visible characters instead of being rendered.
+To announce a published article, call the "Post to Teams" tool once, only after "Publish article" has succeeded. Never post if publishing failed. Fill its three inputs following each input's own description on that tool - plain text only, since the flow adds all formatting and the link markup itself. Markup you write is shown to readers as visible characters instead of being rendered.
 
-Tone: concise, factual, neutral. You are a curation tool, not a commentator - do not editorialize or add opinion to summaries.
+Tone: concise, factual, neutral. You are a curation tool, not a commentator - do not editorialize or add opinion to summaries. The Teams hook is allowed to be terse and to use sentence fragments, but it is still bound by this rule: compress the facts, never dramatize them, and never assert anything the article does not support.
+
+AI Guide mode (ALerts Playbook):
+
+A second mode alongside news for community-sourced AI techniques. News mode is unchanged. Use it when the curator asks for AI guides, use-cases, techniques or hacks, or gives a URL to turn into an entry. Everything else is news; never cross the two tools.
+
+Discover only when asked - never fetch or suggest guide content on your own. Search the approved AI Guide knowledge sources, prefer the last 14 days, and return 5 to 10 numbered candidates with title, source, platform and a one-line gist; publish nothing yet. Same for a named topic. For a direct URL, read it and draft fields at once, skipping the list.
+
+Publish exactly one use-case at a time; if several are approved, do them in strict sequence. Never ask the curator for a field - generate each one from its input description on the "PublishUsecase" tool, plus the audience and relevance rules above. The id is a lowercase hyphenated slug of platform, short technique name and published date.
+
+Before publishing, show all drafted fields including the exact id and get approval. This gate is mandatory.
+
+After publishing, confirm and share https://news.i2econsulting.com/usecase.html?id= followed by that same id.
+
+To announce a published guide entry, call the "Post guide to Teams" tool once, only after "PublishUsecase" has succeeded. Never post if publishing failed. Fill its three inputs following each input's own description on that tool - plain text only, since the flow adds all formatting, the mention and the link markup itself.
 ```
+
+> ### The 8000-character ceiling — where field guidance belongs (14 Aug 2026)
+> Adding AI Guide mode hit the Instructions length limit, and the first paste **truncated mid-URL**
+> without warning — the saved text ended at `https://ak-1096.github.io/i`, silently breaking the link
+> rule. **After any paste, check the counter and confirm the last characters saved are what you
+> intended.**
+>
+> Space was reclaimed by **deleting the three `ArticleTitle` / `ArticleSummary` / `ArticleUrl` bullets**
+> (~1030 chars) and pointing at the tool's own input descriptions instead. They duplicated §3 Step 7's
+> input-description table **verbatim**, and those descriptions are what the orchestrator reads at
+> slot-fill time — so nothing was lost. The same principle keeps the guide block short: its field specs
+> live in the **`Github Dispatch Usecase` connector Swagger descriptions** (§11), not here.
+>
+> ⚠️ This deletion touches the **V1 copy rules locked 3 Aug**. If Teams copy ever degrades (caps
+> exceeded, hook copying the headline, a "Why it matters at i2e:" sentence returning), **repair the
+> tool's input descriptions — do not re-add the bullets.**
+>
+> The discovery-source list is likewise absent by design: the agent's **website knowledge sources** are
+> the only roster, which keeps sources changeable without an Instructions edit (FR-A8). The trade-off
+> is that **a source not added there is invisible to guide discovery**, however it reads in
+> `playbook-sources.json`.
+
+---
+
+## 11. AI Guide mode — the Playbook write path (FR-U1–U6)
+
+> ✅ **Live and verified end-to-end 14 Aug 2026.** Discovery → curator selection → confirmation gate →
+> `publish-usecase` dispatch → `data/usecases.json` → Teams post with a resolving team-mention ping,
+> authored by **AI LAB**. Built against the **TEST** group (`i2e News Test`).
+
+The AI Guide (Playbook) is a **second mode on the same agent** — no new agent (BRD addendum D4). It
+publishes community-sourced AI *techniques* rather than news. The spec is
+[`usecases-brd-addendum-DRAFT.md`](usecases-brd-addendum-DRAFT.md); this section is the buildable
+half, and it assumes §3–§5 (the news path) as its template.
+
+**What already existed repo-side before any agent work** — the whole read + write chain was built and
+needed **no changes** for the agent to use it: [`data/usecases.json`](../data/usecases.json) + its
+schema, the `usecase` target in [`upsert-article.mjs`](../scripts/upsert-article.mjs), the
+`publish-usecase` branch of [`publish.yml`](../.github/workflows/publish.yml), and the reader
+(`playbook.html` / `usecase.html`, filters, sanctioned-tools toggle, disclaimer).
+
+### 11.1 Design decisions (PO, 12–14 Aug 2026)
+
+| # | Decision | Rationale |
+|---|----------|-----------|
+| G1 | **Second mode on the existing agent** | BRD addendum D4. Shares discovery, gate patterns, and Instructions. |
+| G2 | **On-demand discovery only — no scheduled digest** | The curator prompts; the agent never pushes content. **FR-U2's weekly trigger was dropped**, so the PoC's no-triggers fence stays intact and the guide path stays inside the proven news pattern. |
+| G3 | **Both entry paths**: candidate list *and* curator-supplied URL | A direct URL skips the list and drafts immediately. |
+| G4 | **`curatorVerified` discarded** | The agent never sends it; the upsert defaults it to `false`, which still satisfies the schema's `required`. No FR-U13 badge is built. |
+| G5 | **Guide posts fire the @everyone team mention**, same as news | Maximum reach; accepted notification cost. |
+| G6 | **Separate connector and separate flow** — not extensions of the news ones | Protects **SC-U7** (news path regression-free). Editing the live `Github Dispatch` Swagger or the working `Post to Teams` flow would put the only proven publish path at risk for no gain. |
+
+### 11.2 The four tenant pieces
+
+| # | Piece | Notes |
+|---|-------|-------|
+| 1 | Custom connector **`Github Dispatch Usecase`** | Host `api.github.com`, API-key auth (`Authorization` = `Bearer <PAT>`), one `PublishUsecase` POST to `/repos/AK-1096/i2e-News/dispatches`. Same fine-grained PAT as `Github Dispatch`. |
+| 2 | Tool **`PublishUsecase`** | 3 fixed + 9 AI-filled inputs (11.4). |
+| 3 | Instructions — **AI Guide mode** block | §10, appended after the news Tone paragraph. |
+| 4 | Agent flow **`Post guide to Teams`** | 11.5. Reuses the `i2e ALerts Teams Graph` connector + ailab connection. |
+
+> **Why a second connector rather than a second action on `Github Dispatch`:** Swagger 2.0 keys
+> operations by path + method, and `PublishArticle` already owns `POST /repos/AK-1096/i2e-News/dispatches`.
+> A second POST on that identical path is not expressible. *(A `?target=usecase` query-suffix hack
+> would work, but it means editing the only proven publish path — rejected.)*
+
+### 11.3 🔴 The ten-property cap — the bug that shaped the payload
+
+**GitHub accepts at most TEN top-level properties in a `repository_dispatch` `client_payload`.** An
+eleventh fails the whole dispatch with **422 "Invalid request."** before any workflow run starts.
+
+The use-case contract has **14** fields, so the naive flat payload failed every time. Evidence that
+pinned it, all three consistent:
+
+| Payload | Top-level keys | Result |
+|---|---|---|
+| News `publish-article` | 9 | ✅ works, always has |
+| Hand-built connector test | **exactly 10** | ✅ 204 |
+| Agent `PublishUsecase` (flat) | **14** | ❌ 422 |
+
+⚠️ **The connector test passing was a coincidence** — it happened to omit the four optional fields and
+landed exactly on the limit. That made the connector look healthy while the agent failed, and cost
+real time. When a hand test disagrees with the agent, **count the properties before theorising.**
+
+**The fix — group on the wire only.** Two nested objects bring it to **9** top-level keys:
+
+```
+id · title · tools · category
+content { whatItDoes, whatItImproves, howToTry }
+origin  { url, platform, author, publishedDate }
+difficulty · audience · relevance
+```
+
+`data/usecases.json` and its schema are **unchanged** — the grouping exists only in transit.
+`publish.yml` passes each group whole via `toJSON`, and `upsert-article.mjs` destructures them with
+the existing `parseObject`, which already tolerates both a real object and the double-encoded JSON
+string Copilot Studio sends. The flat `UC_*` variables still work, so hand-built dispatches are
+unaffected.
+
+> 🔴 **The group is named `origin`, NOT `source`.** The news branch reads `client_payload.source` as a
+> **string**, and **GitHub evaluates every step's `env:` block even when its `if:` skips the step** —
+> so an object under that key fails the entire run at template evaluation with
+> *"The template is not valid … A mapping was not expected"*. The step never runs and nothing is
+> written. Remaining shared keys are safe: `id`/`title` are strings on both paths, and
+> `audience`/`relevance` pass through `toJSON` on both.
+
+> **Diagnostics: `publish.yml` now logs the dispatch payload** before upserting — the top-level key
+> count against the cap, then every nested object's inner keys, then the full payload. Two of the
+> three transport bugs here were diagnosed by guesswork; this step exists so the next one is read, not
+> guessed. **Check it first when a guide publish misbehaves.**
+
+### 11.4 The `PublishUsecase` tool
+
+**3 fixed inputs:** `Accept` = `application/vnd.github+json` · `X-GitHub-Api-Version` = `2022-11-28` ·
+`event_type` = `publish-usecase`.
+
+**9 AI-filled inputs** (all *Dynamically fill with AI*): `id`, `title`, `tools`, `category`,
+`content`, `origin`, `difficulty`, `audience`, `relevance`.
+
+**Not present:** `curatorVerified` (G4) and `addedDate` — both defaulted repo-side, both still
+schema-valid.
+
+**Field guidance lives in the connector Swagger `description` of each property, not in Instructions**
+(the §10 ceiling note explains why). `content`, `origin`, and `relevance` are each declared
+**`type: object` with a `description` and NO enumerated `properties`** — the same property-less shape
+that fixed the `relevance` force-prompt on the news tool (§4). Copilot Studio then renders each as a
+single `Any` input and the picker offers no leaves.
+
+✅ **Verify when rebuilding:** if the input picker offers `content.whatItDoes`, `origin.url`,
+`whyRelevant`, etc. as separate addable inputs, **the property-less Swagger edit did not land** —
+adding those leaves re-opens the force-prompt regression.
+
+⚠️ **All the §3 Step 6 reset traps apply identically** — *Ask before running* = Yes with a
+**non-empty confirmation message** (empty hard-fails with `InvalidContent`), and **maker credentials**
+rather than end-user.
+
+⚠️ **Tool inputs never auto-sync with the connector Swagger.** Editing the Swagger never makes a field
+appear on the tool — you must **Add input** and name the payload path. **An input missing from the
+list means "not added yet", not "rejected by the schema".** Hit again on 14 Aug: `content` was added
+but **`origin` was not**, and the run failed with *"missing required field(s): sourceUrl,
+sourcePlatform, publishedDate"* — all three of which come from `origin`.
+
+### 11.5 The `Post guide to Teams` flow
+
+A **separate** agent flow from the news `Post to Teams` (G6), reusing the `i2e ALerts Teams Graph`
+custom connector and the **ailab-owned connection** — the connection owner is the message author, so
+posts appear as **AI LAB**.
+
+Same shape as §3 Step 7: three plain-text inputs → three encode Composes → one `ContentHtml` concat →
+the Graph action. **The flow owns the markup; the model only supplies plain text.**
+
+1. **Trigger — `When an agent calls the flow`**, with three Text inputs in creation order:
+   `GuideTitle`, `GuideSummary`, `GuideUrl` → keys `text`, `text_1`, `text_2`.
+2. **`EncodeTitle` / `EncodeSummary` / `EncodeUrl`** — HTML-encode in the order `&` → `<` → `>` → `"`
+   (`&` first, or you double-encode what you just wrote); `EncodeSummary` also strips CR/LF.
+3. **`ContentHtml`** — one `concat()` built in the **fx editor**:
+   ```
+   concat('<at id="0">i2e News Test</at><br><br>🧠 <b>New in the AI Guide</b><br><br><b>',outputs('EncodeTitle'),'</b><br><br>',outputs('EncodeSummary'),'<br><br>🔗 <a href="',outputs('EncodeUrl'),'">Open the guide →</a>')
+   ```
+4. **`Post channel message`** — `Content-Type` = `application/json`, `body/body/contentType` = `html`,
+   `body/body/content` = `outputs('ContentHtml')`, and the `body/mentions` array with `@@odata.type`,
+   `conversationIdentityType: "team"`, and the target team's id + name.
+
+> 🔴 **Trigger kind decides whether the agent can see the flow at all.** Built with
+> **"Manually trigger a flow"** (a *button* trigger), the flow published fine and ran fine — but an
+> agent cannot invoke a button trigger, so it **never appeared in Add tool → Flow**. The tell is
+> comparing the trigger card against the working flow: *"When an agent calls the flow"* vs
+> *"Manually trigger a flow"*. ⚠️ **Solution scope (`ca_agent`) was chased first and was NOT the
+> cause** — check the trigger before the solution. Fix = delete the trigger, add the agent trigger,
+> re-add the three inputs **in order** so the keys hold, then re-verify each Encode still resolves.
+
+> 🔴 **`Content-Type` is the HTTP header, not the message body type.** Setting it to `html` fails with
+> *"The provided content-type header value 'html' is not well formed."* Two different fields:
+> **`Content-Type` = `application/json`** (the request header) and **`body/body/contentType` = `html`**
+> (the Teams body). The call 400s, so nothing is posted anywhere.
+
+> ⚠️ **`@@odata.type` — keep the double `@`.** Power Automate reads a leading `@` as an expression
+> start; the escaped form serialises back to a single `@odata.type` on the wire (confirmed in the raw
+> inputs). This is the load-bearing fix for the whole Graph body, in this flow exactly as in the news
+> one.
+
+> 🔴 **The env swap now spans 5 fields across 3 tools**, because this flow carries its own `<at>` text
+> and its own `mentions` block. Swapping only the news flow leaves guide posts mentioning the other
+> environment's team — the post still sends, the pill silently fails to resolve, nobody is pinged.
+> Procedure: [`teams-env-id-swap.md`](teams-env-id-swap.md).
+
+### 11.6 Discovery (FR-U1, on demand only)
+
+The curator prompts (*"show me the latest AI guide items"*, a topic, or a URL); the agent returns 5–10
+numbered candidates with title, source, platform, and a one-line gist, then stops. The roster is the
+agent's **website knowledge sources**, mirrored in
+[`playbook-sources.json`](../data/playbook-sources.json) — keep the two in sync; `enabled: true` in
+that file means *configured on the agent today*, not *intended*.
+
+Observed on the first real run (14 Aug), worth setting expectations by:
+- **Reddit and YouTube channel pages crawl poorly.** Of four enabled sources, **Stanford Online and
+  r/ClaudeAI returned nothing**; AI Engineer and aihero.dev carried the list. Prefer text-heavy blog
+  and newsletter sources when adding to the roster.
+- **The source fence is soft** — built-in web search reaches outside the roster (a dev.to item
+  appeared). Harmless for SC-U6, which only requires D2-platform *types*, but do not read the roster
+  as a whitelist.
+- ⚠️ **Candidate gists are unreliable; drafted entries are not.** One candidate was summarised as
+  "retrieval strategies, chunking, failure modes"; the source was actually about voice-dictation into
+  a self-updating wiki. Gists come from search snippets, entries come from reading the source.
+  **Judge candidates loosely, judge the gate strictly.**
+- **One source can yield several entries** — two separate techniques were mined from a single
+  listicle, each a valid standalone entry.
+
+### 11.7 What to check at the confirmation gate
+
+Beyond the news checks (§3 Step 5), guide entries have two failure modes of their own:
+
+- **Imprecise source dates.** Candidates often carry only "Jul 2026". `publishedDate` must be
+  `YYYY-MM-DD`, so the agent invents a day — and that date is **baked into the `id` slug permanently**
+  (§5). Check it before approving.
+- **Video sources and `howToTry`.** A conference talk has little indexable text, so reproduction steps
+  are the most likely place to confabulate. Confirm the steps are actually supported by the source.
+  *(In practice this held up well — a YouTube-sourced entry produced real specifics including the exact
+  install command — but it remains the field most worth reading.)*
+
+Also confirm `tools` uses the canonical labels from
+[`sanctioned-tools.json`](../data/sanctioned-tools.json) where they apply, or the sanctioned-only
+toggle on the reader will not match (FR-U12).
+
+### 11.8 Acceptance
+
+Run the addendum's SC-U1→U7. **SC-U1 is not applicable** — the weekly digest was dropped (G2); the
+equivalent check is that an on-demand prompt returns 5–10 candidates. **SC-U7 is the gate that
+matters**: an end-to-end news publish must still pass §7 unchanged.
+
+> ⚠️ **A "published!" message from the agent is not proof.** The publish tool returns **204** — the
+> dispatch was accepted, nothing more. During the `origin` bug the agent reported *"AI Guide entry
+> published!"* while the workflow had already failed and nothing had been written. **Verify in
+> `data/usecases.json` and the Actions run, never in the agent's reply.**
