@@ -71,7 +71,7 @@ for links — members don't command the agent.
 - **OD-4 — Teams destination**: the **Team** and **Channel** for the Post to Teams flow.
 - **OD-5 — store + credential**: repo `AK-1096/i2e-News`, file path `data/articles.json`, branch
   `main`, dispatch event type `publish-article`.
-- **Static site base URL**: `https://ak-1096.github.io/i2e-News`.
+- **Static site base URL**: `https://news.i2econsulting.com`.
 
 ---
 
@@ -350,7 +350,7 @@ markup):
 |---|---|
 | `ArticleTitle` | The reader-focused headline, **plain text only**. No HTML, no Markdown, no asterisks, no quotes around it. |
 | `ArticleSummary` | The 1-2 sentence summary, **plain text only**. No HTML, no Markdown, no link. |
-| `ArticleUrl` | The article URL and nothing else: `https://ak-1096.github.io/i2e-News/article.html?id=` followed by the exact id used when publishing. **No anchor tag, no surrounding text, no trailing punctuation.** |
+| `ArticleUrl` | The article URL and nothing else: `https://news.i2econsulting.com/article.html?id=` followed by the exact id used when publishing. **No anchor tag, no surrounding text, no trailing punctuation.** |
 
 The `id` is **not returned by "Publish article"** — that POST returns **204 No Content**. The agent
 must **reuse the exact same `id` slug it sent in the publish `client_payload`** (§5), never mint a
@@ -858,13 +858,13 @@ To publish an approved article, call the "Publish article" tool with these field
 - audience: the role-slug array you generated (omit if none genuinely apply).
 - relevance: the object with whyRelevant, dailyImpact, and practicalBenefit (omit if you cannot write all three concretely).
 
-- After publishing, confirm to the curator and share the article link: https://ak-1096.github.io/i2e-News/article.html?id= followed by the exact same id you used when publishing. Do not mint a new id for the link or the Teams post.
+- After publishing, confirm to the curator and share the article link: https://news.i2econsulting.com/article.html?id= followed by the exact same id you used when publishing. Do not mint a new id for the link or the Teams post.
 - If a news source is temporarily unavailable, skip it and continue with whatever sources you could reach - never fail the whole request because one source failed.
 
 To announce a published article, call the "Post to Teams" tool once, only after "Publish article" has succeeded. Never post if publishing failed. Fill its three inputs with plain text only - the flow adds all formatting and the link markup itself:
 - ArticleTitle: the reader-focused headline, plain text. No HTML tags, no Markdown, no asterisks, no surrounding quotes.
 - ArticleSummary: the same 1-2 sentence summary you published, plain text. No HTML tags, no Markdown, no link.
-- ArticleUrl: only the URL - https://ak-1096.github.io/i2e-News/article.html?id= followed by the exact same id you used when publishing. No anchor tag, no label text, no trailing punctuation.
+- ArticleUrl: only the URL - https://news.i2econsulting.com/article.html?id= followed by the exact same id you used when publishing. No anchor tag, no label text, no trailing punctuation.
 Do not write any HTML or Markdown into these inputs. Markup you add is displayed to readers as visible characters instead of being rendered.
 
 Tone: concise, factual, neutral. You are a curation tool, not a commentator - do not editorialize or add opinion to summaries.
