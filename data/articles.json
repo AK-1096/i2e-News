@@ -1,5 +1,25 @@
 [
   {
+    "id": "fiercebiotech-icon-anthropic-claude-clinical-trials-2026-08-04",
+    "title": "ICON deploys Claude across clinical trials: what it means when the world's largest CRO goes all-in on AI",
+    "url": "https://www.fiercebiotech.com/cro/icon-inks-anthropic-partnership-deploy-claude-clinical-trials",
+    "source": "Fierce Biotech",
+    "summary": "ICON plc, the world's largest contract research organization, has announced a multi-year collaboration with Anthropic to deploy Claude across its agentic AI platform Orbis, covering site selection intelligence, real-time enrollment risk detection, protocol optimization, and client ecosystem integration. The deal responds to a structural problem that delays up to 80% of clinical trials — study enrollment — and will roll out Claude Code for developers, Claude for knowledge teams, and Claude Science for clinical staff across ICON's 40,000-person organization.",
+    "topic": "Latest",
+    "publishedDate": "2026-08-04",
+    "addedDate": "2026-09-03",
+    "audience": [
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "When preparing a client status update or scoping a validation project for a pharma sponsor, you can cite ICON's role-based Claude rollout — Claude Code for developers, Claude Science for clinical teams — as a live GxP-adjacent example of how AI is being stratified by function at scale.",
+      "practicalBenefit": "The partnership gives you a named, production CRO deployment to reference when advising pharma clients on AI readiness for clinical operations, turning a generic AI-in-trials conversation into a concrete, attributable case study.",
+      "whyRelevant": "ICON is the world's largest CRO, and its enterprise-wide Claude deployment sets a precedent that your pharma clients — who commission ICON or competing CROs — will encounter in contract discussions, vendor assessments, and system integration conversations on active projects."
+    }
+  },
+  {
     "id": "anthropic-expanding-support-scientists-2026-08-27",
     "title": "Point pharma clients to free Claude access: Anthropic opens 10,000 scientist seats with auditable research tools",
     "url": "https://www.anthropic.com/news/expanding-support-for-scientists",
