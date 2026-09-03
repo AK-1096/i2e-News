@@ -1,5 +1,27 @@
 [
   {
+    "id": "techcrunch-claude-fable-5-1-less-restrictive-2026-09-01",
+    "title": "Fable 5.1 blocks fewer legitimate professional queries — use it now for clinical and validation work",
+    "url": "https://techcrunch.com/2026/09/01/anthropics-new-fable-release-is-cheaper-less-restrictive/",
+    "source": "TechCrunch",
+    "summary": "Claude Fable 5.1 cuts costs by approximately 25% for typical workloads and up to 45% for highly agentic tasks, while also significantly reducing the false-positive safety restrictions that previously interrupted legitimate professional queries — making the model more reliable for enterprise and regulated-environment use without changing actual safety limits.",
+    "topic": "Latest",
+    "publishedDate": "2026-09-01",
+    "addedDate": "2026-09-03",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can now run Claude on clinical terminology, validation document sections, and pharma regulatory language with fewer unexpected refusals, because Fable 5.1 explicitly addresses the over-restriction problem that affected previous versions on professional scientific and regulated-industry content.",
+      "practicalBenefit": "Fewer false-positive blocks means fewer interruptions in agentic workflows used for validation document drafting or client status updates, and the cost reduction of up to 45% on agentic tasks means more AI-assisted work can fit within the same project budget.",
+      "whyRelevant": "When using Claude Fable 5.1 to draft validation protocols or review clinical data documents, the reduced rate of false safety blocks means you spend less time rewording legitimate queries and more time on the actual deliverable."
+    }
+  },
+  {
     "id": "techcrunch-openai-copyright-training-2026-09-02",
     "title": "U.S. government backs AI training on copyrighted data — what it means for the tools your clients rely on",
     "url": "https://techcrunch.com/2026/09/02/u-s-government-sides-with-openai-on-issue-of-training-llms-on-copyrighted-material/",
