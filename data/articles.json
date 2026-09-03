@@ -1,5 +1,25 @@
 [
   {
+    "id": "anthropic-enterprise-ai-services-2026-05-04",
+    "title": "Anthropic is building its own AI services firm for mid-sized pharma and healthcare clients — know how it shifts the competitive landscape",
+    "url": "https://www.anthropic.com/news/enterprise-ai-services-company",
+    "source": "Anthropic",
+    "summary": "Anthropic has formed a new AI services company backed by Blackstone, Hellman & Friedman, and Goldman Sachs to embed Applied AI engineers directly inside mid-sized companies — including healthcare networks and manufacturers — building custom Claude-powered systems tailored to each organisation's operations. The initiative extends Anthropic's delivery capacity beyond its existing consulting-firm partner network and explicitly targets companies that lack in-house resources to build and run frontier AI deployments.",
+    "topic": "Latest",
+    "publishedDate": "2026-05-04",
+    "addedDate": "2026-09-03",
+    "audience": [
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "When scoping a Claude deployment or preparing an AI strategy proposal for a pharma account, you can reference this firm's engagement model — small expert teams, workflow-first scoping, clinician-facing tools — as a benchmark for how Anthropic-backed delivery will approach the same clients you are pitching.",
+      "practicalBenefit": "Knowing Anthropic now builds its own delivery capacity for mid-sized regulated-sector clients gives you a concrete data point for partner-positioning conversations and helps i2e leadership identify where to differentiate — in GxP expertise, validation knowledge, and domain-specific pharma workflow design — beyond tool access alone.",
+      "whyRelevant": "Anthropic's new forward-deployed services firm targets the same mid-sized pharma, healthcare, and manufacturing clients i2e serves, embedding Applied AI engineers directly into client operations — a delivery model that competes in the same space as consulting firms in the Claude Partner Network."
+    }
+  },
+  {
     "id": "techcrunch-claude-fable-5-1-less-restrictive-2026-09-01",
     "title": "Fable 5.1 blocks fewer legitimate professional queries — use it now for clinical and validation work",
     "url": "https://techcrunch.com/2026/09/01/anthropics-new-fable-release-is-cheaper-less-restrictive/",
