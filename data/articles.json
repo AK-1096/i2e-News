@@ -1,5 +1,25 @@
 [
   {
+    "id": "anthropic-expanding-support-scientists-2026-08-27",
+    "title": "Point pharma clients to free Claude access: Anthropic opens 10,000 scientist seats with auditable research tools",
+    "url": "https://www.anthropic.com/news/expanding-support-for-scientists",
+    "source": "Anthropic",
+    "summary": "Anthropic has opened 10,000 free and discounted Claude Team plan seats for academic and nonprofit scientists — standard seats free, premium seats at $15/month — alongside an expansion of its AI for Science credit program (up to $50,000 per project) to fields beyond biology. A parallel program, developed in partnership with the US government, is being established to give life sciences R&D professionals access to Anthropic's most capable Mythos-class models, with first participants already enrolled.",
+    "topic": "Latest",
+    "publishedDate": "2026-08-27",
+    "addedDate": "2026-09-03",
+    "audience": [
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "When preparing a client status update or AI tool recommendation for a pharma account, you can reference this program as a concrete, low-friction route for your client's research collaborators to access auditable Claude research tools without a standard procurement cycle.",
+      "practicalBenefit": "Knowing that a government-partnered Mythos-class access program for life sciences R&D professionals is already enrolling participants gives you a specific, forward-looking data point to include in client AI roadmap discussions, keeping i2e's advice grounded in the fastest-moving access and compliance changes in the sector.",
+      "whyRelevant": "Your pharma and life sciences clients may have academic or nonprofit research partners who now qualify for free Claude access, and the Mythos-class model access program Anthropic is building with the US government is specifically designed for professional life sciences R&D work — a development directly relevant to the AI tool conversations you have with regulated-sector clients."
+    }
+  },
+  {
     "id": "techcrunch-openai-astra-recurrent-depth-2026-09-02",
     "title": "Ask vendors about chain-of-thought visibility before deploying OpenAI's next model on client systems",
     "url": "https://techcrunch.com/2026/09/02/openais-new-reasoning-technique-alarms-ai-safety-experts/",
