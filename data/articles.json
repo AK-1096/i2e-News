@@ -1,5 +1,27 @@
 [
   {
+    "id": "explainx-fable-5-1-benchmarks-tips-2026-09-02",
+    "title": "Get more from Fable 5.1 for less: confirmed benchmarks, real pricing math, and effort-level tips",
+    "url": "https://www.explainx.ai/blog/claude-fable-5-1-mythos-5-1-launch-benchmarks-pricing-2026",
+    "source": "explainx.ai",
+    "summary": "A detailed third-party breakdown of Claude Fable 5.1 that separates independently confirmed benchmarks — CursorBench 73.4% verified directly by Cursor — from self-reported vendor numbers, and explains exactly where the cost savings land: a 75% cut to cache reads that compounds fast on agentic workloads. Practical tips include running at low effort to match Fable 5's high-effort results at roughly a third of the cost, using the new mid-conversation effort-switching beta to raise effort only on hard steps, and the explicit fix Anthropic shipped for the verbose jargon-heavy writing style that dogged Fable 5 since June.",
+    "topic": "Latest",
+    "publishedDate": "2026-09-02",
+    "addedDate": "2026-09-03",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "Running Fable 5.1 at low effort on routine tasks like client status updates or first-draft validation sections now matches Fable 5 at high effort for roughly a third of the cost — a concrete saving you can apply to every agentic session today.",
+      "practicalBenefit": "The effort-level guidance and mid-conversation effort-switching beta give you a practical toolkit to get Fable-class quality on demanding GxP document work while spending significantly less on routine steps within the same session.",
+      "whyRelevant": "i2e employees use Claude Fable 5.1 daily for drafting validation documents, client deliverables, and code — this guide separates independently confirmed performance gains from vendor-reported numbers and shows exactly where the real cost savings apply."
+    }
+  },
+  {
     "id": "techcrunch-hiddenlayer-ai-security-2026-09-02",
     "title": "Add AI runtime security to your client deployment checklist — enterprises now spend $2.83B a year protecting AI agents",
     "url": "https://techcrunch.com/2026/09/02/hiddenlayer-nabs-100m-as-enterprises-rush-to-secure-their-ai-deployments/",
