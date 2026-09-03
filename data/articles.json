@@ -1,5 +1,25 @@
 [
   {
+    "id": "healthcareitnews-ai-audit-trail-governance-2026-09-02",
+    "title": "Build your AI audit trail now: what pharma and healthcare orgs must track before regulators arrive",
+    "url": "https://www.healthcareitnews.com/news/build-ai-audit-trail-now-anyone-asks-it",
+    "source": "Healthcare IT News",
+    "summary": "Governance experts and attorneys warn healthcare and life-sciences organizations not to wait for regulatory clarity on AI-generated data: every AI artifact must have a named owner, organizations must track model and prompt versions to reconstruct what a tool produced at a specific point in time, and audit trails must span the full chain from generation through clinician or staff review to final adoption or rejection. The article sets out a cross-disciplinary governance framework — covering vendor contracts, retention schedules, legal hold processes, and board-level oversight — that applies directly to any organization deploying AI in a regulated environment.",
+    "topic": "Latest",
+    "publishedDate": "2026-09-02",
+    "addedDate": "2026-09-03",
+    "audience": [
+      "qa",
+      "ba-pc",
+      "pm"
+    ],
+    "relevance": {
+      "dailyImpact": "When scoping an AI tool deployment for a pharma client, you can draw on this article's governance checklist — named artifact owners, model and prompt version tracking, contractual vendor-update notice requirements — to add a defensible AI governance section to your validation plan or client status update.",
+      "practicalBenefit": "Providing clients with a concrete AI audit-trail framework that captures model versions, retention schedules, and chain-of-custody from generation through review positions i2e as a compliance-ready partner and gives pharma clients a structured defence when EU AI Act auditors, regulators, or litigation counsel arrive.",
+      "whyRelevant": "When you deliver AI-assisted validation documents or GxP data-handling systems for pharma clients, this article addresses the governance gap your clients face: how to track model versions, assign named ownership to every AI-generated artifact, and demonstrate compliance before regulators or litigants ask."
+    }
+  },
+  {
     "id": "techcrunch-nvidia-hugging-face-confirmed-2026-09-03",
     "title": "Nvidia's Hugging Face acquisition is confirmed: review your open-model dependencies before ownership changes",
     "url": "https://techcrunch.com/2026/09/03/nvidia-confirms-it-will-buy-hugging-face-for-12-9-billion/",
