@@ -1,5 +1,25 @@
 [
   {
+    "id": "techcrunch-openai-copyright-training-2026-09-02",
+    "title": "U.S. government backs AI training on copyrighted data — what it means for the tools your clients rely on",
+    "url": "https://techcrunch.com/2026/09/02/u-s-government-sides-with-openai-on-issue-of-training-llms-on-copyrighted-material/",
+    "source": "TechCrunch",
+    "summary": "The U.S. government has filed a legal position supporting OpenAI's use of copyrighted material to train large language models, signalling that federal authorities view AI training on publicly available data as consistent with fair use. The stance could significantly reduce litigation risk for major AI vendors and stabilise the legal foundation underlying tools such as ChatGPT, Claude, and M365 Copilot that enterprises — including pharma clients — rely on daily.",
+    "topic": "Latest",
+    "publishedDate": "2026-09-02",
+    "addedDate": "2026-09-03",
+    "audience": [
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "If a client raises IP concerns about using AI-generated content in a validation document or regulatory submission, you can now cite the federal government's legal position as a concrete, authoritative data point rather than relying on vendor assurances alone.",
+      "practicalBenefit": "Reduced litigation risk for the major AI vendors your pharma clients use means vendor-continuity arguments in GxP tool assessments now carry stronger legal backing, making it easier to defend AI tool adoption decisions in governance and procurement reviews.",
+      "whyRelevant": "When assessing AI tool vendor risk for a pharma client, the U.S. government's published fair-use position on AI training data directly affects how you frame IP risk in procurement assessments and vendor evaluations you include in client status updates."
+    }
+  },
+  {
     "id": "techcrunch-openai-astra-cyber-2026-09-01",
     "title": "OpenAI's Astra can autonomously break into computer systems — scope your AI tool permissions before it ships",
     "url": "https://techcrunch.com/2026/09/01/open-ais-astra-model-is-on-the-way-and-very-good-at-breaking-into-computer-systems/",
