@@ -1,5 +1,25 @@
 [
   {
+    "id": "techcrunch-openai-astra-cyber-2026-09-01",
+    "title": "OpenAI's Astra can autonomously break into computer systems — scope your AI tool permissions before it ships",
+    "url": "https://techcrunch.com/2026/09/01/open-ais-astra-model-is-on-the-way-and-very-good-at-breaking-into-computer-systems/",
+    "source": "TechCrunch",
+    "summary": "OpenAI's upcoming Astra model has demonstrated strong autonomous cybersecurity capabilities, including the ability to break into computer systems, according to TechCrunch reporting from September 1, 2026. The development raises concrete questions for enterprises about how much system access frontier AI models should be granted, particularly in environments handling sensitive or regulated data.",
+    "topic": "Latest",
+    "publishedDate": "2026-09-01",
+    "addedDate": "2026-09-03",
+    "audience": [
+      "developers",
+      "qa",
+      "pm"
+    ],
+    "relevance": {
+      "dailyImpact": "Before granting any AI agent broad access to a client's validated IT environment, you can cite Astra's demonstrated offensive capabilities as the concrete reason to scope permissions tightly and require audit logs on every tool call the agent makes.",
+      "practicalBenefit": "Adding a named-model risk reference to your AI agent deployment checklist — specifically that Astra-class models can autonomously exploit system access — gives pharma clients a defensible, evidence-backed control requirement to include in GxP system validation documentation.",
+      "whyRelevant": "When you assess or specify AI tool deployments for pharma clients, a frontier model with confirmed autonomous system-intrusion capabilities changes what least-privilege access controls you must document in your validation plans and vendor risk assessments."
+    }
+  },
+  {
     "id": "healthcareitnews-ai-audit-trail-governance-2026-09-02",
     "title": "Build your AI audit trail now: what pharma and healthcare orgs must track before regulators arrive",
     "url": "https://www.healthcareitnews.com/news/build-ai-audit-trail-now-anyone-asks-it",
