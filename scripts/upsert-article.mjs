@@ -41,6 +41,7 @@ const TARGETS = {
       relevance: () => parseObject(process.env.ART_RELEVANCE),
     },
     required: ["id", "title", "url", "source", "summary", "topic", "publishedDate", "addedDate"],
+    urlField: "url", // the stable identity key — see the URL-collision guard below
   },
   usecase: {
     file: join(ROOT, "data", "usecases.json"),
@@ -70,6 +71,7 @@ const TARGETS = {
       "id", "title", "tools", "category", "whatItDoes", "whatItImproves", "howToTry",
       "sourceUrl", "sourcePlatform", "curatorVerified", "publishedDate", "addedDate",
     ],
+    urlField: "sourceUrl", // the stable identity key — see the URL-collision guard below
   },
 };
 
@@ -136,6 +138,40 @@ function parseBool(raw) {
 const ucContent = () => parseObject(process.env.UC_CONTENT) || {};
 const ucOrigin = () => parseObject(process.env.UC_ORIGIN) || {};
 
+// Query keys that identify a *referral*, not a document — two links differing only by these point at
+// the same article. Anchored so `ref_src` matches but a meaningful `reference` param does not.
+const TRACKING_PARAM = /^(utm_[a-z_]*|fbclid|gclid|mc_cid|mc_eid|igshid|ref_src|si)$/i;
+
+// Reduce a URL to a comparison key for the collision guard below. Scheme and fragment are dropped
+// (http/https serve the same article; `#section` is a position within one page, not another page),
+// `www.` and a trailing slash are stripped, tracking params are removed, and the survivors are
+// sorted so param order cannot disguise a duplicate. Host and path are lowercased: article URLs are
+// effectively case-insensitive in practice, and a missed duplicate is silent while a false match is
+// loud and overridable. An unparseable value is compared verbatim rather than guessed at.
+function normalizeUrl(raw) {
+  const s = String(raw ?? "").trim();
+  if (s === "") return "";
+  let u;
+  try {
+    u = new URL(s);
+  } catch {
+    return s.toLowerCase();
+  }
+  const host = u.hostname.toLowerCase().replace(/^www\./, "");
+  const path = u.pathname.replace(/\/+$/, "").toLowerCase();
+  const params = [...u.searchParams.entries()]
+    .filter(([k]) => !TRACKING_PARAM.test(k))
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+  const query = params.length ? `?${params.map(([k, v]) => `${k}=${v}`).join("&")}` : "";
+  return `${host}${path}${query}`;
+}
+
+// Titles are model-generated prose, so compare them on words alone — punctuation, casing and
+// spacing vary between two generations of the same headline without changing what it says.
+function normalizeTitle(raw) {
+  return String(raw ?? "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
 function isEmpty(v) {
   if (v == null) return true;
   if (Array.isArray(v)) return v.length === 0;
@@ -187,6 +223,51 @@ async function main() {
   if (!Array.isArray(records)) {
     console.error(`upsert-${target.label}: ${target.file} is not a JSON array`);
     process.exit(1);
+  }
+
+  // --- Duplicate guard --------------------------------------------------------
+  // Why this exists: the `id` slug is model-minted from source + short title + publishedDate, and the
+  // agent invents a day when a source carries only a month (runbook §11.7). So the SAME item
+  // rediscovered on a later run can mint a DIFFERENT id, which the upsert-by-id below would accept as
+  // a brand-new record — a duplicate on the reader and, once publishing is automated, a duplicate
+  // @everyone Teams ping. Comparing ids alone cannot catch that.
+  //
+  // ⚠️ But a shared URL is NOT by itself a duplicate, and must never hard-fail. One source page
+  // legitimately yields several distinct entries — runbook §11.6 records exactly this ("one source
+  // can yield several entries"), and both contracts already contain such groups: a roundup post and
+  // a TechCrunch *category* page each back two separate articles, and one dev.to listicle backs two
+  // separate techniques. Failing on URL would break roundup mining and would also block the
+  // idempotent republish of every record already sitting in one of those groups (SC-U7).
+  //
+  // So the signal is split by how unambiguous it is:
+  //   same URL + same title, different id  -> a true duplicate. Fail before anything is written.
+  //   same URL, different title            -> the legitimate roundup pattern. Warn only.
+  // The warning lands in the workflow log, which publish.yml treats as the record of what the model
+  // actually sent, so an accidental duplicate stays visible after the fact.
+  const incomingUrl = normalizeUrl(record[target.urlField]);
+  if (incomingUrl !== "") {
+    const sharesUrl = records.filter(
+      (r) => r && r.id !== record.id && normalizeUrl(r[target.urlField]) === incomingUrl,
+    );
+    const twin = sharesUrl.find((r) => normalizeTitle(r.title) === normalizeTitle(record.title));
+    if (twin) {
+      console.error(
+        `upsert-${target.label}: duplicate — ${record[target.urlField]} is already published as ` +
+        `"${twin.id}" under the same title, but this payload carries id "${record.id}".`,
+      );
+      console.error(
+        `upsert-${target.label}: refusing to write it. Republish under id "${twin.id}" to update ` +
+        `the existing record.`,
+      );
+      process.exit(1);
+    }
+    if (sharesUrl.length > 0) {
+      console.warn(
+        `upsert-${target.label}: note — ${sharesUrl.length} existing record(s) share this URL ` +
+        `(${sharesUrl.map((r) => `"${r.id}"`).join(", ")}). Titles differ, so this is treated as a ` +
+        `distinct item from the same source. Verify that is intended.`,
+      );
+    }
   }
 
   const existingIndex = records.findIndex((r) => r && r.id === record.id);
