@@ -1,5 +1,37 @@
 [
   {
+    "id": "blog-structured-output-prompting-2026-05-23",
+    "title": "Pin down the output format before the model writes anything",
+    "tools": [
+      "ChatGPT",
+      "Claude",
+      "M365 Copilot"
+    ],
+    "category": "prompting-technique",
+    "whatItDoes": "Structured output prompting means telling the model exactly what shape its response must take — headers, JSON fields, table columns, numbered lists, or a fixed schema — before it writes a single word of content. Instead of asking for 'a summary', you supply the precise structure: field names, order, length limits, and any mandatory sections. The model then fills that skeleton rather than inventing its own layout.",
+    "whatItImproves": "Without a declared output format, the same prompt produces differently structured responses on every run — forcing a manual cleanup step to standardise fields, headings, or delimiters before the output can be used in a document, a downstream system, or a shared template. After adding an explicit format block, output structure becomes stable and predictable across runs, removing the reformatting step entirely and making AI-generated content drop directly into review workflows or parsed by code without post-processing.",
+    "howToTry": "1. Decide the exact structure you need: a JSON object with named fields, a markdown table with fixed columns, a numbered list with a header per item, or a two-section report (Findings / Recommendations). Write it down before you write the prompt.\n2. Add a Format section at the end of your prompt — after the task instruction — that shows the skeleton: for JSON, list every key; for a table, name every column; for a report, name every heading and specify the maximum word count per section.\n3. For structured data (JSON, CSV), include one example row with placeholder values so the model can copy the exact format rather than approximating it.\n4. If you need the model to reason before it formats, add: 'Work through the problem first, then return only the result in the format below.' This preserves chain-of-thought internally while keeping the output clean.\n5. Run the same prompt three times on different inputs and check whether the structure is identical each time; if a field drifts or disappears, tighten the format instruction by making that field mandatory with a fallback value such as N/A.",
+    "sourceUrl": "https://promptessor.com/blog/prompt-engineering-best-practices-2026",
+    "sourcePlatform": "blog",
+    "author": "Rizki Murtadha",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2026-05-23",
+    "addedDate": "2026-09-04",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can define a two-section Findings/Recommendations skeleton in your prompt and receive consistently structured output across every document review session, cutting the time you spend rearranging AI responses before they are ready for a colleague or a pharma client to review.",
+      "practicalBenefit": "Locking the output format in shared prompt templates for GxP document reviews, gap analyses, and client deliverables means every team member receives the same structured result regardless of how they word the rest of the prompt — reducing individual variation and making AI-assisted drafts audit-ready from the first pass.",
+      "whyRelevant": "When you use Claude or ChatGPT to extract findings from a validation protocol or draft a structured client status update, an undeclared output format means every response looks different — structured output prompting gives you the same field layout every time, so the result slots directly into your Word template or review checklist without manual reformatting."
+    }
+  },
+  {
     "id": "blog-context-engineering-seven-layers-2026-04-16",
     "title": "Fix silent AI agent failures by managing context across seven layers",
     "tools": [
