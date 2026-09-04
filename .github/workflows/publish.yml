@@ -44,6 +44,16 @@ jobs:
         with:
           node-version: 20
 
+      # Serve the ajv-cli install from the npm cache instead of a cold network fetch on every run. The
+      # validate steps below were spiking to several minutes on slow-registry days — long enough that
+      # the Guide flow's WaitForPublish poll gave up before this job committed. Cached (and with
+      # --prefer-offline below) they run in seconds. Same validator, same command.
+      - name: Cache the npm download cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-ajv-cli-5
+
       # The agent reports success on HTTP 204, which only means the dispatch was accepted — so when a
       # publish silently fails to land, this log is the only record of what the model actually sent.
       # Printing the top-level key list first makes two recurring faults obvious at a glance: the ten
@@ -90,7 +100,7 @@ jobs:
       # archive is never corrupted (NFR-3).
       - name: Validate articles.json against schema
         if: github.event.action == 'publish-article'
-        run: npx --yes ajv-cli@5 validate -s data/articles.schema.json -d data/articles.json
+        run: npx --prefer-offline --yes ajv-cli@5 validate -s data/articles.schema.json -d data/articles.json
 
       # --- Playbook path (publish-usecase) ---------------------------------
       # ⚠️ GitHub caps `client_payload` at TEN top-level properties; an 11th makes the dispatch fail
@@ -126,7 +136,7 @@ jobs:
 
       - name: Validate usecases.json against schema
         if: github.event.action == 'publish-usecase'
-        run: npx --yes ajv-cli@5 validate -s data/usecases.schema.json -d data/usecases.json
+        run: npx --prefer-offline --yes ajv-cli@5 validate -s data/usecases.schema.json -d data/usecases.json
 
       # --- Shared commit ---------------------------------------------------
       - name: Commit the updated data contract

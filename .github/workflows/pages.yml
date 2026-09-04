@@ -20,5 +20,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Cache the npm download cache so the ajv-cli install is served from cache instead of a cold
+      # network fetch (matches publish.yml). Same validator, same command.
+      - name: Cache the npm download cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-ajv-cli-5
+
       - name: Validate articles.json against schema
-        run: npx --yes ajv-cli@5 validate -s data/articles.schema.json -d data/articles.json
+        run: npx --prefer-offline --yes ajv-cli@5 validate -s data/articles.schema.json -d data/articles.json
