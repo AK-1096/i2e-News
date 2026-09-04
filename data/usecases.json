@@ -1,5 +1,37 @@
 [
   {
+    "id": "blog-xml-tag-prompt-structuring-2026-09-02",
+    "title": "Wrap prompt sections in XML tags to stop Claude misreading your instructions",
+    "tools": [
+      "Claude",
+      "ChatGPT",
+      "M365 Copilot"
+    ],
+    "category": "prompting-technique",
+    "whatItDoes": "When a prompt contains multiple logical sections — instructions, background context, a reference document, examples, and output constraints — wrapping each in named XML tags (e.g., <context>, <document>, <task>, <examples>, <format>) tells the model exactly where each section starts and ends. Claude is specifically trained to parse XML-tagged sections; the pattern also improves boundary clarity on GPT-5.6 and Gemini. Without tags, the model must infer boundaries from whitespace and prose transitions, which regularly causes it to apply instructions to the wrong block of text.",
+    "whatItImproves": "Before XML tagging, long multi-section prompts caused models to blend instructions with reference material or ignore example blocks entirely, forcing two or three refinement rounds to correct misaligned output. After adopting XML structure, the model reads each section cleanly and in isolation, cutting the average number of follow-up corrections needed to reach a usable result — the gain is sharpest on prompts that mix a large reference document with precise instructions and a specific output format.",
+    "howToTry": "1. Identify the logical sections in your prompt: persona or role, background context, the reference document or data the model should draw from, the task itself, any examples, and the required output format.\\n2. Wrap each section in descriptive XML tags — for example: <context>...</context>, <document>...</document>, <task>...</task>, <examples>...</examples>, <format>...</format>.\\n3. Order the sections so the <task> block appears last, after all supporting material, so the instruction is freshest in the model's attention when it starts generating.\\n4. For Claude specifically, pre-fill the opening of the Assistant turn with the first tag or word of the expected output (e.g., <output>) to anchor the response structure and prevent the model from adding unsolicited preamble.\\n5. Run the same prompt with and without XML tags on any multi-section task and compare output quality; the difference is most visible on prompts longer than 400 words that mix reference text with instructions.",
+    "sourceUrl": "https://tech-insider.org/au/prompt-engineering-guide-2026/",
+    "sourcePlatform": "blog",
+    "author": "Nadia Dubois",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2026-09-02",
+    "addedDate": "2026-09-04",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can wrap any validation protocol section in <document> tags and your review criteria in <task> tags so Claude applies its reasoning to the correct content block without needing a clarifying follow-up, saving at least one prompt-correction round on every document review session.",
+      "practicalBenefit": "Embedding XML-tagged sections in shared prompt templates for client deliverables and GxP document reviews gives every team member a portable, reusable structure that produces consistent, predictable outputs across repeated uses — reducing individual variation in AI-assisted draft quality.",
+      "whyRelevant": "When you send Claude a prompt that mixes a validation document excerpt, review instructions, and an output format requirement, XML tags prevent the model from treating your reference text as instructions — a boundary error that produces off-target outputs on multi-section pharma deliverables."
+    }
+  },
+  {
     "id": "blog-copilot-agent-mode-complete-guide-2026-07-24",
     "title": "Run multi-file edits and test-fix loops with GitHub Copilot Agent Mode",
     "tools": [
