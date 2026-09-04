@@ -1,5 +1,34 @@
 [
   {
+    "id": "blog-copilot-pages-collaborative-canvas-2026-08-31",
+    "title": "Turn a Copilot chat into a shareable, editable document with Copilot Pages",
+    "tools": [
+      "M365 Copilot"
+    ],
+    "category": "workflow",
+    "whatItDoes": "Copilot Pages splits the M365 Copilot interface into a chat window and a live document canvas, letting you turn any AI response into a persistent, editable page without leaving the chat. You can keep prompting Copilot to add or rewrite sections of the page, edit text directly on the canvas, and share the live page with colleagues as a Loop component embedded in Teams, Outlook, or Word. No separate Copilot licence is required — the feature is available to any Microsoft 365 subscriber with SharePoint or OneDrive storage.",
+    "whatItImproves": "Before Copilot Pages, AI-generated output had to be manually copied into Word or another editor, losing the live connection with Copilot and requiring separate sharing steps. With Pages, the document stays live beside the chat — Copilot can keep refining it on request, collaborators can edit it in real time, and the finished page exports directly to Word or PowerPoint, collapsing a multi-step copy-paste-share cycle into a single session.",
+    "howToTry": "1. Open microsoft365.com and start a Copilot Chat session; prompt Copilot for any work output such as a meeting agenda, project outline, or gap-analysis list.\n2. When the response looks useful, click the pencil (Edit in Pages) icon at the bottom of the result to open it as a page beside the chat.\n3. Edit the page text directly and continue prompting Copilot in the left window; use the Copilot shortcuts icon at the lower-right to adjust tone, add an introduction, or make the whole page more concise.\n4. Click the Share icon at the upper-right of the page, then copy either the page link or the Loop component link and paste it into a Teams chat or Outlook email — recipients can edit in real time without seeing your chat history.\n5. When the page is final, export it to Word or PowerPoint via the page menu for client-ready formatting.",
+    "sourceUrl": "https://www.computerworld.com/article/4202427/copilot-pages-work-side-by-side-with-ai.html",
+    "sourcePlatform": "blog",
+    "author": "Howard Wen",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2026-08-31",
+    "addedDate": "2026-09-04",
+    "audience": [
+      "ba-pc",
+      "pm",
+      "qa",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can share a Copilot Page as a Loop component in a Teams chat or Outlook email so colleagues edit it in real time, cutting the rounds of email-attachment back-and-forth that slow down collaborative document reviews on pharma deliverables.",
+      "practicalBenefit": "The export-to-Word step means your AI-assisted draft ends up in the format pharma clients expect for validation deliverables, with all manual edits and Copilot refinements captured in one session rather than spread across tools.",
+      "whyRelevant": "When you use M365 Copilot to draft a validation summary or client status update, Copilot Pages lets you refine that output in a live document beside the chat instead of copying it into Word and losing the AI connection."
+    }
+  },
+  {
     "id": "blog-prompt-versioning-production-2026-06-22",
     "title": "Version your prompts like code — stop silent regressions in AI-assisted workflows",
     "tools": [
