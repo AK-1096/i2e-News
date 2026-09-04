@@ -1,5 +1,37 @@
 [
   {
+    "id": "hackernews-chain-of-draft-prompting-2025-02-18",
+    "title": "Cut reasoning token costs with Chain of Draft — minimal scratchpad, same accuracy",
+    "tools": [
+      "ChatGPT",
+      "Claude",
+      "M365 Copilot"
+    ],
+    "category": "prompting-technique",
+    "whatItDoes": "Chain of Draft (CoD) is a prompting technique that instructs the model to produce extremely short intermediate reasoning steps — typically five words or fewer each — before writing its final answer. You add one sentence to your prompt: 'Think step by step, but only keep a minimum draft of each thinking step, ideally five words per step.' The model still reasons through the problem but compresses its scratchpad rather than writing out verbose chain-of-thought prose.",
+    "whatItImproves": "Standard chain-of-thought prompting can multiply token usage two to five times on reasoning-heavy tasks, adding cost and latency to every analytical prompt. Chain of Draft achieves comparable accuracy while using up to 80% fewer tokens in the intermediate steps, making complex analytical prompts significantly cheaper and faster without changing the model or the underlying task.",
+    "howToTry": "1. Open Claude, ChatGPT, or M365 Copilot and write your prompt as normal.\n2. Append this instruction at the end: 'Think step by step, but only keep a minimum draft of each thinking step, ideally five words per step.'\n3. Run the same task with standard 'Think step by step' and compare output quality — for most reasoning and analysis tasks the results are equivalent.\n4. For recurring complex tasks such as document gap analysis or data review, embed the CoD instruction in your saved prompt template or system prompt so it applies automatically.\n5. If a task is highly complex and quality drops, increase the draft length slightly — try 'ten words per step' — to find the right balance between cost and thoroughness.",
+    "sourceUrl": "https://news.ycombinator.com/item?id=43167601",
+    "sourcePlatform": "hackernews",
+    "author": "silasMartel",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2025-02-18",
+    "addedDate": "2026-09-04",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can add one sentence to any complex prompt and immediately reduce the token spend on every reasoning task you run on validation documents, client status write-ups, or protocol gap analyses without changing the tool or retraining your workflow.",
+      "practicalBenefit": "Embedding the CoD instruction in your standard prompt templates cuts AI cost per analysis task across every project, making it easier to fit more AI-assisted document reviews and reasoning steps within a client engagement's AI budget.",
+      "whyRelevant": "When running analytical or reasoning-heavy tasks in Claude — such as reviewing validation document discrepancies or checking GxP data entries — Chain of Draft gives you the same structured reasoning at up to 80% lower token cost than standard chain-of-thought."
+    }
+  },
+  {
     "id": "blog-chain-of-draft-prompting-2026-03-01",
     "title": "Cut AI response length by 80% without losing reasoning quality using Chain of Draft",
     "tools": [
