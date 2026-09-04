@@ -1,5 +1,34 @@
 [
   {
+    "id": "blog-claude-projects-persistent-context-2024-11-19",
+    "title": "Load every client SOP and standing rule into a Claude Project — brief it once, never again",
+    "tools": [
+      "Claude"
+    ],
+    "category": "workflow",
+    "whatItDoes": "Claude Projects creates a named workspace that permanently stores a custom system prompt, uploaded reference files, and the full conversation history from every session inside it. Any document you upload — SOPs, validation templates, protocol excerpts, client briefing notes — remains available to Claude in every future session without being pasted again. The system prompt persists automatically, so your role definition, output format rules, and standing instructions apply from the very first message every time you open that project.",
+    "whatItImproves": "Without Projects, every Claude session starts blank: you re-paste context, re-upload documents, and re-explain your role before any real work can begin, adding several minutes of overhead to every session. With a Project in place, that ramp-up drops to zero — Claude already knows the engagement context, the document set, and the required output style from the first message, and every team member who opens the same project gets the same consistently briefed starting point.",
+    "howToTry": "1. Open Claude at claude.ai, click 'Projects' in the left sidebar, then select 'New Project' and give it a client or engagement name.\n2. Click 'Set project instructions' and write a system prompt covering your role, the client context, standing output rules, and audience — for example: 'You are assisting a GxP validation consultant at i2e. Format all findings in two sections: Gaps and Recommendations. Use plain language suitable for a QA manager.'\n3. Click 'Add content' to upload reference files — SOPs, validation plan templates, protocol excerpts, client briefing documents — that Claude should draw on across all sessions in this project.\n4. Open any new conversation inside the project; Claude automatically applies your system instructions and has access to all uploaded files from the first message, with no re-briefing needed.\n5. Update the project instructions or replace uploaded files whenever the engagement scope changes — the updated context applies immediately to all subsequent sessions.",
+    "sourceUrl": "https://www.anthropic.com/news/projects",
+    "sourcePlatform": "blog",
+    "author": "Anthropic",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2024-11-19",
+    "addedDate": "2026-09-04",
+    "audience": [
+      "ba-pc",
+      "pm",
+      "qa",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can open a Project pre-loaded with your client's validation templates and standing output instructions and start a document review or gap-analysis session from the first message, with no setup overhead on any return visit.",
+      "practicalBenefit": "Uploading GxP reference documents and a project-specific system prompt gives your entire engagement team a shared, consistently briefed AI workspace — so every consultant produces outputs in the same format and draws on the same reference material without maintaining a separate shared-prompt document.",
+      "whyRelevant": "When you work on a recurring pharma client engagement using Claude, re-pasting the same project context, SOPs, and role instructions at the start of every session wastes time that a Claude Project eliminates entirely."
+    }
+  },
+  {
     "id": "blog-structured-output-prompting-2026-05-23",
     "title": "Pin down the output format before the model writes anything",
     "tools": [
