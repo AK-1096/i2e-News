@@ -1,5 +1,36 @@
 [
   {
+    "id": "blog-static-dynamic-prompt-caching-2026-05-14",
+    "title": "Separate static and dynamic context to cut AI agent costs by up to 90%",
+    "tools": [
+      "Claude",
+      "ChatGPT",
+      "M365 Copilot",
+      "Claude Code"
+    ],
+    "category": "prompting-technique",
+    "whatItDoes": "Place stable context — system instructions, tool definitions, policies, and reference documents — at the top of every prompt and keep dynamic content (user input, session data, retrieved results) below it. When the static prefix is identical across calls, the LLM provider reuses cached computation instead of reprocessing those tokens from scratch, delivering up to 90% cost reduction and up to 85% latency reduction on cache hits. A 2026 arXiv paper evaluating 500-plus long-horizon agent sessions across OpenAI, Anthropic, and Google confirmed that caching a stable system context while keeping dynamic tool results out of the reusable prefix cut API costs by 41–80% and improved time-to-first-token by 13–31%.",
+    "whatItImproves": "Before this separation, every prompt call reprocesses the full context from scratch — instructions, rules, and document blocks you send every single time — burning tokens you already paid for. After applying static/dynamic separation, that shared prefix is processed once and cached; only the small dynamic tail changes per call, so high-volume sessions that previously consumed tens of millions of repeated tokens per day become dramatically cheaper and faster without any change to output quality.",
+    "howToTry": "1. Identify the stable parts of your prompt: system instructions, persona definition, tool schemas, policy rules, few-shot examples, and any reference document that does not change per request.\n2. Move all stable content to the very top of your prompt, before anything user-specific or session-specific.\n3. Place dynamic content — user message, session ID, timestamps, retrieved results that vary per call — below the stable block.\n4. Verify the static prefix is byte-for-byte identical across calls: even a single token change breaks the cache key and you lose the saving.\n5. Monitor cache hit rates using your provider's token usage logs (Anthropic, OpenAI, and Google Vertex AI all report cache hits); aim for the stable prefix to account for at least 60% of total prompt tokens to see meaningful savings.",
+    "sourceUrl": "https://atlan.com/know/context-caching/",
+    "sourcePlatform": "blog",
+    "author": "Emily Winks",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-05-14",
+    "addedDate": "2026-09-04",
+    "audience": [
+      "developers",
+      "ba-pc",
+      "pm"
+    ],
+    "relevance": {
+      "dailyImpact": "On a pharma project where an agent runs dozens of document-review queries a day against the same GxP policy context, moving that policy block into a stable cached prefix cuts both the per-call cost and the wait time for every response in the session.",
+      "practicalBenefit": "Applying static/dynamic separation to any agent or automated prompt pipeline that reuses the same instructions or reference material reduces AI tooling spend by up to 90% on the cached tokens, making it practical to run more agent-assisted review cycles within the same project budget.",
+      "whyRelevant": "When you build or configure Claude or ChatGPT agents that process the same validation rules, SOP snippets, or client policy documents on every call, you are paying to reprocess identical tokens repeatedly — static/dynamic separation lets the provider cache that shared prefix so you stop paying for it."
+    }
+  },
+  {
     "id": "hackernews-chain-of-draft-prompting-2025-02-18",
     "title": "Cut reasoning token costs with Chain of Draft — minimal scratchpad, same accuracy",
     "tools": [
