@@ -78,14 +78,38 @@ const TARGETS = {
 // Tools / audience arrive as a JSON array string (["a","b"]) or a comma-separated list. Both
 // normalise to a trimmed, non-empty string[]. A missing repository_dispatch field is rendered by
 // `toJSON(...)` as the literal string "null" (or "undefined") — treat those as empty, not a value.
+//
+// Double-encoded case (mirrors parseObject): the Copilot Studio connector's *array* input widget
+// wraps the real array as JSON text, so one JSON.parse can yield either a lone string
+// (["a","b"] arriving as the string "[\"a\",\"b\"]") or a one-element array holding that string
+// (["[\"a\",\"b\"]"]). Both were reaching the schema gate as a single bogus element and failing
+// validation (e.g. audience[0] == '["developers",…]'), so unwrap any element that is itself a
+// JSON-array string.
 function parseList(raw) {
   if (raw == null) return [];
   const s = String(raw).trim();
   if (s === "" || s === "null" || s === "undefined") return [];
   if (s.startsWith("[")) {
     try {
-      const arr = JSON.parse(s);
-      if (Array.isArray(arr)) return arr.map((x) => String(x).trim()).filter(Boolean);
+      let arr = JSON.parse(s);
+      if (typeof arr === "string") arr = JSON.parse(arr); // whole array double-encoded to one string
+      if (Array.isArray(arr)) {
+        return arr
+          .flatMap((x) => {
+            const t = String(x).trim();
+            if (t.startsWith("[")) {
+              try {
+                const inner = JSON.parse(t);
+                if (Array.isArray(inner)) return inner; // element was itself a JSON array — flatten it
+              } catch {
+                /* not a nested array — keep the element as-is */
+              }
+            }
+            return [x];
+          })
+          .map((x) => String(x).trim())
+          .filter(Boolean);
+      }
     } catch {
       /* fall through to comma-split */
     }
