@@ -1,5 +1,36 @@
 [
   {
+    "id": "blog-context-engineering-seven-layers-2026-04-16",
+    "title": "Fix silent AI agent failures by managing context across seven layers",
+    "tools": [
+      "Claude",
+      "Claude Code",
+      "ChatGPT",
+      "GitHub Copilot"
+    ],
+    "category": "prompting-technique",
+    "whatItDoes": "Context engineering is the discipline of deciding what information enters an AI agent's context window, when it gets there, and in what form — spanning seven distinct layers: system prompt, user input, retrieved knowledge, tool outputs, conversation history, structured intermediate outputs, and persistent memory. Unlike prompt engineering, which optimises a single message, context engineering manages the entire information architecture across a multi-step session. Production agent failures today are almost always context failures — wrong documents, stale memory, contradictory instructions, or conversation history that crowds out critical earlier guidance.",
+    "whatItImproves": "Before applying context engineering, agent sessions degrade silently: a hallucination in one turn becomes a stated fact in the next (context poisoning), or irrelevant detail high in the window pulls model attention away from critical instructions (context distraction). After structuring each of the seven layers deliberately — placing instructions at window edges, compressing old history before new tool outputs, and loading retrieved documents on-demand rather than upfront — agent accuracy stabilises across long sessions and token costs drop because the window carries only what the current step needs.",
+    "howToTry": "1. Map your agent's seven context layers: write down what fills each one in your current setup — system prompt, user input, retrieved chunks, tool outputs, prior turns, intermediate results, and memory — and flag which layer is largest and least controlled.\n2. Fix information ordering first: place your most critical instructions at the very start and very end of the context window; the 'lost in the middle' effect means accuracy on information buried in a long window drops measurably compared to content at the edges.\n3. Compress conversation history before it crowds instructions: summarise turns older than five exchanges into a short paragraph and replace the raw turn-by-turn record with that summary, keeping the window lean for new tool outputs.\n4. Switch from static to on-demand retrieval: instead of injecting your full knowledge base at session start, retrieve only the chunks relevant to the current step and add them just before the model call — this reserves token budget for tool outputs that arrive mid-loop.\n5. Identify your dominant failure mode after each session — context poisoning, context distraction, context confusion, or context clash — and address the specific layer that caused it rather than rewriting the prompt.",
+    "sourceUrl": "https://logic.inc/resources/context-engineering-guide-for-ai-teams",
+    "sourcePlatform": "blog",
+    "author": "Samira Qureshi",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-04-16",
+    "addedDate": "2026-09-04",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc"
+    ],
+    "relevance": {
+      "dailyImpact": "Applying on-demand retrieval and conversation-history compression to any recurring agent session you run for pharma deliverables cuts both the token cost per session and the frequency of mid-task hallucinations that require you to restart from scratch.",
+      "practicalBenefit": "Structuring your agent's context window using the seven-layer framework gives you a concrete, auditable configuration you can document in a GxP validation package — turning an informal 'we use Claude' statement into a specified, repeatable information architecture.",
+      "whyRelevant": "When you run Claude or ChatGPT agents across multi-step validation document reviews, the failures you see — wrong section referenced, contradictory guidance, cost spikes — are almost always context failures that a structured seven-layer approach directly fixes."
+    }
+  },
+  {
     "id": "blog-xml-tag-prompt-structuring-2026-09-02",
     "title": "Wrap prompt sections in XML tags to stop Claude misreading your instructions",
     "tools": [
