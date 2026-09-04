@@ -1,5 +1,36 @@
 [
   {
+    "id": "blog-prompt-versioning-production-2026-06-22",
+    "title": "Version your prompts like code — stop silent regressions in AI-assisted workflows",
+    "tools": [
+      "Claude",
+      "ChatGPT",
+      "M365 Copilot",
+      "Claude Code"
+    ],
+    "category": "workflow",
+    "whatItDoes": "Prompt versioning treats every prompt as an immutable, versioned artifact with a unique content-addressable ID — storing not just the text but the temperature setting, model hash, and expected input variables in a centralized registry. Any change to a prompt creates a new version rather than silently overwriting the old one, giving teams a rollback path and a complete audit trail of exactly what the model was asked at any point in time. Schema validation gates each new version, blocking a rollout automatically if the new prompt would break the structure downstream parsers expect.",
+    "whatItImproves": "Before prompt versioning, small uncoordinated edits by different team members silently degraded AI output quality with no way to pinpoint when or why — a pattern called prompt drift. After adopting a versioned registry, every regression is traceable to a specific version diff, rollback takes seconds, and quality metrics are tied to exact prompt IDs so teams can measure which version actually performs better instead of relying on gut feel.",
+    "howToTry": "1. Move all prompt templates out of application code and into a centralized registry (Git-based for developer-heavy teams, or a proxy-based platform such as Braintrust or Agenta for non-technical collaborators who need instant updates without a redeploy).\\n2. Assign each prompt a content-addressable ID — a hash of the full prompt text plus its configuration parameters (model, temperature, top-p, input variable names) — so identical content always produces the same ID and changes are always detectable.\\n3. Add schema validation: before any version is tagged 'production', run a small set of few-shot tests confirming the model still returns correctly structured output and block the rollout automatically if the schema breaks.\\n4. Tag every live request with its prompt version ID and pipe those tags into your analytics or logging tool so you can build per-version quality heatmaps and catch regressions before users do.\\n5. For multi-step agent chains, version the entire bundle of prompts as a tested unit rather than individual prompts in isolation, and use canary rollouts to validate aggregate chain behavior before full promotion.",
+    "sourceUrl": "https://linesncircles.com/Blog/Enterprise/prompt_versioning_production",
+    "sourcePlatform": "blog",
+    "author": "Mohamed Ali",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-06-22",
+    "addedDate": "2026-09-04",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc"
+    ],
+    "relevance": {
+      "dailyImpact": "If a prompt used in a recurring client deliverable — such as a protocol gap-analysis template — produces unexpected output after someone edited it, you can roll back to the last known-good version in seconds rather than trying to reconstruct the previous wording from memory.",
+      "practicalBenefit": "Version-linked quality metrics let you demonstrate to a pharma client that a specific, immutable prompt configuration was used consistently throughout a validation cycle, turning what was informal configuration into a traceable, auditable artifact alongside the rest of your delivery evidence.",
+      "whyRelevant": "When your team uses Claude or ChatGPT prompts to drive validation document reviews or GxP-aware data steps, any untracked wording change can silently degrade output quality in a way that only surfaces during a client review — prompt versioning gives you an auditable record of exactly what the model was asked at each point in the project."
+    }
+  },
+  {
     "id": "blog-static-dynamic-prompt-caching-2026-05-14",
     "title": "Separate static and dynamic context to cut AI agent costs by up to 90%",
     "tools": [
