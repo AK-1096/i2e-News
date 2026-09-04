@@ -1,5 +1,37 @@
 [
   {
+    "id": "blog-chain-of-draft-prompting-2026-03-01",
+    "title": "Cut AI response length by 80% without losing reasoning quality using Chain of Draft",
+    "tools": [
+      "ChatGPT",
+      "Claude",
+      "M365 Copilot"
+    ],
+    "category": "prompting-technique",
+    "whatItDoes": "Chain of Draft (CoD) is a prompting technique that instructs the AI to reason through a problem using the absolute minimum words per step — typically five words or fewer — before producing the final answer. Unlike standard Chain-of-Thought which generates verbose intermediate reasoning, CoD compresses the thinking phase into dense, minimal fragments, slashing token usage while preserving accuracy.",
+    "whatItImproves": "Standard Chain-of-Thought reasoning often produces long, repetitive reasoning traces that inflate cost and latency with no benefit to output quality. Chain of Draft cuts the intermediate reasoning text by up to 80% while matching or exceeding CoT accuracy on reasoning tasks, making it practical for high-volume document drafting and review workflows where every token counts.",
+    "howToTry": "1. Open ChatGPT, Claude, or any LLM interface.\n2. Add this instruction to your prompt: \"Think step by step, but only keep a minimum draft for each thinking step. Each intermediate step should be at most 5 words.\"\n3. Follow with your actual task — for example: \"Think step by step, but only keep a minimum draft for each thinking step. Each intermediate step should be at most 5 words. Now review the following validation test case and identify any logical gaps: [paste content].\"\n4. Read the compressed reasoning trace to check the model's logic, then use the final answer.\n5. Adjust the word-per-step limit (e.g. 8–10 words) if the task involves technical domain terms that need more specificity.",
+    "sourceUrl": "https://arxiv.org/abs/2502.18600",
+    "sourcePlatform": "blog",
+    "author": "Silei Xu, Wenhao Xie, Lingxiao Zhao, Pengcheng He",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2025-02-25",
+    "addedDate": "2026-09-04",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can apply the five-word-step instruction to any prompt where you want the model to reason carefully — such as checking a GxP test script for logical gaps — without paying for a wall of verbose intermediate text you would skip-read anyway.",
+      "practicalBenefit": "On high-volume document review tasks for pharma clients, Chain of Draft lets you keep reasoning-quality outputs at a fraction of the token cost, making AI-assisted review sustainable within project budgets without switching to a weaker model.",
+      "whyRelevant": "When you use Claude or ChatGPT to review validation test cases, protocol sections, or client deliverables, adding Chain of Draft keeps the model's reasoning visible and auditable while cutting the token volume that inflates cost on repeated, high-volume tasks."
+    }
+  },
+  {
     "id": "aihero-grill-me-skill-2026-05-20",
     "title": "Let the agent interview you before any task — the /grill-me skill stops misaligned output before it starts",
     "tools": [
