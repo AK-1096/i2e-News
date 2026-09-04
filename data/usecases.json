@@ -1,5 +1,32 @@
 [
   {
+    "id": "blog-copilot-agent-mode-complete-guide-2026-07-24",
+    "title": "Run multi-file edits and test-fix loops with GitHub Copilot Agent Mode",
+    "tools": [
+      "GitHub Copilot"
+    ],
+    "category": "workflow",
+    "whatItDoes": "GitHub Copilot Agent Mode lets you describe a task at the goal level — not the file level — and have the agent plan the steps, edit multiple files, run terminal commands, read error output, and iterate until the task is done, all without you directing each step manually. It operates inside VS Code, reads your full workspace context automatically, and since mid-2026 supports MCP servers so the agent can query external systems like databases directly during a task.",
+    "whatItImproves": "Before agent mode, AI coding assistance required you to specify which files to open and what exactly to change, then manually apply diffs and re-run tests yourself. After enabling agent mode, you hand off a task with acceptance criteria and the agent closes the edit-run-fix loop autonomously — the biggest gain is on test-fix cycles where terminal output feeds directly back into code corrections without any manual copy-paste.",
+    "howToTry": "1. Install VS Code 1.99+, ensure the GitHub Copilot Chat extension is installed, and add these settings: {\"github.copilot.chat.agent.enabled\": true, \"github.copilot.chat.agent.runTasks\": true, \"github.copilot.chat.agent.autoFix\": true}.\n2. Open the Copilot Chat panel (Ctrl+Alt+I) and switch the dropdown at the top to Agent mode.\n3. Write a task with clear acceptance criteria and explicit scope constraints — e.g. \"Add input validation to the POST /patients endpoint. Only change files in src/routes/ and src/middleware/. Run the existing tests and fix any failures.\"\n4. Read the agent's plan before it starts; if the approach or files look wrong, reject it and refine the prompt before the agent touches anything.\n5. Review the resulting diffs in the Source Control panel; accept, reject, or ask the agent to adjust specific parts before committing.",
+    "sourceUrl": "https://dev.to/stacknotice/github-copilot-agent-mode-complete-guide-2026-1p8k",
+    "sourcePlatform": "blog",
+    "author": "Carlos Oliva Pascual",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-07-24",
+    "addedDate": "2026-09-04",
+    "audience": [
+      "developers",
+      "qa"
+    ],
+    "relevance": {
+      "dailyImpact": "You can hand the agent a failing test suite and a task description and then review the final diff rather than driving each edit step yourself, freeing your attention for checking the output for GxP compliance instead of mechanics.",
+      "practicalBenefit": "Agent mode's autonomous test-fix loop produces cleaner, test-passing commits with less back-and-forth debugging, giving you stronger audit evidence to include in client delivery reviews and validation packages.",
+      "whyRelevant": "When building or validating software features for pharma clients, agent mode lets you describe a multi-file change and its acceptance criteria once and have the agent close the edit-test-fix loop, cutting the manual file-by-file iteration that slows delivery against tight project timelines."
+    }
+  },
+  {
     "id": "blog-copilot-pages-collaborative-canvas-2026-08-31",
     "title": "Turn a Copilot chat into a shareable, editable document with Copilot Pages",
     "tools": [
