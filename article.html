@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ALerts</title>
-  <link rel="stylesheet" href="assets/styles.css?v=4">
+  <link rel="stylesheet" href="assets/styles.css?v=5">
 </head>
 <body>
   <header class="masthead">
@@ -12,8 +12,8 @@
       <span class="masthead__spacer" aria-hidden="true"></span>
       <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
       <span class="masthead__nav">
-        <a class="ghost-link" href="index.html#events" data-open="news">News &rarr;</a>
-        <a class="ghost-link" href="index.html#guide" data-open="guide">Guides &rarr;</a>
+        <a class="ghost-link" href="events.html">News &rarr;</a>
+        <a class="ghost-link" href="playbook.html">i2e AI Guide &rarr;</a>
         <a class="ghost-link" href="archive.html">Archive &rarr;</a>
       </span>
     </nav>
@@ -25,7 +25,7 @@
     </div>
   </main>
 
-  <script src="assets/app.js?v=7"></script>
+  <script src="assets/app.js?v=11"></script>
   <script>
     function getId() {
       return new URLSearchParams(window.location.search).get('id');
@@ -64,10 +64,13 @@
             '<article class="clipping">' +
               renderTags('clipping__chip', a.addedDate, a.topic) +
               '<h1 class="headline">' + escapeHtml(a.title) + '</h1>' +
-              '<p class="dateline caption">' + escapeHtml(a.source) + ' &middot; ' + formatDate(a.publishedDate) + '</p>' +
+              '<p class="dateline caption">' + escapeHtml(a.source) + ' &middot; ' + formatDate(a.addedDate) + '</p>' +
               '<p class="excerpt">' + escapeHtml(a.summary) + '</p>' +
               renderRelevance(a.relevance) +
-              '<div class="clipping__upvote" id="upvote"></div>' +
+              '<div class="clipping__reactions">' +
+                '<div class="clipping__upvote" id="upvote"></div>' +
+                '<div class="clipping__share" id="share"></div>' +
+              '</div>' +
               '<p class="clipping__action">' +
                 '<a class="btn-accent" href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener noreferrer">' +
                   'Read the original at ' + escapeHtml(a.source) + ' &rarr;</a>' +
@@ -79,12 +82,14 @@
             '</article>';
 
           initUpvotes(document.getElementById('upvote'), 'article', a.id);
+          initShare(document.getElementById('share'), 'article', a.id);
+          initViewCount('article', a.id);
 
           // Dynamic header, now that the clipping's own heading exists to feed
           // the compact top-left bar and mark where it should collapse.
           initDynamicHeader({
             title: a.title,
-            sub: a.source + ' · ' + formatDate(a.publishedDate),
+            sub: a.source + ' · ' + formatDate(a.addedDate),
             collapseAfter: container.querySelector('.dateline')
           });
         })

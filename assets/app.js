@@ -2,10 +2,6 @@
 // The static site reads data/articles.json as its only data source (FR-S1);
 // no backend, no AI calls run here (NFR-2/NFR-4).
 
-// FR-S7: the front page shows a sensible number of recent items; the rest live
-// in the archive. Config-driven so the cap is tunable without touching markup.
-var RECENT_LIMIT = 10;
-
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, function (c) {
     return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -18,6 +14,27 @@ function formatDate(d) {
   return new Date(t).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
+// Order a contract array newest-first by `addedDate` — when the curator filed
+// the item on ALerts. That date is also the one shown everywhere on the site;
+// `publishedDate` (the original source's date) is kept in the data for the
+// record and is never displayed, so ordering and dateline agree.
+//
+// Ties are broken by the item's position in the JSON file rather than left to
+// the engine: the publisher appends at the top, so file order is already
+// newest-first within a day. Array.prototype.sort is stable in modern engines,
+// but decorating with the index makes that a property of this function instead
+// of an assumption about the host.
+function sortByAddedDate(items) {
+  return items
+    .map(function (it, i) { return { it: it, i: i }; })
+    .sort(function (a, b) {
+      var d = Date.parse(b.it.addedDate) - Date.parse(a.it.addedDate);
+      if (d) return d;
+      return a.i - b.i;
+    })
+    .map(function (w) { return w.it; });
+}
+
 // Fetch articles.json and return the list ordered newest-first by addedDate
 // (when the curator published it). Rejects on HTTP/parse failure.
 function loadArticles() {
@@ -28,13 +45,11 @@ function loadArticles() {
     })
     .then(function (articles) {
       if (!Array.isArray(articles)) return [];
-      return articles.slice().sort(function (a, b) {
-        return Date.parse(b.addedDate) - Date.parse(a.addedDate);
-      });
+      return sortByAddedDate(articles);
     });
 }
 
-// --- AI Guide (data/usecases.json) -----------------------------------------
+// --- i2e AI Guide (data/usecases.json) -----------------------------------------
 // Sibling data contract; same no-backend read model as the news path.
 
 // Fetch usecases.json and return the list ordered newest-first by addedDate.
@@ -47,9 +62,7 @@ function loadUsecases() {
     })
     .then(function (usecases) {
       if (!Array.isArray(usecases)) return [];
-      return usecases.slice().sort(function (a, b) {
-        return Date.parse(b.addedDate) - Date.parse(a.addedDate);
-      });
+      return sortByAddedDate(usecases);
     });
 }
 
@@ -235,20 +248,35 @@ function platformLabel(p) {
   return map[p] || (p ? String(p) : 'Other');
 }
 
+// The empty counter slot every row carries. initRowCounters() fills it in after
+// the list has painted; until then (and forever, if the counter service is
+// unreachable) it is an empty, aria-hidden span that costs nothing.
+//
+// It is emitted as the row's *last* child — after the summary — so the cluster
+// settles into the row's bottom-right corner on its own line rather than
+// crowding the meta dateline. It stays inert: no link, no pointer events, and
+// the headline's stretched ::after overlay is a positioned element painted over
+// this static one, so the whole row remains one click target.
+function rowStatsSlot() {
+  return '<span class="row__stats" aria-hidden="true"></span>';
+}
+
 // Render one use-case as an editorial list row (reuses the .row component).
-// Category leads as the chip; the meta line carries platform + tools.
+// Category leads as the chip; the meta line carries platform, the ALerts
+// publish date and tools.
 function renderUsecaseItem(u) {
   var href = 'usecase.html?id=' + encodeURIComponent(u.id);
   var tools = Array.isArray(u.tools) ? u.tools.join(' · ') : '';
-  var meta = escapeHtml(platformLabel(u.sourcePlatform));
+  var meta = escapeHtml(platformLabel(u.sourcePlatform)) + ' &middot; ' + formatDate(u.addedDate);
   if (tools) meta += ' &middot; ' + escapeHtml(tools);
   var aud = audienceMeta(u.audience);
   if (aud) meta += ' &middot; ' + escapeHtml(aud);
-  return '<article class="row">' +
+  return '<article class="row" data-kind="usecase" data-id="' + escapeHtml(u.id) + '">' +
     renderTags('row__chip', u.addedDate, u.category) +
     '<h2 class="row__headline"><a href="' + href + '">' + escapeHtml(u.title) + '</a></h2>' +
     '<p class="row__meta caption">' + meta + '</p>' +
     '<p class="row__summary">' + escapeHtml(u.whatItDoes) + '</p>' +
+    rowStatsSlot() +
     '</article>';
 }
 
@@ -257,14 +285,15 @@ function renderUsecaseItem(u) {
 // a click target. Every injected field is escaped; the id is URL-encoded.
 function renderListItem(a) {
   var href = 'article.html?id=' + encodeURIComponent(a.id);
-  var meta = escapeHtml(a.source) + ' &middot; ' + formatDate(a.publishedDate);
+  var meta = escapeHtml(a.source) + ' &middot; ' + formatDate(a.addedDate);
   var aud = audienceMeta(a.audience);
   if (aud) meta += ' &middot; ' + escapeHtml(aud);
-  return '<article class="row">' +
+  return '<article class="row" data-kind="article" data-id="' + escapeHtml(a.id) + '">' +
     renderTags('row__chip', a.addedDate, a.topic) +
     '<h2 class="row__headline"><a href="' + href + '">' + escapeHtml(a.title) + '</a></h2>' +
     '<p class="row__meta caption">' + meta + '</p>' +
     '<p class="row__summary">' + escapeHtml(a.summary) + '</p>' +
+    rowStatsSlot() +
     '</article>';
 }
 
@@ -303,24 +332,40 @@ var UPVOTE_UNSURE = 'We couldn’t confirm your upvote. Reload to see the curren
 // voted state into one counter.
 var UPVOTE_KINDS = { article: 'a', usecase: 'g' };
 
-// The counter key for one item: a collection prefix plus its id. Returns null
-// for an unknown collection, which leaves the control unrendered rather than
-// guessing a prefix and silently sharing someone else's counter.
+// The counter key for one item: an optional metric prefix, then a collection
+// prefix, then its id. Returns null for an unknown collection, which leaves the
+// control unrendered rather than guessing a prefix and silently sharing someone
+// else's counter.
+//
+//   counterKey('',   'article', id) → 'a-<id>'    upvotes
+//   counterKey('v-', 'article', id) → 'v-a-<id>'  views
+//   counterKey('s-', 'usecase', id) → 's-g-<id>'  shares
+//
+// The three metrics are separate counters on the same namespace; the metric
+// prefix is what keeps them apart. Upvotes pass '' so their keys stay exactly
+// what they were before views and shares existed — an existing total must not
+// be orphaned by a key change.
 //
 // Keys are capped at 64 characters and limited to a URL-safe alphabet. Every id
 // in the contract fits today (the longest is 59, plus the 2-character prefix),
 // but ids are written by the curator, so a long one folds down to a truncated
 // slug plus a hash of the whole key rather than 400-ing and losing the control.
-function upvoteKey(kind, id) {
+// The fold runs on the whole key, metric prefix included, so the three metrics
+// stay distinct even for a folded id.
+function counterKey(prefix, kind, id) {
   // Own-property check, not a plain lookup: `toString` and `constructor` resolve
   // through the prototype chain and would otherwise pass for real collections.
   if (!Object.prototype.hasOwnProperty.call(UPVOTE_KINDS, kind)) return null;
-  var prefix = UPVOTE_KINDS[kind];
-  var k = prefix + '-' + id;
+  var k = (prefix || '') + UPVOTE_KINDS[kind] + '-' + id;
   if (k.length <= 64 && /^[A-Za-z0-9_-]+$/.test(k)) return k;
   var h = 5381;
   for (var i = 0; i < k.length; i++) h = ((h * 33) ^ k.charCodeAt(i)) >>> 0;
   return k.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 50) + '-' + h.toString(36);
+}
+
+// The upvote counter key — the original, unprefixed form.
+function upvoteKey(kind, id) {
+  return counterKey('', kind, id);
 }
 
 // Read a total out of a counter response. A 200 carrying a payload we can't read
@@ -362,13 +407,21 @@ function initUpvotes(host, kind, id) {
   if (!key) return;
   var seen = 'alerts:upvoted:' + key;
 
-  fetch(UPVOTE_API + '/get/' + UPVOTE_NS + '/' + encodeURIComponent(key))
+  // Priority: the control can't be built until this lands, and a reader waiting
+  // on it must not queue behind a list page's speculative row reads.
+  counterFetch(UPVOTE_API + '/get/' + UPVOTE_NS + '/' + encodeURIComponent(key), true)
     .then(function (r) {
       if (r.status === 404) return { value: 0 };   // created on first upvote
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
     })
-    .then(function (d) { mount(upvoteCount(d)); })
+    .then(function (d) {
+      var n = upvoteCount(d);
+      // Same memo the list rows read from, so a Back out of this page shows the
+      // total we already paid for rather than spending another request.
+      counterCacheWrite(key, n);
+      mount(n);
+    })
     .catch(function () { /* counter unavailable — leave the page as it was */ });
 
   function mount(count) {
@@ -404,13 +457,16 @@ function initUpvotes(host, kind, id) {
       paint(previous + 1, true);
       note.textContent = UPVOTE_NOTE;
 
-      fetch(UPVOTE_API + '/hit/' + UPVOTE_NS + '/' + encodeURIComponent(key))
+      counterFetch(UPVOTE_API + '/hit/' + UPVOTE_NS + '/' + encodeURIComponent(key), true)
         .then(function (r) {
           if (!r.ok) throw new Error('HTTP ' + r.status);
           return r.json();
         })
         .then(function (d) {
           count = upvoteCount(d);
+          // Fold the new total into the session memo so the list this reader
+          // goes back to shows their own vote instead of the pre-vote number.
+          counterCacheWrite(key, count);
           // Only now is the vote real. Recording it any earlier would lock the
           // reader out of retrying a vote that never actually landed: the next
           // load would read back the unchanged total and still disable the
@@ -432,7 +488,7 @@ function initUpvotes(host, kind, id) {
     // deliberately resolved towards under-counting. Losing one upvote off a soft
     // popularity signal is the cheaper error than inflating it.
     function reconcile(previous) {
-      fetch(UPVOTE_API + '/get/' + UPVOTE_NS + '/' + encodeURIComponent(key))
+      counterFetch(UPVOTE_API + '/get/' + UPVOTE_NS + '/' + encodeURIComponent(key), true)
         .then(function (r) {
           if (r.status === 404) return { value: 0 };
           if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -444,6 +500,7 @@ function initUpvotes(host, kind, id) {
             // Something landed. Treat it as this reader's vote and stop here —
             // the button stays spent, so no retry can double it.
             count = now;
+            counterCacheWrite(key, count);
             upvoteWrite(seen);
             paint(count, true);
           } else {
@@ -482,6 +539,968 @@ function initUpvotes(host, kind, id) {
         (isVoted ? 'Upvoted. ' : 'Upvote this. ') +
         n + (n === 1 ? ' upvote' : ' upvotes') + ' so far.');
     }
+  }
+}
+
+// --- Toast ------------------------------------------------------------------
+// One transient status line for the whole page, bottom-centre. A single element
+// is created on first use and reused on every later message, so repeated clicks
+// stack nothing up. role=status + aria-live=polite means the message is spoken
+// as well as seen; the fade is CSS and is dropped under reduced motion.
+
+var TOAST_MS = 2500;
+
+function showToast(msg) {
+  var el = document.getElementById('alerts-toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'alerts-toast';
+    el.className = 'toast';
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  if (el.dismissTimer) clearTimeout(el.dismissTimer);
+  // Drop and re-add so a second click restarts the fade rather than riding out
+  // the first one's remaining time. Reading offsetWidth forces the reflow that
+  // makes the removal a real style change.
+  el.classList.remove('is-visible');
+  void el.offsetWidth;
+  el.classList.add('is-visible');
+  el.dismissTimer = setTimeout(function () {
+    el.dismissTimer = null;
+    el.classList.remove('is-visible');
+  }, TOAST_MS);
+}
+
+// --- Counter request budget --------------------------------------------------
+// Abacus rate-limits at 30 requests per 10 seconds per IP, and it enforces that
+// across the whole service — not per counter and not per tab. A 53-row archive
+// asking for two totals a row is 106 requests, so the naive version tripped 429
+// inside the first second: most rows stayed blank *and* the reader's next click
+// (a view hit, an upvote) landed in the penalty box behind them.
+//
+// So every Abacus call in this file goes through counterFetch(), which meters
+// the whole page against one budget:
+//
+//   * a rolling-window allowance of COUNTER_BUDGET requests per
+//     COUNTER_WINDOW_MS — deliberately under the service's 30, leaving headroom
+//     for the same reader's other tabs, which share the IP and the limit;
+//   * at most COUNTER_MAX_INFLIGHT sockets open at once;
+//   * two lanes. Interactive calls (a view hit, a share hit, anything the
+//     upvote control does) are a FIFO that jumps ahead of speculative row
+//     reads, because those are the reader's own actions and there is a person
+//     waiting on them. The background lane is *not* a FIFO: it holds no
+//     standing backlog and instead asks its registered providers for the next
+//     unit of work each time a slot frees, which is how row reads follow the
+//     viewport instead of the order the rows were scrolled past;
+//   * a back-off: a 429 or a network failure on a row read pauses the *row*
+//     drain (interactive calls still go), honouring Retry-After when the service
+//     sends one.
+//
+// Nothing here retries on the caller's behalf and nothing here throws into the
+// page: a starved request simply waits, and a failed one resolves the way a
+// failed fetch already did.
+
+var COUNTER_BUDGET = 20;            // requests allowed per rolling window
+var COUNTER_WINDOW_MS = 10000;      // the window Abacus measures (30/10s there)
+var COUNTER_MAX_INFLIGHT = 4;       // sockets open at once
+var COUNTER_BACKOFF_MS = 10000;     // default pause after a 429
+var COUNTER_BACKOFF_MAX_MS = 30000; // cap on a service-supplied Retry-After
+
+var counterStamps = [];             // issue times inside the current window
+var counterQueues = [[], []];       // [0] interactive, [1] background row reads
+var counterInflight = 0;
+var counterBackoffUntil = 0;        // background drain paused until this ms
+var counterTimer = null;
+var counterPumping = false;         // re-entrancy guard (a provider enqueues)
+var counterProviders = [];          // background work that picks its own order
+
+// Background providers. A FIFO of every row read on the page was the wrong
+// order: a reader who scrolls twenty rows down waits for the twenty rows they
+// have already passed before the rows in front of them are even issued. So the
+// background lane holds no standing backlog of its own — when a slot frees,
+// counterTake() asks each registered provider to nominate its next unit of
+// work, and initRowCounters() nominates the pending row nearest the viewport.
+//   fill()  — enqueue the next unit's requests; true when it did.
+//   count() — how many units are waiting right now. Zero is normal (a list
+//             registers before its first row scrolls into view), so a quiet
+//             provider is skipped, never dropped; it deregisters itself
+//             through counterDropProvider() when its render is superseded.
+function counterAddProvider(p) {
+  counterProviders.push(p);
+  counterPump();
+}
+
+function counterDropProvider(p) {
+  for (var i = 0; i < counterProviders.length; i++) {
+    if (counterProviders[i] === p) { counterProviders.splice(i, 1); return; }
+  }
+}
+
+// Let providers top the background lane up. A provider can resolve its unit
+// entirely from the memo and enqueue nothing, so keep asking while any of them
+// still has work and the lane is still empty.
+// Iterate a copy: count() is where a superseded render notices it is stale and
+// deregisters itself, which mutates the list underneath us.
+function counterFill() {
+  var list = counterProviders.slice();
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].count() && list[i].fill()) return true;
+  }
+  return false;
+}
+
+// Is there background work anywhere — queued, or waiting inside a provider?
+function counterBacklog() {
+  if (counterQueues[1].length) return true;
+  var list = counterProviders.slice();
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].count()) return true;
+  }
+  return false;
+}
+
+// Drop the issue stamps that have aged out of the rolling window.
+function counterPrune(now) {
+  while (counterStamps.length && now - counterStamps[0] >= COUNTER_WINDOW_MS) {
+    counterStamps.shift();
+  }
+}
+
+// The next job to send, or null when everything runnable is blocked. Interactive
+// work is never held by the back-off — the pause exists to stop row reads from
+// re-tripping the limit, not to punish the reader.
+function counterTake(now) {
+  if (counterQueues[0].length) return counterQueues[0].shift();
+  if (now < counterBackoffUntil) return null;
+  while (!counterQueues[1].length && counterFill()) { /* ask the providers */ }
+  if (counterQueues[1].length) return counterQueues[1].shift();
+  return null;
+}
+
+// Wake counterPump() at the earliest moment the queue can move again. In-flight
+// completions re-pump on their own, so only the window and the back-off need a
+// timer; one is enough, and it is never stacked.
+function counterSchedule() {
+  if (counterTimer) return;
+  var backlog = counterBacklog();
+  if (!counterQueues[0].length && !backlog) return;
+  var now = Date.now();
+  var delay = -1;
+  if (counterStamps.length >= COUNTER_BUDGET && counterStamps.length) {
+    delay = Math.max(delay, counterStamps[0] + COUNTER_WINDOW_MS - now);
+  }
+  if (!counterQueues[0].length && backlog && counterBackoffUntil > now) {
+    delay = Math.max(delay, counterBackoffUntil - now);
+  }
+  if (delay < 0) return;            // only in-flight capacity is missing
+  counterTimer = setTimeout(function () {
+    counterTimer = null;
+    counterPump();
+  }, delay + 1);
+}
+
+function counterSend(job) {
+  var settled = false;
+  function done() {
+    if (settled) return;
+    settled = true;
+    counterInflight--;
+    counterPump();
+  }
+  var p;
+  try { p = fetch(job.url); } catch (e) { p = Promise.reject(e); }
+  Promise.resolve(p).then(
+    function (r) { done(); job.resolve(r); },
+    function (e) { done(); job.reject(counterNetworkError(e)); }
+  );
+}
+
+// A rejected fetch and a 429 are the same thing to the row drain: "back off and
+// try this one again later". Tagging the error is what lets the read layer tell
+// those apart from a junk payload, which retrying would not fix.
+function counterNetworkError(e) {
+  var err = new Error('counter request failed: ' + ((e && e.message) || 'network'));
+  err.counterRetry = true;
+  return err;
+}
+
+// The guard matters now that counterTake() can call back into a provider, which
+// enqueues through counterFetch() and so re-enters counterPump(). The outer loop
+// is still running and re-reads the budget every turn, so the inner call has
+// nothing to add and would only confuse the accounting.
+function counterPump() {
+  if (counterPumping) return;
+  counterPumping = true;
+  try {
+    var now = Date.now();
+    counterPrune(now);
+    while (counterInflight < COUNTER_MAX_INFLIGHT && counterStamps.length < COUNTER_BUDGET) {
+      var job = counterTake(now);
+      if (!job) break;
+      counterStamps.push(now);
+      counterInflight++;
+      counterSend(job);
+    }
+  } finally {
+    counterPumping = false;
+  }
+  counterSchedule();
+}
+
+// The one door to Abacus. `priority` true = the reader is waiting (hits, upvote
+// reads); false = a speculative row read. Resolves with the Response, rejects
+// only when the request never completed.
+function counterFetch(url, priority) {
+  return new Promise(function (resolve, reject) {
+    counterQueues[priority ? 0 : 1].push({ url: url, resolve: resolve, reject: reject });
+    counterPump();
+  });
+}
+
+// How long to wait after a throttle. `res` is the 429 response when there was
+// one, so a service-supplied Retry-After (seconds) wins over the default —
+// capped, because an absurd value would otherwise strand the counters for the
+// whole visit. Shared by the row-read back-off and by the /hit retry, so both
+// obey the same instruction from the service.
+function counterRetryAfterMs(res) {
+  var ms = COUNTER_BACKOFF_MS;
+  if (res && res.headers && res.headers.get) {
+    var ra = parseFloat(res.headers.get('Retry-After'));
+    if (isFinite(ra) && ra > 0) ms = ra * 1000;
+  }
+  if (ms > COUNTER_BACKOFF_MAX_MS) ms = COUNTER_BACKOFF_MAX_MS;
+  return ms;
+}
+
+// Pause the row-read drain. `res` is the 429 response when there was one, so a
+// service-supplied Retry-After (seconds) wins over the default — capped, because
+// an absurd value would otherwise strand the counters for the whole visit.
+function counterBackoff(res) {
+  var until = Date.now() + counterRetryAfterMs(res);
+  if (until > counterBackoffUntil) counterBackoffUntil = until;
+}
+
+// --- Counter cache -----------------------------------------------------------
+// Totals are soft signals that move slowly, so a short memo in sessionStorage
+// buys back most of the budget: the role filter re-rendering the list, and a
+// Back out of an article, both repaint from the cache without spending a single
+// request. sessionStorage (not localStorage) keeps the memo to this tab and this
+// visit, which is about as long as a number this stale should be trusted.
+
+var COUNTER_CACHE_PREFIX = 'alerts:ctr:';
+var COUNTER_CACHE_TTL_MS = 300000;   // 5 minutes
+
+function counterCacheRead(key) {
+  if (!key) return null;
+  try {
+    var raw = sessionStorage.getItem(COUNTER_CACHE_PREFIX + key);
+    if (!raw) return null;
+    var o = JSON.parse(raw);
+    if (!o || typeof o.v !== 'number' || typeof o.t !== 'number') return null;
+    if (!Number.isSafeInteger(o.v) || o.v < 0) return null;
+    if (Date.now() - o.t > COUNTER_CACHE_TTL_MS) return null;
+    return o.v;
+  } catch (e) {
+    return null;
+  }
+}
+
+function counterCacheWrite(key, v) {
+  if (!key) return;
+  try {
+    sessionStorage.setItem(COUNTER_CACHE_PREFIX + key, JSON.stringify({ v: v, t: Date.now() }));
+  } catch (e) { /* private mode, or the quota — the memo is optional */ }
+}
+
+// Used when this browser lands a /hit whose body we couldn't read: the total we
+// have is now one behind, and showing the reader's own action is worth more than
+// waiting out the TTL. Absent from the cache means nothing to correct.
+function counterCacheBump(key) {
+  var v = counterCacheRead(key);
+  if (v !== null) counterCacheWrite(key, v + 1);
+}
+
+// --- Counter reads/writes (shared by upvotes, views and shares) --------------
+
+// GET /hit — increment, resolving true only when the service confirmed it.
+// Never rejects: every caller here is fire-and-forget and must not turn a dead
+// counter service into an unhandled rejection in the console.
+//
+// Interactive by definition — a hit is always something the reader just did — so
+// every attempt takes the priority queue, and each retry is metered by the same
+// global budget as the first try.
+//
+// Abacus' 30-per-10s limit is shared across every tab and everyone behind the
+// same IP, so a reader's view or share hit can be throttled through no fault of
+// this page. Resolving false once and stopping there silently lost the action
+// until the reader happened to reopen the page or copy the link again, so a hit
+// now retries:
+//
+//   * HTTP 429 — the increment did *not* happen, so retrying cannot double
+//     count. Wait Retry-After (default 10s, capped at 30s) and try again, up to
+//     HIT_MAX_ATTEMPTS attempts in total. The row-read drain is paused too: this
+//     browser is demonstrably over the limit, and speculative reads should stand
+//     aside for the reader's own action.
+//   * a rejected fetch — ambiguous: the request may well have landed and only
+//     the response been lost, and Abacus offers no idempotency key to settle it.
+//     Retried exactly ONCE after HIT_NET_RETRY_MS, which accepts a small risk of
+//     counting one view or share twice in exchange for not dropping it. That
+//     trade is deliberate and specific to views and shares — soft signals where
+//     a rare +1 costs less than a systematically lost count. Upvotes do not use
+//     this path; initUpvotes() reconciles by re-reading the total instead.
+//   * any other non-ok status (other 4xx/5xx) — give up and resolve false. A
+//     dead or misconfigured service fails the same way on the next attempt.
+//
+// Resolves true only after a confirmed ok response, which is what keeps
+// initViewCount()/initShare() from writing their localStorage flag for a hit
+// that never landed. Retries are plain setTimeout work: if the reader closes the
+// page first they simply die with it, the flag stays unset, and the next open or
+// copy counts the action.
+var HIT_MAX_ATTEMPTS = 4;        // total /hit attempts across 429s
+var HIT_NET_RETRY_MS = 5000;     // the single retry after a request never completed
+
+function hitCounter(key) {
+  if (!key) return Promise.resolve(false);
+  var url = UPVOTE_API + '/hit/' + UPVOTE_NS + '/' + encodeURIComponent(key);
+
+  return new Promise(function (resolve) {
+    var attempts = 0;            // attempts issued, including the first
+    var netRetried = false;      // the one network-failure retry is spent
+
+    function attempt() {
+      attempts++;
+      counterFetch(url, true).then(
+        function (r) {
+          if (r.status === 429) {
+            counterBackoff(r);                     // hold the row reads back too
+            if (attempts >= HIT_MAX_ATTEMPTS) { resolve(false); return; }
+            setTimeout(attempt, counterRetryAfterMs(r));
+            return;
+          }
+          if (!r.ok) { resolve(false); return; }
+          // The increment has landed; only the body is still in question, so
+          // from here every path resolves true.
+          var body;
+          try { body = r.json(); } catch (e) { body = Promise.reject(e); }
+          Promise.resolve(body).then(
+            function (d) {
+              // The response carries the new total; fold it into the memo so the
+              // list the reader goes back to shows their own view or share.
+              try { counterCacheWrite(key, upvoteCount(d)); } catch (e) { counterCacheBump(key); }
+              resolve(true);
+            },
+            function () { counterCacheBump(key); resolve(true); }
+          );
+        },
+        function () {
+          if (netRetried) { resolve(false); return; }
+          netRetried = true;
+          setTimeout(attempt, HIT_NET_RETRY_MS);
+        }
+      );
+    }
+
+    attempt();
+  });
+}
+
+// One metered, memoised counter read. Resolves { v, retry }:
+//   v     — the total, or null when it couldn't be read (callers render nothing
+//           rather than an invented "0"). 404 is "nobody has hit this yet" and
+//           is a real zero.
+//   retry — the read failed in a way worth one more attempt later (a 429, or the
+//           request never completed). A junk payload is not: retrying it would
+//           fail the same way.
+function counterReadDetailed(key, priority) {
+  if (!key) return Promise.resolve({ v: null, retry: false });
+  var cached = counterCacheRead(key);
+  if (cached !== null) return Promise.resolve({ v: cached, retry: false });
+  return counterFetch(UPVOTE_API + '/get/' + UPVOTE_NS + '/' + encodeURIComponent(key), priority)
+    .then(function (r) {
+      if (r.status === 404) return { value: 0 };
+      if (r.status === 429) {
+        counterBackoff(r);                 // Retry-After, if the service sent one
+        var e429 = counterNetworkError(new Error('HTTP 429'));
+        e429.counterBackedOff = true;      // don't let the catch overwrite it
+        throw e429;
+      }
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function (d) {
+      var n = upvoteCount(d);
+      counterCacheWrite(key, n);
+      return { v: n, retry: false };
+    })
+    .catch(function (e) {
+      var again = !!(e && e.counterRetry);
+      // A request that never completed is indistinguishable from a throttle at
+      // this layer, and the cure is the same, so pause the row drain for both.
+      if (again && !e.counterBackedOff) counterBackoff(null);
+      return { v: null, retry: again };
+    });
+}
+
+// GET /get — the current total, or null when it can't be read.
+function readCounter(key) {
+  return counterReadDetailed(key, false).then(function (o) { return o.v; });
+}
+
+// --- Share (detail pages only) ----------------------------------------------
+// Copies the item's canonical ALerts URL and counts the copy. Unlike upvotes
+// this control is built unconditionally: copying to the clipboard is a local
+// operation that works whether or not the counter service is reachable, so a
+// dead Abacus costs the tally, not the feature.
+
+var SHARE_COPIED = 'Link copied to the clipboard';
+var SHARE_FAILED = 'Couldn’t copy the link';
+
+var SHARE_ICON =
+  '<svg class="share__icon" viewBox="0 0 24 24" width="15" height="15" fill="none" ' +
+    'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" ' +
+    'aria-hidden="true" focusable="false">' +
+    '<circle cx="18" cy="5" r="3"></circle>' +
+    '<circle cx="6" cy="12" r="3"></circle>' +
+    '<circle cx="18" cy="19" r="3"></circle>' +
+    '<line x1="8.6" y1="10.6" x2="15.4" y2="6.4"></line>' +
+    '<line x1="8.6" y1="13.4" x2="15.4" y2="17.6"></line>' +
+  '</svg>';
+
+// The page's own address, stripped of any hash or stray query parameters, so a
+// reader who arrived through a tracking link still shares the clean canonical
+// one.
+function canonicalItemUrl(id) {
+  return location.origin + location.pathname + '?id=' + encodeURIComponent(id);
+}
+
+// navigator.clipboard is unavailable on insecure origins and in older browsers,
+// and can reject even where it exists (permission, no user gesture). The
+// textarea + execCommand path is the fallback for both cases.
+function legacyCopy(text) {
+  return new Promise(function (resolve, reject) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    var ok = false;
+    try {
+      ta.select();
+      if (ta.setSelectionRange) ta.setSelectionRange(0, ta.value.length);
+      ok = document.execCommand('copy');
+    } catch (e) {
+      ok = false;
+    }
+    document.body.removeChild(ta);
+    if (ok) resolve(); else reject(new Error('copy failed'));
+  });
+}
+
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(text).catch(function () { return legacyCopy(text); });
+  }
+  return legacyCopy(text);
+}
+
+// Mount the share control for `id` into `host`. `url` overrides the canonical
+// address if a caller ever needs to (nothing does today).
+//
+// Every click copies the link and confirms with a toast; the *counter* is
+// counted once per browser per item, the same shape as the view guard. The
+// localStorage flag `alerts:shared:<key>` is written only after the increment
+// is confirmed. hitCounter() now retries a throttled hit in place (and a
+// network failure once), so only a hit that fails every attempt leaves the flag
+// unwritten — and that one is retried on the next copy. A reader in a privacy
+// mode where
+// localStorage throws is counted on each copy rather than not at all.
+function initShare(host, kind, id, url) {
+  if (!host || !id) return;
+  var link = url || canonicalItemUrl(id);
+  var shareKey = counterKey('s-', kind, id);
+  var shared = shareKey ? 'alerts:shared:' + shareKey : null;
+
+  host.innerHTML =
+    '<button type="button" class="share" aria-label="Copy a link to this page">' +
+      SHARE_ICON +
+      '<span class="share__label">Share</span>' +
+    '</button>';
+
+  host.querySelector('.share').addEventListener('click', function () {
+    copyText(link).then(
+      function () {
+        showToast(SHARE_COPIED);
+        // Fire-and-forget: the reader has the link either way, so a failed
+        // count must not walk back a toast that told the truth.
+        if (shared && upvoteRead(shared)) return;   // already counted on this browser
+        hitCounter(shareKey).then(function (ok) {
+          if (ok && shared) upvoteWrite(shared);
+        });
+      },
+      function () {
+        showToast(SHARE_FAILED);
+      }
+    );
+  });
+}
+
+// --- View counter (detail pages only) ---------------------------------------
+// Counted once per browser per item, the same shape as the upvote guard: the
+// localStorage flag is written only after the increment is confirmed, so a hit
+// that never landed is retried on the next visit instead of being lost. A
+// reader in a privacy mode where localStorage throws is counted each visit
+// rather than not at all. A 429 is retried in place by hitCounter() while the
+// page is open; only a hit that fails every attempt leaves the flag unwritten,
+// and the next open counts the view.
+//
+// Call it after the item has rendered. It touches no DOM and never rejects, so
+// it cannot affect the page.
+function initViewCount(kind, id) {
+  if (!id) return;
+  var key = counterKey('v-', kind, id);
+  if (!key) return;
+  var seen = 'alerts:viewed:' + key;
+  if (upvoteRead(seen)) return;          // already counted on this browser
+  hitCounter(key).then(function (ok) {
+    if (ok) upvoteWrite(seen);
+  });
+}
+
+// --- List-row counters ------------------------------------------------------
+// initRowCounters(container)
+//
+//   Contract. Call it after rendering a list of rows into `container` — e.g.
+//   `initRowCounters(document.getElementById('list'))`. It finds every
+//   `.row[data-kind][data-id]` beneath the container (renderListItem() and
+//   renderUsecaseItem() emit those attributes and an empty
+//   `<span class="row__stats">` slot as the row's last child), reads that
+//   item's upvote, view and share totals from the counter service, and fills
+//   the slot in — ▲ n · 👁 n · share n, icons only, bottom-right of the row.
+//   The upvote total is read through the *unprefixed* key initUpvotes() writes,
+//   so the list and the detail page always agree; lists never write it.
+//
+//   Safe to call again after any re-render — a role filter rebuilding the list
+//   is the usual case. Each call takes a new generation number; results from a
+//   superseded call are dropped instead of painted onto rows that no longer
+//   exist, and the superseded call's observer is disconnected. Nothing here can
+//   fail the page: a row whose reads fail keeps its empty slot, and the list is
+//   already interactive before the first response.
+//
+//   Cheap by construction, because the budget is small (see counterFetch) and a
+//   full archive is 53 rows × 3 counters:
+//
+//     * Nothing is read for a row the reader hasn't reached. An
+//       IntersectionObserver with a 200px margin enqueues each row the first
+//       time it comes near the viewport and then stops watching it, so an
+//       opening screen costs a handful of requests instead of 159. Without
+//       IntersectionObserver (old browsers) the first ROW_COUNTER_FALLBACK_ROWS
+//       rows are read and the rest simply stay blank — the same
+//       degrade-to-nothing the whole feature already has.
+//     * Anything still fresh in the session memo paints straight away, before
+//       any observing starts and without a request. That is what makes a
+//       role-filter re-render and a Back out of an article free. A Back that
+//       comes out of the back-forward cache restores the old DOM instead of
+//       re-running any of this, so a `pageshow` listener repaints the rows
+//       from the memo there too — cache only, no requests, observer untouched.
+//     * Reads follow the reader, not the scrollbar's history. Enqueuing does
+//       not issue anything; it adds the row to this call's pending set, and the
+//       background lane of the budget then asks (counterAddProvider) for the
+//       pending row nearest the middle of the viewport every time a slot frees.
+//       Rows inside the viewport go first, then the nearest ones outside it, so
+//       scrolling past twenty rows no longer buries the rows the reader is
+//       actually looking at behind sixty already-passed reads. Nothing is
+//       dropped: a row left far behind is simply last in line.
+//     * A throttled or failed read is retried with its own back-off — 10s, 20s,
+//       then 30s, up to ROW_READ_MAX_ATTEMPTS attempts — because the 429 that
+//       caused it is usually not this page's fault (the service's 30-per-10s is
+//       per IP, shared with every other tab and everyone behind the same office
+//       address). counterBackoff() has already paused the row drain, so a retry
+//       never lands before the pause is over. A row that has scrolled more than
+//       ROW_FAR_SCREENS viewports away is parked instead of retried — put back
+//       under the observer, resumed with its attempt count intact when it comes
+//       back into view — so the budget is spent on rows someone can see.
+//     * A row that is queued, in flight or waiting to retry shows its three
+//       icons with an en-dash in place of each number
+//       (`.row__stats--pending`, aria-hidden): "coming", as distinct from the
+//       empty slot that means "not available". A fully memoised row paints its
+//       numbers straight away and never shows it, and a row that exhausts its
+//       attempts is cleared back to empty — the same degrade-to-nothing as
+//       before.
+
+var ROW_COUNTER_GEN = 0;
+var ROW_COUNTER_ROOT_MARGIN = '200px 0px';   // start reading just before arrival
+var ROW_COUNTER_FALLBACK_ROWS = 6;           // no IntersectionObserver
+var ROW_READ_MAX_ATTEMPTS = 5;               // total attempts per row
+var ROW_RETRY_BASE_MS = 10000;               // 10s, 20s, 30s …
+var ROW_RETRY_MAX_MS = 30000;                // … capped there
+var ROW_FAR_SCREENS = 2;                     // viewports past which a row parks
+var ROW_STAT_PENDING = '–';             // en-dash: the number is coming
+
+var STAT_ICONS = {
+  // A bare up-chevron, not the filled ▲ of the detail-page control: the row
+  // cluster is a read-out, and a solid mark would read as a button to press.
+  upvotes:
+    '<svg class="row__stat-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" ' +
+      'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" ' +
+      'aria-hidden="true" focusable="false">' +
+      '<path d="M5 15.5 12 8.5l7 7"></path>' +
+    '</svg>',
+  views:
+    '<svg class="row__stat-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" ' +
+      'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" ' +
+      'aria-hidden="true" focusable="false">' +
+      '<path d="M1.8 12S5.5 5.2 12 5.2 22.2 12 22.2 12 18.5 18.8 12 18.8 1.8 12 1.8 12Z"></path>' +
+      '<circle cx="12" cy="12" r="3"></circle>' +
+    '</svg>',
+  shares:
+    '<svg class="row__stat-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" ' +
+      'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" ' +
+      'aria-hidden="true" focusable="false">' +
+      '<circle cx="18" cy="5" r="2.6"></circle>' +
+      '<circle cx="6" cy="12" r="2.6"></circle>' +
+      '<circle cx="18" cy="19" r="2.6"></circle>' +
+      '<line x1="8.4" y1="10.7" x2="15.6" y2="6.3"></line>' +
+      '<line x1="8.4" y1="13.3" x2="15.6" y2="17.7"></line>' +
+    '</svg>'
+};
+
+function rowStatUnit(n, one, many) {
+  return n + ' ' + (n === 1 ? one : many);
+}
+
+// --- Where a row is, relative to the reader ---------------------------------
+// Used to order and to park pending row reads. getBoundingClientRect() is a
+// layout read on a handful of rows at the moment a request slot frees — cheap,
+// and never in a scroll handler.
+
+function rowViewportH() {
+  var h = window.innerHeight;
+  if (!h && document.documentElement) h = document.documentElement.clientHeight;
+  return h || 800;
+}
+
+function rowRect(row) {
+  if (!row || !row.getBoundingClientRect) return null;
+  try { return row.getBoundingClientRect(); } catch (e) { return null; }
+}
+
+// Lower is more urgent: distance from the row's middle to the viewport's, with
+// everything outside the viewport pushed behind everything inside it. A row we
+// cannot measure sorts last rather than jumping the line.
+function rowScore(row) {
+  var r = rowRect(row);
+  if (!r) return 2e6;
+  var vh = rowViewportH();
+  var d = Math.abs(r.top + (r.height || 0) / 2 - vh / 2);
+  return (r.bottom > 0 && r.top < vh) ? d : d + 1e6;
+}
+
+// More than ROW_FAR_SCREENS viewports away in either direction: the reader has
+// moved on, so this row's retries can wait until it comes back.
+function rowFar(row) {
+  var r = rowRect(row);
+  if (!r) return false;
+  var vh = rowViewportH();
+  return r.bottom < -ROW_FAR_SCREENS * vh || r.top > (1 + ROW_FAR_SCREENS) * vh;
+}
+
+function initRowCounters(container) {
+  if (!container) return;
+  var gen = ++ROW_COUNTER_GEN;
+  container.setAttribute('data-counters-gen', String(gen));
+
+  var found = container.querySelectorAll('.row[data-kind][data-id]');
+  var rows = [];
+  for (var i = 0; i < found.length; i++) rows.push(found[i]);
+
+  var observer = null;
+
+  // A later render bumps the container's generation; anything still in flight
+  // from this one then paints nothing, and this call's observer lets go of the
+  // rows it was watching rather than outliving the list it belongs to.
+  function stale() {
+    if (container.getAttribute('data-counters-gen') === String(gen)) return false;
+    if (observer) { observer.disconnect(); observer = null; }
+    if (provider) { counterDropProvider(provider); provider = null; }
+    return true;
+  }
+
+  // The cluster, in reading order: upvotes, views, shares. Each entry is the
+  // metric prefix its counter key carries — '' is the upvote key, which
+  // predates the other two and is read here exactly as initUpvotes() writes it.
+  var ROW_STATS = [
+    { prefix: '', icon: 'upvotes', one: 'upvote', many: 'upvotes' },
+    { prefix: 'v-', icon: 'views', one: 'view', many: 'views' },
+    { prefix: 's-', icon: 'shares', one: 'share', many: 'shares' }
+  ];
+
+  // The three keys for one row, in cluster order.
+  function keysFor(row) {
+    var kind = row.getAttribute('data-kind');
+    var id = row.getAttribute('data-id');
+    return ROW_STATS.map(function (m) { return counterKey(m.prefix, kind, id); });
+  }
+
+  // The number currently painted for one metric, or null when that metric is
+  // not in the cluster. Lets a partial repaint keep the sides it knows nothing
+  // about instead of dropping them.
+  function paintedStat(slot, name) {
+    var el = slot.querySelector('.row__stat[data-stat="' + name + '"] .row__stat-n');
+    if (!el) return null;
+    var n = parseInt(el.textContent, 10);
+    return (typeof n === 'number' && isFinite(n)) ? n : null;
+  }
+
+  // `values` is one entry per ROW_STATS metric: a number, or null when that
+  // read failed or wasn't attempted. Each metric is then resolved
+  // independently — memo, then the value handed in, then whatever is already
+  // painted — so the cluster always shows the freshest number this page knows
+  // per metric, and a partial repaint never erases the others. Only a row with
+  // nothing known at all says nothing.
+  //
+  // Returns true when the row now shows at least one real number — which is
+  // what tells the read path whether a row that has run out of attempts should
+  // be cleared back to empty or left showing what it did get.
+  function paint(row, values) {
+    var slot = row.querySelector('.row__stats');
+    if (!slot) return false;
+    var any = false;
+    var keys = keysFor(row);
+    var resolved = [];
+    for (var i = 0; i < ROW_STATS.length; i++) {
+      // Cache-first, per metric. The memo is written by every confirmed read
+      // *and* by the reader's own hit on the detail page, so it is never staler
+      // than the value handed in here — and a metric this call knows nothing
+      // about (null) keeps whatever is already on the row rather than
+      // disappearing from the cluster.
+      var n = counterCacheRead(keys[i]);
+      if (n === null && values && values[i] !== undefined) n = values[i];
+      if (n === null) n = paintedStat(slot, ROW_STATS[i].icon);
+      if (n !== null) any = true;
+      resolved.push(n);
+    }
+    // Nothing known at all — say nothing, and leave the pending dashes up: this
+    // row is either still trying or about to be cleared by the caller.
+    if (!any) return false;
+
+    var html = '';
+    var label = [];
+    ROW_STATS.forEach(function (m, i) {
+      var n = resolved[i];
+      if (n === null) return;
+      html += '<span class="row__stat' + (n > 0 ? ' is-on' : '') + '" data-stat="' + m.icon + '">' +
+        STAT_ICONS[m.icon] + '<span class="row__stat-n">' + n + '</span></span>';
+      label.push(rowStatUnit(n, m.one, m.many));
+    });
+    slot.innerHTML = html;
+    if (slot.classList) slot.classList.remove('row__stats--pending');
+    slot.setAttribute('aria-label', label.join(', '));
+    slot.setAttribute('aria-hidden', 'false');
+    return true;
+  }
+
+  // The waiting state: the same three icons, an en-dash where each number will
+  // go, and no aria-label — a screen reader is told nothing rather than told a
+  // dash. Only ever applied to a slot that is still empty, so a row painted
+  // from the memo (even partly) is never walked backwards into it.
+  function paintPending(row) {
+    var slot = row.querySelector('.row__stats');
+    if (!slot || slot.innerHTML) return;
+    var html = '';
+    ROW_STATS.forEach(function (m) {
+      html += '<span class="row__stat" data-stat="' + m.icon + '">' +
+        STAT_ICONS[m.icon] + '<span class="row__stat-n">' + ROW_STAT_PENDING + '</span></span>';
+    });
+    slot.innerHTML = html;
+    if (slot.classList) slot.classList.add('row__stats--pending');
+    slot.setAttribute('aria-hidden', 'true');
+    if (slot.removeAttribute) slot.removeAttribute('aria-label');
+  }
+
+  // Out of attempts with nothing to show: back to the empty slot, which the CSS
+  // hides entirely. Degrading to nothing beats leaving a dash that will never
+  // become a number.
+  function clearSlot(row) {
+    var slot = row.querySelector('.row__stats');
+    if (!slot) return;
+    slot.innerHTML = '';
+    if (slot.classList) slot.classList.remove('row__stats--pending');
+    slot.setAttribute('aria-hidden', 'true');
+    if (slot.removeAttribute) slot.removeAttribute('aria-label');
+  }
+
+  // Paint whatever the session memo already holds for this row, and report
+  // whether that covered all three metrics. One memoised metric is worth
+  // painting on its own — that is what makes the reader's own upvote show up on
+  // the list — but a partly-cached row still goes through the read path, where
+  // the cached sides resolve without a request anyway.
+  function paintFromCache(row) {
+    var keys = keysFor(row);
+    var values = [];
+    var have = 0;
+    for (var i = 0; i < keys.length; i++) {
+      var v = counterCacheRead(keys[i]);
+      if (v !== null) have++;
+      values.push(v);
+    }
+    if (!have) return false;
+    paint(row, values);
+    return have === keys.length;
+  }
+
+  // --- Scheduling ------------------------------------------------------------
+  // `waiting` is this render's pending set: rows the observer has reached that
+  // have not been read yet, each an entry { row, tries, painted }. Nothing here
+  // issues a request — the budget's background lane pulls from `waiting` via the
+  // provider below, newest viewport position first, every time a slot frees.
+  // `parked` holds entries whose retry is postponed because the row has
+  // scrolled out of reach; they come back through the observer.
+
+  var waiting = [];
+  var parked = [];
+  var provider = null;
+
+  function unpark(row) {
+    for (var i = 0; i < parked.length; i++) {
+      if (parked[i].row === row) return parked.splice(i, 1)[0];
+    }
+    return null;
+  }
+
+  // Wait for the row to come back into view rather than spending the budget on
+  // something nobody is looking at. Without an observer there is nothing to wait
+  // on, so fall back to the timed retry.
+  function park(entry) {
+    if (!observer) { hold(entry, ROW_RETRY_MAX_MS); return; }
+    parked.push(entry);
+    observer.observe(entry.row);
+  }
+
+  function hold(entry, delay) {
+    setTimeout(function () {
+      if (stale()) return;
+      if (rowFar(entry.row)) { park(entry); return; }
+      waiting.push(entry);
+      counterPump();
+    }, delay);
+  }
+
+  // One attempt at one row's three counters, issued together: a cached side
+  // resolves without a request, so a partly-cached row costs only what it is
+  // missing, and a retry re-reads only the metrics that actually failed.
+  function attempt(entry) {
+    entry.tries++;
+    var keys = keysFor(entry.row);
+    Promise.all(keys.map(function (k) { return counterReadDetailed(k, false); }))
+      .then(function (reads) {
+        if (stale()) return;
+        var values = [];
+        var again = false;
+        for (var i = 0; i < reads.length; i++) {
+          values.push(reads[i].v);
+          if (reads[i].retry) again = true;
+        }
+        if (paint(entry.row, values)) entry.painted = true;
+        if (!again || entry.tries >= ROW_READ_MAX_ATTEMPTS) {
+          if (!entry.painted) clearSlot(entry.row);   // out of road — say nothing
+          return;
+        }
+        if (rowFar(entry.row)) { park(entry); return; }
+        // 10s, 20s, 30s — and never before counterBackoff()'s pause is over,
+        // which is what stops five rows retrying straight back into the limit.
+        var delay = Math.min(ROW_RETRY_BASE_MS * entry.tries, ROW_RETRY_MAX_MS);
+        var pause = counterBackoffUntil - Date.now();
+        if (pause > delay) delay = pause;
+        hold(entry, delay);
+      });
+  }
+
+  // The budget's view of this list: how much is left to read, and "start the
+  // next one" — the pending row closest to the middle of the viewport.
+  provider = {
+    count: function () { return stale() ? 0 : waiting.length; },
+    fill: function () {
+      if (stale() || !waiting.length) return false;
+      var best = 0;
+      var score = rowScore(waiting[0].row);
+      for (var i = 1; i < waiting.length; i++) {
+        var s = rowScore(waiting[i].row);
+        if (s < score) { score = s; best = i; }
+      }
+      attempt(waiting.splice(best, 1)[0]);
+      return true;
+    }
+  };
+
+  function enqueue(row) {
+    var entry = unpark(row);
+    if (!entry) {
+      if (row.getAttribute('data-counters-read') === '1') return;
+      row.setAttribute('data-counters-read', '1');
+      entry = { row: row, tries: 0, painted: false };
+    }
+    paintPending(row);
+    waiting.push(entry);
+    // No pump here: the caller pumps once the whole batch is in, so the first
+    // free slots are handed to the nearest row of the batch rather than to
+    // whichever row the observer happened to report first.
+  }
+
+  // Pressing Back out of a detail page usually restores this document from the
+  // browser's back-forward cache: the old DOM comes back untouched, so the row
+  // the reader just opened still shows its pre-visit numbers even though the
+  // view, share or upvote they landed has already been folded into the memo.
+  // `pageshow` with persisted=true is the only signal that happened (no load,
+  // no DOMContentLoaded), so repaint from the memo there. Cache only — no
+  // requests are issued on a restore, and the observer set up by whichever
+  // render is current is left exactly as it is. A row whose memo has since
+  // expired keeps the numbers it is showing. Registered once per container;
+  // persisted=false is an ordinary load, which paints itself.
+  if (container.getAttribute('data-counters-pageshow') !== '1') {
+    container.setAttribute('data-counters-pageshow', '1');
+    window.addEventListener('pageshow', function (e) {
+      if (!e || !e.persisted) return;
+      var live = container.querySelectorAll('.row[data-kind][data-id]');
+      for (var r = 0; r < live.length; r++) paintFromCache(live[r]);
+    });
+  }
+
+  // Free rows first, so a re-render repaints everything it can before deciding
+  // what still has to be fetched.
+  var pending = [];
+  for (var c = 0; c < rows.length; c++) {
+    if (paintFromCache(rows[c])) rows[c].setAttribute('data-counters-read', '1');
+    else pending.push(rows[c]);
+  }
+  if (!pending.length) return;
+
+  // Only now, with rows to read, does this render start competing for the
+  // background budget. stale() hands the registration back on a re-render.
+  counterAddProvider(provider);
+
+  if (typeof IntersectionObserver === 'function') {
+    observer = new IntersectionObserver(function (entries) {
+      if (stale()) return;
+      for (var e = 0; e < entries.length; e++) {
+        if (!entries[e].isIntersecting) continue;
+        // One read per row for the life of this render: stop watching before
+        // enqueuing, so a row scrolled past and back doesn't queue twice. A row
+        // parked mid-retry is re-observed, and comes back through here to
+        // resume with its attempt count intact.
+        observer.unobserve(entries[e].target);
+        enqueue(entries[e].target);
+      }
+      counterPump();                  // one pump for the whole batch
+    }, { rootMargin: ROW_COUNTER_ROOT_MARGIN });
+    for (var o = 0; o < pending.length; o++) observer.observe(pending[o]);
+  } else {
+    for (var f = 0; f < pending.length && f < ROW_COUNTER_FALLBACK_ROWS; f++) enqueue(pending[f]);
+    counterPump();
   }
 }
 
