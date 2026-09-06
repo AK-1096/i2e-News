@@ -153,14 +153,23 @@ private window resets it, and a browser where `localStorage` throws is counted o
 List pages show all three totals per row — ▲ upvotes · views · shares, icons only, in the row's
 bottom-right corner — via `initRowCounters(container)`, which reads one triple per
 `.row[data-kind][data-id]`. **Abacus rate-limits at 30 requests per 10 seconds per IP**, and a 53-row
-archive is 159 reads — enough to 429 the whole page and the reader's next click with it. Four things
+archive is 159 reads — enough to 429 the whole page and the reader's next click with it. Several mechanisms
 keep the site inside that budget. Reads are **lazy by viewport**: an `IntersectionObserver`
 (`200px` margin) enqueues a row only as the reader reaches it, so an opening screen costs a handful of
 requests (no `IntersectionObserver` → the first six rows only). Every Abacus call in `app.js` then
 goes through `counterFetch()`, a shared **20-requests-per-rolling-10s budget** (≤ 4 in flight) whose
 priority queue lets interactive calls — view hits, share hits, upvotes — jump ahead of speculative row
-reads. A **429 or network failure pauses the row drain** for 10s (or `Retry-After`, capped at 30s) and
-re-queues that row once. Interactive **view and share hits retry themselves**: a 429 means the
+reads. Row reads are **scheduled by viewport, not FIFO**: enqueuing only adds the row to a pending
+set, and each time a request slot frees the budget picks the pending row nearest the middle of the
+viewport (rows on screen first), so scrolling down no longer leaves the reader waiting behind sixty
+reads for rows they have already passed. A **429 or network failure pauses the row drain** for 10s (or
+`Retry-After`, capped at 30s), after which that row is **retried with its own back-off** — 10s, 20s,
+then 30s, up to five attempts — unless it has scrolled more than two viewports away, in which case it
+is parked under the observer and resumes, attempt count intact, when it comes back into view. While a
+row is queued, in flight or waiting to retry its slot shows the three icons with an en-dash in place
+of each number (`.row__stats--pending`, `aria-hidden`); it paints numbers as they arrive, and clears
+back to an empty slot only once the attempts are exhausted, so "loading" and "gave up" no longer look
+alike. Interactive **view and share hits retry themselves**: a 429 means the
 increment did not happen, so the hit waits `Retry-After` (10s default, 30s cap) and tries again, up to
 four attempts while the page is open; a request that never completed is retried once after 5s,
 accepting a rare double count over a systematically lost one. Any other error, or four exhausted
@@ -175,6 +184,10 @@ therefore costs far less than the raw 50% suggests: the budget constants are unc
 lazy-by-viewport reads plus the memo absorb it. Each row still degrades on its own — it paints
 whichever of the three totals came back and stays empty only when all three fail, rather than showing
 an invented `0` — and a re-render invalidates results still in flight and disconnects the old observer.
+Be honest about the ceiling, though: **Abacus' 30-per-10s limit is per IP, and everyone behind the same
+office address shares it** — one colleague's open tabs can throttle another's, and no amount of
+client-side scheduling fixes that. At company scale the counters need the same tenant-controlled
+endpoint this README already names as the replacement path for upvotes.
 
 The same PoC-grade caveats as upvotes apply in full: public namespace, unofficial free service, no
 SLA, and anyone who works out the URL can inflate a number. **Treat views and shares as soft signals,

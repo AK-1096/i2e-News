@@ -1572,6 +1572,21 @@ html.vt-left::view-transition-new(root) {
   font-variant-numeric: tabular-nums;
 }
 
+/* Waiting for the numbers: the same cluster with an en-dash in each slot, a
+   shade fainter than a real read-out so "coming" never reads as a value. No
+   lime here — the accent means "this counter has been hit", which is exactly
+   what we don't know yet — and no hover lift either, for the same reason. */
+.row__stats--pending .row__stat,
+.row:hover .row__stats--pending .row__stat {
+  opacity: 0.35;
+}
+
+.row__stats--pending .row__stat-icon,
+.row:hover .row__stats--pending .row__stat .row__stat-icon {
+  color: var(--color-press-black);
+  filter: none;
+}
+
 .row__stat-icon {
   display: block;
   flex: none;

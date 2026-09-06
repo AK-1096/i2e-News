@@ -588,9 +588,13 @@ function showToast(msg) {
 //     COUNTER_WINDOW_MS — deliberately under the service's 30, leaving headroom
 //     for the same reader's other tabs, which share the IP and the limit;
 //   * at most COUNTER_MAX_INFLIGHT sockets open at once;
-//   * two FIFO queues. Interactive calls (a view hit, a share hit, anything the
-//     upvote control does) jump ahead of speculative row reads, because those
-//     are the reader's own actions and there is a person waiting on them;
+//   * two lanes. Interactive calls (a view hit, a share hit, anything the
+//     upvote control does) are a FIFO that jumps ahead of speculative row
+//     reads, because those are the reader's own actions and there is a person
+//     waiting on them. The background lane is *not* a FIFO: it holds no
+//     standing backlog and instead asks its registered providers for the next
+//     unit of work each time a slot frees, which is how row reads follow the
+//     viewport instead of the order the rows were scrolled past;
 //   * a back-off: a 429 or a network failure on a row read pauses the *row*
 //     drain (interactive calls still go), honouring Retry-After when the service
 //     sends one.
@@ -610,6 +614,53 @@ var counterQueues = [[], []];       // [0] interactive, [1] background row reads
 var counterInflight = 0;
 var counterBackoffUntil = 0;        // background drain paused until this ms
 var counterTimer = null;
+var counterPumping = false;         // re-entrancy guard (a provider enqueues)
+var counterProviders = [];          // background work that picks its own order
+
+// Background providers. A FIFO of every row read on the page was the wrong
+// order: a reader who scrolls twenty rows down waits for the twenty rows they
+// have already passed before the rows in front of them are even issued. So the
+// background lane holds no standing backlog of its own — when a slot frees,
+// counterTake() asks each registered provider to nominate its next unit of
+// work, and initRowCounters() nominates the pending row nearest the viewport.
+//   fill()  — enqueue the next unit's requests; true when it did.
+//   count() — how many units are waiting right now. Zero is normal (a list
+//             registers before its first row scrolls into view), so a quiet
+//             provider is skipped, never dropped; it deregisters itself
+//             through counterDropProvider() when its render is superseded.
+function counterAddProvider(p) {
+  counterProviders.push(p);
+  counterPump();
+}
+
+function counterDropProvider(p) {
+  for (var i = 0; i < counterProviders.length; i++) {
+    if (counterProviders[i] === p) { counterProviders.splice(i, 1); return; }
+  }
+}
+
+// Let providers top the background lane up. A provider can resolve its unit
+// entirely from the memo and enqueue nothing, so keep asking while any of them
+// still has work and the lane is still empty.
+// Iterate a copy: count() is where a superseded render notices it is stale and
+// deregisters itself, which mutates the list underneath us.
+function counterFill() {
+  var list = counterProviders.slice();
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].count() && list[i].fill()) return true;
+  }
+  return false;
+}
+
+// Is there background work anywhere — queued, or waiting inside a provider?
+function counterBacklog() {
+  if (counterQueues[1].length) return true;
+  var list = counterProviders.slice();
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].count()) return true;
+  }
+  return false;
+}
 
 // Drop the issue stamps that have aged out of the rolling window.
 function counterPrune(now) {
@@ -623,7 +674,9 @@ function counterPrune(now) {
 // re-tripping the limit, not to punish the reader.
 function counterTake(now) {
   if (counterQueues[0].length) return counterQueues[0].shift();
-  if (counterQueues[1].length && now >= counterBackoffUntil) return counterQueues[1].shift();
+  if (now < counterBackoffUntil) return null;
+  while (!counterQueues[1].length && counterFill()) { /* ask the providers */ }
+  if (counterQueues[1].length) return counterQueues[1].shift();
   return null;
 }
 
@@ -632,13 +685,14 @@ function counterTake(now) {
 // timer; one is enough, and it is never stacked.
 function counterSchedule() {
   if (counterTimer) return;
-  if (!counterQueues[0].length && !counterQueues[1].length) return;
+  var backlog = counterBacklog();
+  if (!counterQueues[0].length && !backlog) return;
   var now = Date.now();
   var delay = -1;
   if (counterStamps.length >= COUNTER_BUDGET && counterStamps.length) {
     delay = Math.max(delay, counterStamps[0] + COUNTER_WINDOW_MS - now);
   }
-  if (!counterQueues[0].length && counterQueues[1].length && counterBackoffUntil > now) {
+  if (!counterQueues[0].length && backlog && counterBackoffUntil > now) {
     delay = Math.max(delay, counterBackoffUntil - now);
   }
   if (delay < 0) return;            // only in-flight capacity is missing
@@ -673,15 +727,25 @@ function counterNetworkError(e) {
   return err;
 }
 
+// The guard matters now that counterTake() can call back into a provider, which
+// enqueues through counterFetch() and so re-enters counterPump(). The outer loop
+// is still running and re-reads the budget every turn, so the inner call has
+// nothing to add and would only confuse the accounting.
 function counterPump() {
-  var now = Date.now();
-  counterPrune(now);
-  while (counterInflight < COUNTER_MAX_INFLIGHT && counterStamps.length < COUNTER_BUDGET) {
-    var job = counterTake(now);
-    if (!job) break;
-    counterStamps.push(now);
-    counterInflight++;
-    counterSend(job);
+  if (counterPumping) return;
+  counterPumping = true;
+  try {
+    var now = Date.now();
+    counterPrune(now);
+    while (counterInflight < COUNTER_MAX_INFLIGHT && counterStamps.length < COUNTER_BUDGET) {
+      var job = counterTake(now);
+      if (!job) break;
+      counterStamps.push(now);
+      counterInflight++;
+      counterSend(job);
+    }
+  } finally {
+    counterPumping = false;
   }
   counterSchedule();
 }
@@ -1043,13 +1107,39 @@ function initViewCount(kind, id) {
 //       comes out of the back-forward cache restores the old DOM instead of
 //       re-running any of this, so a `pageshow` listener repaints the rows
 //       from the memo there too — cache only, no requests, observer untouched.
-//     * A throttled or failed read is re-queued exactly once. counterBackoff()
-//       has already paused the row drain by then, so the retry naturally lands
-//       after the pause rather than immediately re-tripping the limit.
+//     * Reads follow the reader, not the scrollbar's history. Enqueuing does
+//       not issue anything; it adds the row to this call's pending set, and the
+//       background lane of the budget then asks (counterAddProvider) for the
+//       pending row nearest the middle of the viewport every time a slot frees.
+//       Rows inside the viewport go first, then the nearest ones outside it, so
+//       scrolling past twenty rows no longer buries the rows the reader is
+//       actually looking at behind sixty already-passed reads. Nothing is
+//       dropped: a row left far behind is simply last in line.
+//     * A throttled or failed read is retried with its own back-off — 10s, 20s,
+//       then 30s, up to ROW_READ_MAX_ATTEMPTS attempts — because the 429 that
+//       caused it is usually not this page's fault (the service's 30-per-10s is
+//       per IP, shared with every other tab and everyone behind the same office
+//       address). counterBackoff() has already paused the row drain, so a retry
+//       never lands before the pause is over. A row that has scrolled more than
+//       ROW_FAR_SCREENS viewports away is parked instead of retried — put back
+//       under the observer, resumed with its attempt count intact when it comes
+//       back into view — so the budget is spent on rows someone can see.
+//     * A row that is queued, in flight or waiting to retry shows its three
+//       icons with an en-dash in place of each number
+//       (`.row__stats--pending`, aria-hidden): "coming", as distinct from the
+//       empty slot that means "not available". A fully memoised row paints its
+//       numbers straight away and never shows it, and a row that exhausts its
+//       attempts is cleared back to empty — the same degrade-to-nothing as
+//       before.
 
 var ROW_COUNTER_GEN = 0;
 var ROW_COUNTER_ROOT_MARGIN = '200px 0px';   // start reading just before arrival
 var ROW_COUNTER_FALLBACK_ROWS = 6;           // no IntersectionObserver
+var ROW_READ_MAX_ATTEMPTS = 5;               // total attempts per row
+var ROW_RETRY_BASE_MS = 10000;               // 10s, 20s, 30s …
+var ROW_RETRY_MAX_MS = 30000;                // … capped there
+var ROW_FAR_SCREENS = 2;                     // viewports past which a row parks
+var ROW_STAT_PENDING = '–';             // en-dash: the number is coming
 
 var STAT_ICONS = {
   // A bare up-chevron, not the filled ▲ of the detail-page control: the row
@@ -1083,6 +1173,42 @@ function rowStatUnit(n, one, many) {
   return n + ' ' + (n === 1 ? one : many);
 }
 
+// --- Where a row is, relative to the reader ---------------------------------
+// Used to order and to park pending row reads. getBoundingClientRect() is a
+// layout read on a handful of rows at the moment a request slot frees — cheap,
+// and never in a scroll handler.
+
+function rowViewportH() {
+  var h = window.innerHeight;
+  if (!h && document.documentElement) h = document.documentElement.clientHeight;
+  return h || 800;
+}
+
+function rowRect(row) {
+  if (!row || !row.getBoundingClientRect) return null;
+  try { return row.getBoundingClientRect(); } catch (e) { return null; }
+}
+
+// Lower is more urgent: distance from the row's middle to the viewport's, with
+// everything outside the viewport pushed behind everything inside it. A row we
+// cannot measure sorts last rather than jumping the line.
+function rowScore(row) {
+  var r = rowRect(row);
+  if (!r) return 2e6;
+  var vh = rowViewportH();
+  var d = Math.abs(r.top + (r.height || 0) / 2 - vh / 2);
+  return (r.bottom > 0 && r.top < vh) ? d : d + 1e6;
+}
+
+// More than ROW_FAR_SCREENS viewports away in either direction: the reader has
+// moved on, so this row's retries can wait until it comes back.
+function rowFar(row) {
+  var r = rowRect(row);
+  if (!r) return false;
+  var vh = rowViewportH();
+  return r.bottom < -ROW_FAR_SCREENS * vh || r.top > (1 + ROW_FAR_SCREENS) * vh;
+}
+
 function initRowCounters(container) {
   if (!container) return;
   var gen = ++ROW_COUNTER_GEN;
@@ -1100,6 +1226,7 @@ function initRowCounters(container) {
   function stale() {
     if (container.getAttribute('data-counters-gen') === String(gen)) return false;
     if (observer) { observer.disconnect(); observer = null; }
+    if (provider) { counterDropProvider(provider); provider = null; }
     return true;
   }
 
@@ -1135,9 +1262,13 @@ function initRowCounters(container) {
   // painted — so the cluster always shows the freshest number this page knows
   // per metric, and a partial repaint never erases the others. Only a row with
   // nothing known at all says nothing.
+  //
+  // Returns true when the row now shows at least one real number — which is
+  // what tells the read path whether a row that has run out of attempts should
+  // be cleared back to empty or left showing what it did get.
   function paint(row, values) {
     var slot = row.querySelector('.row__stats');
-    if (!slot) return;
+    if (!slot) return false;
     var any = false;
     var keys = keysFor(row);
     var resolved = [];
@@ -1153,7 +1284,9 @@ function initRowCounters(container) {
       if (n !== null) any = true;
       resolved.push(n);
     }
-    if (!any) return;                       // nothing known at all — say nothing
+    // Nothing known at all — say nothing, and leave the pending dashes up: this
+    // row is either still trying or about to be cleared by the caller.
+    if (!any) return false;
 
     var html = '';
     var label = [];
@@ -1165,8 +1298,40 @@ function initRowCounters(container) {
       label.push(rowStatUnit(n, m.one, m.many));
     });
     slot.innerHTML = html;
+    if (slot.classList) slot.classList.remove('row__stats--pending');
     slot.setAttribute('aria-label', label.join(', '));
     slot.setAttribute('aria-hidden', 'false');
+    return true;
+  }
+
+  // The waiting state: the same three icons, an en-dash where each number will
+  // go, and no aria-label — a screen reader is told nothing rather than told a
+  // dash. Only ever applied to a slot that is still empty, so a row painted
+  // from the memo (even partly) is never walked backwards into it.
+  function paintPending(row) {
+    var slot = row.querySelector('.row__stats');
+    if (!slot || slot.innerHTML) return;
+    var html = '';
+    ROW_STATS.forEach(function (m) {
+      html += '<span class="row__stat" data-stat="' + m.icon + '">' +
+        STAT_ICONS[m.icon] + '<span class="row__stat-n">' + ROW_STAT_PENDING + '</span></span>';
+    });
+    slot.innerHTML = html;
+    if (slot.classList) slot.classList.add('row__stats--pending');
+    slot.setAttribute('aria-hidden', 'true');
+    if (slot.removeAttribute) slot.removeAttribute('aria-label');
+  }
+
+  // Out of attempts with nothing to show: back to the empty slot, which the CSS
+  // hides entirely. Degrading to nothing beats leaving a dash that will never
+  // become a number.
+  function clearSlot(row) {
+    var slot = row.querySelector('.row__stats');
+    if (!slot) return;
+    slot.innerHTML = '';
+    if (slot.classList) slot.classList.remove('row__stats--pending');
+    slot.setAttribute('aria-hidden', 'true');
+    if (slot.removeAttribute) slot.removeAttribute('aria-label');
   }
 
   // Paint whatever the session memo already holds for this row, and report
@@ -1188,23 +1353,102 @@ function initRowCounters(container) {
     return have === keys.length;
   }
 
-  // Read one row's three counters. A cached side resolves without a request, so
-  // a partly-cached row costs only what it is missing.
-  function one(row, retried) {
-    var keys = keysFor(row);
-    return Promise.all(keys.map(function (k) { return counterReadDetailed(k, false); }))
+  // --- Scheduling ------------------------------------------------------------
+  // `waiting` is this render's pending set: rows the observer has reached that
+  // have not been read yet, each an entry { row, tries, painted }. Nothing here
+  // issues a request — the budget's background lane pulls from `waiting` via the
+  // provider below, newest viewport position first, every time a slot frees.
+  // `parked` holds entries whose retry is postponed because the row has
+  // scrolled out of reach; they come back through the observer.
+
+  var waiting = [];
+  var parked = [];
+  var provider = null;
+
+  function unpark(row) {
+    for (var i = 0; i < parked.length; i++) {
+      if (parked[i].row === row) return parked.splice(i, 1)[0];
+    }
+    return null;
+  }
+
+  // Wait for the row to come back into view rather than spending the budget on
+  // something nobody is looking at. Without an observer there is nothing to wait
+  // on, so fall back to the timed retry.
+  function park(entry) {
+    if (!observer) { hold(entry, ROW_RETRY_MAX_MS); return; }
+    parked.push(entry);
+    observer.observe(entry.row);
+  }
+
+  function hold(entry, delay) {
+    setTimeout(function () {
+      if (stale()) return;
+      if (rowFar(entry.row)) { park(entry); return; }
+      waiting.push(entry);
+      counterPump();
+    }, delay);
+  }
+
+  // One attempt at one row's three counters, issued together: a cached side
+  // resolves without a request, so a partly-cached row costs only what it is
+  // missing, and a retry re-reads only the metrics that actually failed.
+  function attempt(entry) {
+    entry.tries++;
+    var keys = keysFor(entry.row);
+    Promise.all(keys.map(function (k) { return counterReadDetailed(k, false); }))
       .then(function (reads) {
         if (stale()) return;
-        var again = reads.some(function (r) { return r.retry; });
-        if (!retried && again) return one(row, true);
-        paint(row, reads.map(function (r) { return r.v; }));
+        var values = [];
+        var again = false;
+        for (var i = 0; i < reads.length; i++) {
+          values.push(reads[i].v);
+          if (reads[i].retry) again = true;
+        }
+        if (paint(entry.row, values)) entry.painted = true;
+        if (!again || entry.tries >= ROW_READ_MAX_ATTEMPTS) {
+          if (!entry.painted) clearSlot(entry.row);   // out of road — say nothing
+          return;
+        }
+        if (rowFar(entry.row)) { park(entry); return; }
+        // 10s, 20s, 30s — and never before counterBackoff()'s pause is over,
+        // which is what stops five rows retrying straight back into the limit.
+        var delay = Math.min(ROW_RETRY_BASE_MS * entry.tries, ROW_RETRY_MAX_MS);
+        var pause = counterBackoffUntil - Date.now();
+        if (pause > delay) delay = pause;
+        hold(entry, delay);
       });
   }
 
+  // The budget's view of this list: how much is left to read, and "start the
+  // next one" — the pending row closest to the middle of the viewport.
+  provider = {
+    count: function () { return stale() ? 0 : waiting.length; },
+    fill: function () {
+      if (stale() || !waiting.length) return false;
+      var best = 0;
+      var score = rowScore(waiting[0].row);
+      for (var i = 1; i < waiting.length; i++) {
+        var s = rowScore(waiting[i].row);
+        if (s < score) { score = s; best = i; }
+      }
+      attempt(waiting.splice(best, 1)[0]);
+      return true;
+    }
+  };
+
   function enqueue(row) {
-    if (row.getAttribute('data-counters-read') === '1') return;
-    row.setAttribute('data-counters-read', '1');
-    one(row);
+    var entry = unpark(row);
+    if (!entry) {
+      if (row.getAttribute('data-counters-read') === '1') return;
+      row.setAttribute('data-counters-read', '1');
+      entry = { row: row, tries: 0, painted: false };
+    }
+    paintPending(row);
+    waiting.push(entry);
+    // No pump here: the caller pumps once the whole batch is in, so the first
+    // free slots are handed to the nearest row of the batch rather than to
+    // whichever row the observer happened to report first.
   }
 
   // Pressing Back out of a detail page usually restores this document from the
@@ -1235,20 +1479,28 @@ function initRowCounters(container) {
   }
   if (!pending.length) return;
 
+  // Only now, with rows to read, does this render start competing for the
+  // background budget. stale() hands the registration back on a re-render.
+  counterAddProvider(provider);
+
   if (typeof IntersectionObserver === 'function') {
     observer = new IntersectionObserver(function (entries) {
       if (stale()) return;
       for (var e = 0; e < entries.length; e++) {
         if (!entries[e].isIntersecting) continue;
         // One read per row for the life of this render: stop watching before
-        // enqueuing, so a row scrolled past and back doesn't queue twice.
+        // enqueuing, so a row scrolled past and back doesn't queue twice. A row
+        // parked mid-retry is re-observed, and comes back through here to
+        // resume with its attempt count intact.
         observer.unobserve(entries[e].target);
         enqueue(entries[e].target);
       }
+      counterPump();                  // one pump for the whole batch
     }, { rootMargin: ROW_COUNTER_ROOT_MARGIN });
     for (var o = 0; o < pending.length; o++) observer.observe(pending[o]);
   } else {
     for (var f = 0; f < pending.length && f < ROW_COUNTER_FALLBACK_ROWS; f++) enqueue(pending[f]);
+    counterPump();
   }
 }
 
