@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>i2e AI Guide — ALerts</title>
   <link rel="stylesheet" href="assets/styles.css?v=5">
-  <script src="assets/nav.js?v=1"></script>
+  <script src="assets/nav.js?v=2"></script>
 </head>
 <body>
   <header class="masthead">
@@ -21,8 +21,8 @@
   </header>
 
   <!-- Spine portal: News is parked on the left, so the slide has to run the
-       other way — data-slide="left" tells nav.js to reverse it. -->
-  <a class="portal portal--left" href="events.html" data-slide="left" aria-label="Go to News">
+       other way — nav.js reverses it from the navigation itself. -->
+  <a class="portal portal--left" href="events.html" aria-label="Go to News">
     <span class="portal__inner">
       <span class="portal__arrow" aria-hidden="true">&larr;</span>
       <span class="portal__label">News</span>
@@ -60,7 +60,7 @@
     <footer class="frontpage__footer">
       <span class="frontpage__footer-actions">
         <a class="pill" href="index.html">Back to the front page &rarr;</a>
-        <a class="pill" href="events.html" data-slide="left">Go to News &rarr;</a>
+        <a class="pill" href="events.html">Go to News &rarr;</a>
       </span>
       <p class="frontpage__note">
         Curated by i2e Consulting AI Labs — techniques gathered by the ALerts curator agent.

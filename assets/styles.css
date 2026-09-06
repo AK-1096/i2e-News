@@ -1479,8 +1479,8 @@ html.vt-back::view-transition-new(root) {
    pages sit side by side — News on the left, the i2e AI Guide on the right — so
    crossing right-to-left has to play the mirror of the forward slide even
    though it is a forward navigation. `vt-left` is set on <html> by nav.js
-   during `pagereveal`, from a flag the departing page wrote for links marked
-   data-slide="left"; it reuses the back keyframes exactly. */
+   during `pagereveal`, which reads the pair of pages straight off
+   `navigation.activation`; it reuses the back keyframes exactly. */
 html.vt-left::view-transition-old(root) {
   z-index: 1;
   animation-name: page-slide-back-out;
@@ -1537,27 +1537,23 @@ html.vt-left::view-transition-new(root) {
   flex: none;
 }
 
-/* Row counters. The meta line becomes a flex row with the stats pushed right.
-   The row's stretched-link overlay (.row__headline a::after) still covers the
-   whole row and sits above nothing interactive here, so click behaviour is
-   unchanged — the stats are inert text. */
-.row__meta {
-  display: flex;
-  align-items: baseline;
-  gap: var(--spacing-12);
-}
+/* Row counters. The cluster is the row's last child — its own line under the
+   summary, pushed to the bottom-right corner. Keeping it in flow (rather than
+   absolutely positioned) is what stops it colliding with a wrapped summary at
+   narrow widths: the row simply grows by one short line.
 
-.row__meta-text {
-  min-width: 0;
-}
-
+   It stays inert. The row's stretched-link overlay (.row__headline a::after) is
+   a positioned element and this one is static, so the overlay paints above it
+   and takes the click; pointer-events: none makes that explicit rather than a
+   consequence of paint order. */
 .row__stats {
-  margin-left: auto;
   display: flex;
+  justify-content: flex-end;
   align-items: center;
   gap: var(--spacing-12);
-  flex: none;
+  margin-top: var(--spacing-8);
   white-space: nowrap;
+  pointer-events: none;
 }
 
 .row__stats:empty {

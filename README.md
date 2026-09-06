@@ -35,8 +35,8 @@ Two surfaces, joined by a single data contract — they never call each other di
 | `usecase.html` | Per-use-case view, reached by `?id=<id>`. |
 | `archive.html` | Full published history, newest first. |
 | `article.html` | Per-article view, reached by `?id=<id>` — the Teams-ping target. |
-| `assets/app.js` | Shared logic: loads/sorts both contracts, renders rows, tags, upvotes, share, view/share counters. |
-| `assets/nav.js` | Direction-aware page slides: flags `data-slide="left"` links so the i2e AI Guide → News crossing slides the mirror way. |
+| `assets/app.js` | Shared logic: loads/sorts both contracts, renders rows, tags, upvotes, share, per-row upvote/view/share counters. |
+| `assets/nav.js` | Direction-aware page slides: reads the from/to pages off `navigation.activation` in `pagereveal` so the i2e AI Guide → News crossing slides the mirror way. |
 | `assets/styles.css` | Shared styling. |
 | `data/articles.json` | **The data contract** — the site's only data source. |
 | `data/articles.schema.json` | JSON Schema for the contract, enforced in CI. |
@@ -129,14 +129,14 @@ indistinguishable from this one, and the ambiguity is deliberately resolved towa
 — losing an upvote off a soft popularity signal is the cheaper error than inflating it. A count that
 must be exact needs the tenant-controlled endpoint, where the vote can carry a request id.
 
-### Views and shares
+### Row counters: upvotes, views and shares
 
 Two more counters ride the **same Abacus service and namespace** as upvotes, and are read and written
 by the same two GETs. Only the key prefix separates them:
 
 | Prefix | Counter | Written when |
 |--------|---------|--------------|
-| `a-` / `g-` | Upvotes | The reader presses Upvote (once per browser). |
+| `a-` / `g-` | Upvotes | The reader presses Upvote on a detail page (once per browser). **Read-only on list pages** — `initRowCounters()` shows this total but never writes it. |
 | `v-a-` / `v-g-` | Views | A detail page renders the item — once per browser, guarded by `alerts:viewed:<key>` in `localStorage` and written only after the hit is confirmed. |
 | `s-a-` / `s-g-` | Shares | Every successful copy from the Share button. No per-browser dedupe: copying the link twice is two shares. |
 
@@ -147,9 +147,10 @@ The Share button copies the item's canonical ALerts URL (`…/article.html?id=�
 toast. It is built unconditionally: copying is local, so a dead counter service costs the tally, not
 the feature. The counter hit is fire-and-forget and never changes what the reader is told.
 
-List pages show a view/share pair per row via `initRowCounters(container)`, which reads one pair per
+List pages show all three totals per row — ▲ upvotes · views · shares, icons only, in the row's
+bottom-right corner — via `initRowCounters(container)`, which reads one triple per
 `.row[data-kind][data-id]`. **Abacus rate-limits at 30 requests per 10 seconds per IP**, and a 53-row
-archive is 106 reads — enough to 429 the whole page and the reader's next click with it. Four things
+archive is 159 reads — enough to 429 the whole page and the reader's next click with it. Four things
 keep the site inside that budget. Reads are **lazy by viewport**: an `IntersectionObserver`
 (`200px` margin) enqueues a row only as the reader reaches it, so an opening screen costs a handful of
 requests (no `IntersectionObserver` → the first six rows only). Every Abacus call in `app.js` then
@@ -159,9 +160,12 @@ reads. A **429 or network failure pauses the row drain** for 10s (or `Retry-Afte
 re-queues that row once; interactive hits are never retried, so a throttled view hit leaves
 `alerts:viewed:` unwritten and is counted on the next open. Finally totals are memoised in
 `sessionStorage` under `alerts:ctr:<key>` for **5 minutes**, so a role-filter re-render or a Back out of
-an article repaints for free, and a `/hit` folds its returned total back into the memo. Each row still
-degrades on its own — a failed pair leaves that row's slot empty rather than showing an invented `0` —
-and a re-render invalidates results still in flight and disconnects the old observer.
+an article repaints for free, and a `/hit` folds its returned total back into the memo — including the
+reader's own upvote, so the list they go back to already shows their vote. The third counter per row
+therefore costs far less than the raw 50% suggests: the budget constants are unchanged, and the
+lazy-by-viewport reads plus the memo absorb it. Each row still degrades on its own — it paints
+whichever of the three totals came back and stays empty only when all three fail, rather than showing
+an invented `0` — and a re-render invalidates results still in flight and disconnects the old observer.
 
 The same PoC-grade caveats as upvotes apply in full: public namespace, unofficial free service, no
 SLA, and anyone who works out the URL can inflate a number. **Treat views and shares as soft signals,

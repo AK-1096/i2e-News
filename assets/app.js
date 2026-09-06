@@ -251,6 +251,12 @@ function platformLabel(p) {
 // The empty counter slot every row carries. initRowCounters() fills it in after
 // the list has painted; until then (and forever, if the counter service is
 // unreachable) it is an empty, aria-hidden span that costs nothing.
+//
+// It is emitted as the row's *last* child — after the summary — so the cluster
+// settles into the row's bottom-right corner on its own line rather than
+// crowding the meta dateline. It stays inert: no link, no pointer events, and
+// the headline's stretched ::after overlay is a positioned element painted over
+// this static one, so the whole row remains one click target.
 function rowStatsSlot() {
   return '<span class="row__stats" aria-hidden="true"></span>';
 }
@@ -268,8 +274,9 @@ function renderUsecaseItem(u) {
   return '<article class="row" data-kind="usecase" data-id="' + escapeHtml(u.id) + '">' +
     renderTags('row__chip', u.addedDate, u.category) +
     '<h2 class="row__headline"><a href="' + href + '">' + escapeHtml(u.title) + '</a></h2>' +
-    '<p class="row__meta caption"><span class="row__meta-text">' + meta + '</span>' + rowStatsSlot() + '</p>' +
+    '<p class="row__meta caption">' + meta + '</p>' +
     '<p class="row__summary">' + escapeHtml(u.whatItDoes) + '</p>' +
+    rowStatsSlot() +
     '</article>';
 }
 
@@ -284,8 +291,9 @@ function renderListItem(a) {
   return '<article class="row" data-kind="article" data-id="' + escapeHtml(a.id) + '">' +
     renderTags('row__chip', a.addedDate, a.topic) +
     '<h2 class="row__headline"><a href="' + href + '">' + escapeHtml(a.title) + '</a></h2>' +
-    '<p class="row__meta caption"><span class="row__meta-text">' + meta + '</span>' + rowStatsSlot() + '</p>' +
+    '<p class="row__meta caption">' + meta + '</p>' +
     '<p class="row__summary">' + escapeHtml(a.summary) + '</p>' +
+    rowStatsSlot() +
     '</article>';
 }
 
@@ -407,7 +415,13 @@ function initUpvotes(host, kind, id) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
     })
-    .then(function (d) { mount(upvoteCount(d)); })
+    .then(function (d) {
+      var n = upvoteCount(d);
+      // Same memo the list rows read from, so a Back out of this page shows the
+      // total we already paid for rather than spending another request.
+      counterCacheWrite(key, n);
+      mount(n);
+    })
     .catch(function () { /* counter unavailable — leave the page as it was */ });
 
   function mount(count) {
@@ -450,6 +464,9 @@ function initUpvotes(host, kind, id) {
         })
         .then(function (d) {
           count = upvoteCount(d);
+          // Fold the new total into the session memo so the list this reader
+          // goes back to shows their own vote instead of the pre-vote number.
+          counterCacheWrite(key, count);
           // Only now is the vote real. Recording it any earlier would lock the
           // reader out of retrying a vote that never actually landed: the next
           // load would read back the unchanged total and still disable the
@@ -483,6 +500,7 @@ function initUpvotes(host, kind, id) {
             // Something landed. Treat it as this reader's vote and stop here —
             // the button stays spent, so no retry can double it.
             count = now;
+            counterCacheWrite(key, count);
             upvoteWrite(seen);
             paint(count, true);
           } else {
@@ -917,8 +935,11 @@ function initViewCount(kind, id) {
 //   `initRowCounters(document.getElementById('list'))`. It finds every
 //   `.row[data-kind][data-id]` beneath the container (renderListItem() and
 //   renderUsecaseItem() emit those attributes and an empty
-//   `<span class="row__stats">` slot), reads that item's view and share totals
-//   from the counter service, and fills the slot in.
+//   `<span class="row__stats">` slot as the row's last child), reads that
+//   item's upvote, view and share totals from the counter service, and fills
+//   the slot in — ▲ n · 👁 n · share n, icons only, bottom-right of the row.
+//   The upvote total is read through the *unprefixed* key initUpvotes() writes,
+//   so the list and the detail page always agree; lists never write it.
 //
 //   Safe to call again after any re-render — a role filter rebuilding the list
 //   is the usual case. Each call takes a new generation number; results from a
@@ -928,12 +949,12 @@ function initViewCount(kind, id) {
 //   already interactive before the first response.
 //
 //   Cheap by construction, because the budget is small (see counterFetch) and a
-//   full archive is 53 rows × 2 counters:
+//   full archive is 53 rows × 3 counters:
 //
 //     * Nothing is read for a row the reader hasn't reached. An
 //       IntersectionObserver with a 200px margin enqueues each row the first
 //       time it comes near the viewport and then stops watching it, so an
-//       opening screen costs a handful of requests instead of 106. Without
+//       opening screen costs a handful of requests instead of 159. Without
 //       IntersectionObserver (old browsers) the first ROW_COUNTER_FALLBACK_ROWS
 //       rows are read and the rest simply stay blank — the same
 //       degrade-to-nothing the whole feature already has.
@@ -949,6 +970,14 @@ var ROW_COUNTER_ROOT_MARGIN = '200px 0px';   // start reading just before arriva
 var ROW_COUNTER_FALLBACK_ROWS = 6;           // no IntersectionObserver
 
 var STAT_ICONS = {
+  // A bare up-chevron, not the filled ▲ of the detail-page control: the row
+  // cluster is a read-out, and a solid mark would read as a button to press.
+  upvotes:
+    '<svg class="row__stat-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" ' +
+      'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" ' +
+      'aria-hidden="true" focusable="false">' +
+      '<path d="M5 15.5 12 8.5l7 7"></path>' +
+    '</svg>',
   views:
     '<svg class="row__stat-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" ' +
       'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" ' +
@@ -992,52 +1021,72 @@ function initRowCounters(container) {
     return true;
   }
 
-  function paint(row, views, shares) {
+  // The cluster, in reading order: upvotes, views, shares. Each entry is the
+  // metric prefix its counter key carries — '' is the upvote key, which
+  // predates the other two and is read here exactly as initUpvotes() writes it.
+  var ROW_STATS = [
+    { prefix: '', icon: 'upvotes', one: 'upvote', many: 'upvotes' },
+    { prefix: 'v-', icon: 'views', one: 'view', many: 'views' },
+    { prefix: 's-', icon: 'shares', one: 'share', many: 'shares' }
+  ];
+
+  // The three keys for one row, in cluster order.
+  function keysFor(row) {
+    var kind = row.getAttribute('data-kind');
+    var id = row.getAttribute('data-id');
+    return ROW_STATS.map(function (m) { return counterKey(m.prefix, kind, id); });
+  }
+
+  // `values` is one entry per ROW_STATS metric: a number, or null when that
+  // read failed. A metric that came back is painted whatever the others did;
+  // only an all-null row says nothing at all.
+  function paint(row, values) {
     var slot = row.querySelector('.row__stats');
     if (!slot) return;
-    if (views === null && shares === null) return;   // both reads failed — say nothing
+    var any = false;
+    for (var i = 0; i < values.length; i++) if (values[i] !== null) any = true;
+    if (!any) return;                       // every read failed — say nothing
 
     var html = '';
     var label = [];
-    if (views !== null) {
-      html += '<span class="row__stat' + (views > 0 ? ' is-on' : '') + '">' +
-        STAT_ICONS.views + '<span class="row__stat-n">' + views + '</span></span>';
-      label.push(rowStatUnit(views, 'view', 'views'));
-    }
-    if (shares !== null) {
-      html += '<span class="row__stat' + (shares > 0 ? ' is-on' : '') + '">' +
-        STAT_ICONS.shares + '<span class="row__stat-n">' + shares + '</span></span>';
-      label.push(rowStatUnit(shares, 'share', 'shares'));
-    }
+    ROW_STATS.forEach(function (m, i) {
+      var n = values[i];
+      if (n === null) return;
+      html += '<span class="row__stat' + (n > 0 ? ' is-on' : '') + '">' +
+        STAT_ICONS[m.icon] + '<span class="row__stat-n">' + n + '</span></span>';
+      label.push(rowStatUnit(n, m.one, m.many));
+    });
     slot.innerHTML = html;
     slot.setAttribute('aria-label', label.join(', '));
     slot.setAttribute('aria-hidden', 'false');
   }
 
-  // Both totals still fresh in the session memo? Paint them now, spend nothing.
+  // All three totals still fresh in the session memo? Paint them now, spend
+  // nothing. A partly-cached row goes through the read path, where the cached
+  // sides resolve without a request anyway.
   function paintFromCache(row) {
-    var kind = row.getAttribute('data-kind');
-    var id = row.getAttribute('data-id');
-    var v = counterCacheRead(counterKey('v-', kind, id));
-    var s = counterCacheRead(counterKey('s-', kind, id));
-    if (v === null || s === null) return false;
-    paint(row, v, s);
+    var keys = keysFor(row);
+    var values = [];
+    for (var i = 0; i < keys.length; i++) {
+      var v = counterCacheRead(keys[i]);
+      if (v === null) return false;
+      values.push(v);
+    }
+    paint(row, values);
     return true;
   }
 
-  // Read one row's pair. A cached side resolves without a request, so a
-  // half-cached row costs one request rather than two.
+  // Read one row's three counters. A cached side resolves without a request, so
+  // a partly-cached row costs only what it is missing.
   function one(row, retried) {
-    var kind = row.getAttribute('data-kind');
-    var id = row.getAttribute('data-id');
-    return Promise.all([
-      counterReadDetailed(counterKey('v-', kind, id), false),
-      counterReadDetailed(counterKey('s-', kind, id), false)
-    ]).then(function (pair) {
-      if (stale()) return;
-      if (!retried && (pair[0].retry || pair[1].retry)) return one(row, true);
-      paint(row, pair[0].v, pair[1].v);
-    });
+    var keys = keysFor(row);
+    return Promise.all(keys.map(function (k) { return counterReadDetailed(k, false); }))
+      .then(function (reads) {
+        if (stale()) return;
+        var again = reads.some(function (r) { return r.retry; });
+        if (!retried && again) return one(row, true);
+        paint(row, reads.map(function (r) { return r.v; }));
+      });
   }
 
   function enqueue(row) {
