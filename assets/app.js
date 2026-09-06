@@ -696,17 +696,26 @@ function counterFetch(url, priority) {
   });
 }
 
-// Pause the row-read drain. `res` is the 429 response when there was one, so a
-// service-supplied Retry-After (seconds) wins over the default — capped, because
-// an absurd value would otherwise strand the counters for the whole visit.
-function counterBackoff(res) {
+// How long to wait after a throttle. `res` is the 429 response when there was
+// one, so a service-supplied Retry-After (seconds) wins over the default —
+// capped, because an absurd value would otherwise strand the counters for the
+// whole visit. Shared by the row-read back-off and by the /hit retry, so both
+// obey the same instruction from the service.
+function counterRetryAfterMs(res) {
   var ms = COUNTER_BACKOFF_MS;
   if (res && res.headers && res.headers.get) {
     var ra = parseFloat(res.headers.get('Retry-After'));
     if (isFinite(ra) && ra > 0) ms = ra * 1000;
   }
   if (ms > COUNTER_BACKOFF_MAX_MS) ms = COUNTER_BACKOFF_MAX_MS;
-  var until = Date.now() + ms;
+  return ms;
+}
+
+// Pause the row-read drain. `res` is the 429 response when there was one, so a
+// service-supplied Retry-After (seconds) wins over the default — capped, because
+// an absurd value would otherwise strand the counters for the whole visit.
+function counterBackoff(res) {
+  var until = Date.now() + counterRetryAfterMs(res);
   if (until > counterBackoffUntil) counterBackoffUntil = until;
 }
 
@@ -757,25 +766,81 @@ function counterCacheBump(key) {
 // counter service into an unhandled rejection in the console.
 //
 // Interactive by definition — a hit is always something the reader just did — so
-// it takes the priority queue and is never retried here. A 429 resolves false,
-// which is what keeps initViewCount() from marking the item viewed on a hit that
-// never landed.
+// every attempt takes the priority queue, and each retry is metered by the same
+// global budget as the first try.
+//
+// Abacus' 30-per-10s limit is shared across every tab and everyone behind the
+// same IP, so a reader's view or share hit can be throttled through no fault of
+// this page. Resolving false once and stopping there silently lost the action
+// until the reader happened to reopen the page or copy the link again, so a hit
+// now retries:
+//
+//   * HTTP 429 — the increment did *not* happen, so retrying cannot double
+//     count. Wait Retry-After (default 10s, capped at 30s) and try again, up to
+//     HIT_MAX_ATTEMPTS attempts in total. The row-read drain is paused too: this
+//     browser is demonstrably over the limit, and speculative reads should stand
+//     aside for the reader's own action.
+//   * a rejected fetch — ambiguous: the request may well have landed and only
+//     the response been lost, and Abacus offers no idempotency key to settle it.
+//     Retried exactly ONCE after HIT_NET_RETRY_MS, which accepts a small risk of
+//     counting one view or share twice in exchange for not dropping it. That
+//     trade is deliberate and specific to views and shares — soft signals where
+//     a rare +1 costs less than a systematically lost count. Upvotes do not use
+//     this path; initUpvotes() reconciles by re-reading the total instead.
+//   * any other non-ok status (other 4xx/5xx) — give up and resolve false. A
+//     dead or misconfigured service fails the same way on the next attempt.
+//
+// Resolves true only after a confirmed ok response, which is what keeps
+// initViewCount()/initShare() from writing their localStorage flag for a hit
+// that never landed. Retries are plain setTimeout work: if the reader closes the
+// page first they simply die with it, the flag stays unset, and the next open or
+// copy counts the action.
+var HIT_MAX_ATTEMPTS = 4;        // total /hit attempts across 429s
+var HIT_NET_RETRY_MS = 5000;     // the single retry after a request never completed
+
 function hitCounter(key) {
   if (!key) return Promise.resolve(false);
-  return counterFetch(UPVOTE_API + '/hit/' + UPVOTE_NS + '/' + encodeURIComponent(key), true)
-    .then(function (r) {
-      if (!r.ok) return false;
-      return r.json().then(
-        function (d) {
-          // The response carries the new total; fold it into the memo so the
-          // list the reader goes back to shows their own view or share.
-          try { counterCacheWrite(key, upvoteCount(d)); } catch (e) { counterCacheBump(key); }
-          return true;
+  var url = UPVOTE_API + '/hit/' + UPVOTE_NS + '/' + encodeURIComponent(key);
+
+  return new Promise(function (resolve) {
+    var attempts = 0;            // attempts issued, including the first
+    var netRetried = false;      // the one network-failure retry is spent
+
+    function attempt() {
+      attempts++;
+      counterFetch(url, true).then(
+        function (r) {
+          if (r.status === 429) {
+            counterBackoff(r);                     // hold the row reads back too
+            if (attempts >= HIT_MAX_ATTEMPTS) { resolve(false); return; }
+            setTimeout(attempt, counterRetryAfterMs(r));
+            return;
+          }
+          if (!r.ok) { resolve(false); return; }
+          // The increment has landed; only the body is still in question, so
+          // from here every path resolves true.
+          var body;
+          try { body = r.json(); } catch (e) { body = Promise.reject(e); }
+          Promise.resolve(body).then(
+            function (d) {
+              // The response carries the new total; fold it into the memo so the
+              // list the reader goes back to shows their own view or share.
+              try { counterCacheWrite(key, upvoteCount(d)); } catch (e) { counterCacheBump(key); }
+              resolve(true);
+            },
+            function () { counterCacheBump(key); resolve(true); }
+          );
         },
-        function () { counterCacheBump(key); return true; }
+        function () {
+          if (netRetried) { resolve(false); return; }
+          netRetried = true;
+          setTimeout(attempt, HIT_NET_RETRY_MS);
+        }
       );
-    })
-    .catch(function () { return false; });
+    }
+
+    attempt();
+  });
 }
 
 // One metered, memoised counter read. Resolves { v, retry }:
@@ -885,8 +950,10 @@ function copyText(text) {
 // Every click copies the link and confirms with a toast; the *counter* is
 // counted once per browser per item, the same shape as the view guard. The
 // localStorage flag `alerts:shared:<key>` is written only after the increment
-// is confirmed, so a hit that never landed (a 429, a dead service) is retried
-// on the next copy instead of being lost. A reader in a privacy mode where
+// is confirmed. hitCounter() now retries a throttled hit in place (and a
+// network failure once), so only a hit that fails every attempt leaves the flag
+// unwritten — and that one is retried on the next copy. A reader in a privacy
+// mode where
 // localStorage throws is counted on each copy rather than not at all.
 function initShare(host, kind, id, url) {
   if (!host || !id) return;
@@ -923,8 +990,9 @@ function initShare(host, kind, id, url) {
 // localStorage flag is written only after the increment is confirmed, so a hit
 // that never landed is retried on the next visit instead of being lost. A
 // reader in a privacy mode where localStorage throws is counted each visit
-// rather than not at all. A 429 is a failure like any other here: hitCounter()
-// resolves false, the flag stays unwritten, and the next open counts the view.
+// rather than not at all. A 429 is retried in place by hitCounter() while the
+// page is open; only a hit that fails every attempt leaves the flag unwritten,
+// and the next open counts the view.
 //
 // Call it after the item has rendered. It touches no DOM and never rejects, so
 // it cannot affect the page.

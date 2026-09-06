@@ -160,8 +160,12 @@ requests (no `IntersectionObserver` → the first six rows only). Every Abacus c
 goes through `counterFetch()`, a shared **20-requests-per-rolling-10s budget** (≤ 4 in flight) whose
 priority queue lets interactive calls — view hits, share hits, upvotes — jump ahead of speculative row
 reads. A **429 or network failure pauses the row drain** for 10s (or `Retry-After`, capped at 30s) and
-re-queues that row once; interactive hits are never retried, so a throttled view or share hit leaves
-`alerts:viewed:`/`alerts:shared:` unwritten and is counted on the next open or copy. Finally totals
+re-queues that row once. Interactive **view and share hits retry themselves**: a 429 means the
+increment did not happen, so the hit waits `Retry-After` (10s default, 30s cap) and tries again, up to
+four attempts while the page is open; a request that never completed is retried once after 5s,
+accepting a rare double count over a systematically lost one. Any other error, or four exhausted
+attempts, leaves `alerts:viewed:`/`alerts:shared:` unwritten so the next open or copy counts it.
+Upvotes keep their own reconcile instead. Finally totals
 are memoised in `sessionStorage` under `alerts:ctr:<key>` for **5 minutes**, so a role-filter re-render or a Back out of
 an article repaints for free, and a `/hit` folds its returned total back into the memo — including the
 reader's own upvote, so the list they go back to already shows their vote. The third counter per row
