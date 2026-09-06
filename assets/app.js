@@ -881,10 +881,18 @@ function copyText(text) {
 
 // Mount the share control for `id` into `host`. `url` overrides the canonical
 // address if a caller ever needs to (nothing does today).
+//
+// Every click copies the link and confirms with a toast; the *counter* is
+// counted once per browser per item, the same shape as the view guard. The
+// localStorage flag `alerts:shared:<key>` is written only after the increment
+// is confirmed, so a hit that never landed (a 429, a dead service) is retried
+// on the next copy instead of being lost. A reader in a privacy mode where
+// localStorage throws is counted on each copy rather than not at all.
 function initShare(host, kind, id, url) {
   if (!host || !id) return;
   var link = url || canonicalItemUrl(id);
   var shareKey = counterKey('s-', kind, id);
+  var shared = shareKey ? 'alerts:shared:' + shareKey : null;
 
   host.innerHTML =
     '<button type="button" class="share" aria-label="Copy a link to this page">' +
@@ -898,7 +906,10 @@ function initShare(host, kind, id, url) {
         showToast(SHARE_COPIED);
         // Fire-and-forget: the reader has the link either way, so a failed
         // count must not walk back a toast that told the truth.
-        hitCounter(shareKey);
+        if (shared && upvoteRead(shared)) return;   // already counted on this browser
+        hitCounter(shareKey).then(function (ok) {
+          if (ok && shared) upvoteWrite(shared);
+        });
       },
       function () {
         showToast(SHARE_FAILED);

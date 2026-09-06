@@ -138,14 +138,17 @@ by the same two GETs. Only the key prefix separates them:
 |--------|---------|--------------|
 | `a-` / `g-` | Upvotes | The reader presses Upvote on a detail page (once per browser). **Read-only on list pages** — `initRowCounters()` shows this total but never writes it. |
 | `v-a-` / `v-g-` | Views | A detail page renders the item — once per browser, guarded by `alerts:viewed:<key>` in `localStorage` and written only after the hit is confirmed. |
-| `s-a-` / `s-g-` | Shares | Every successful copy from the Share button. No per-browser dedupe: copying the link twice is two shares. |
+| `s-a-` / `s-g-` | Shares | The reader copies the link from the Share button — counted once per browser per item, on the first successful copy, guarded by `alerts:shared:<key>` in `localStorage` and written only after the hit is confirmed. Later copies still copy and still toast; they just don't count again. |
 
 `a-`/`g-` is the article/use-case collection prefix described above; `counterKey(prefix, kind, id)` in
 `assets/app.js` builds all three, including the same fold-to-a-hash for an over-long key.
 
 The Share button copies the item's canonical ALerts URL (`…/article.html?id=…`) and confirms with a
 toast. It is built unconditionally: copying is local, so a dead counter service costs the tally, not
-the feature. The counter hit is fire-and-forget and never changes what the reader is told.
+the feature. The counter hit is fire-and-forget and never changes what the reader is told — every
+click copies and toasts, whether or not this browser has already been counted for that item. Like
+views and upvotes, the guard is per device and never leaves it: clearing site data or opening a
+private window resets it, and a browser where `localStorage` throws is counted on each copy.
 
 List pages show all three totals per row — ▲ upvotes · views · shares, icons only, in the row's
 bottom-right corner — via `initRowCounters(container)`, which reads one triple per
@@ -157,9 +160,9 @@ requests (no `IntersectionObserver` → the first six rows only). Every Abacus c
 goes through `counterFetch()`, a shared **20-requests-per-rolling-10s budget** (≤ 4 in flight) whose
 priority queue lets interactive calls — view hits, share hits, upvotes — jump ahead of speculative row
 reads. A **429 or network failure pauses the row drain** for 10s (or `Retry-After`, capped at 30s) and
-re-queues that row once; interactive hits are never retried, so a throttled view hit leaves
-`alerts:viewed:` unwritten and is counted on the next open. Finally totals are memoised in
-`sessionStorage` under `alerts:ctr:<key>` for **5 minutes**, so a role-filter re-render or a Back out of
+re-queues that row once; interactive hits are never retried, so a throttled view or share hit leaves
+`alerts:viewed:`/`alerts:shared:` unwritten and is counted on the next open or copy. Finally totals
+are memoised in `sessionStorage` under `alerts:ctr:<key>` for **5 minutes**, so a role-filter re-render or a Back out of
 an article repaints for free, and a `/hit` folds its returned total back into the memo — including the
 reader's own upvote, so the list they go back to already shows their vote. The third counter per row
 therefore costs far less than the raw 50% suggests: the budget constants are unchanged, and the
