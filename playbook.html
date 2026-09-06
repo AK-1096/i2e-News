@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AI Guide — ALerts</title>
-  <link rel="stylesheet" href="assets/styles.css?v=4">
+  <title>i2e AI Guide — ALerts</title>
+  <link rel="stylesheet" href="assets/styles.css?v=5">
+  <script src="assets/nav.js?v=1"></script>
 </head>
 <body>
   <header class="masthead">
@@ -12,23 +13,33 @@
       <span class="masthead__spacer" aria-hidden="true"></span>
       <a class="wordmark" href="index.html" aria-label="ALerts — home">AI<span class="wordmark__foot" aria-hidden="true"></span>ERTS</a>
       <span class="masthead__nav">
-        <a class="ghost-link" href="index.html#events" data-open="news">News &rarr;</a>
-        <a class="ghost-link" href="index.html#guide" data-open="guide">Guides &rarr;</a>
+        <a class="ghost-link" href="events.html">News &rarr;</a>
+        <a class="ghost-link" href="playbook.html" aria-current="page">i2e AI Guide &rarr;</a>
         <a class="ghost-link" href="archive.html">Archive &rarr;</a>
       </span>
     </nav>
   </header>
 
+  <!-- Spine portal: News is parked on the left, so the slide has to run the
+       other way — data-slide="left" tells nav.js to reverse it. -->
+  <a class="portal portal--left" href="events.html" data-slide="left" aria-label="Go to News">
+    <span class="portal__inner">
+      <span class="portal__arrow" aria-hidden="true">&larr;</span>
+      <span class="portal__label">News</span>
+    </span>
+  </a>
+
   <main class="frontpage">
     <section class="hero">
-      <h1 class="headline">AI Guide</h1>
-      <p class="caption" id="dateline">Community-sourced ways people use AI &amp; its tools</p>
+      <p class="panel__kicker"><span class="panel__kicker-sq" aria-hidden="true"></span>The Practice</p>
+      <h1 class="section-front__title">i2e AI Guide</h1>
+      <p class="section-front__sub" id="dateline">Ways to use AI in your daily work — field-tested</p>
     </section>
 
     <aside class="disclaimer" role="note" aria-label="Important notice">
       <p class="disclaimer__kicker">Read this first</p>
       <p class="disclaimer__lead">
-        <strong>Community-sourced techniques.</strong> AI Guide entries are gathered from public
+        <strong>Community-sourced techniques.</strong> i2e AI Guide entries are gathered from public
         internet sources. Verify results before relying on them, follow i2e&rsquo;s data-handling
         policies, and never enter confidential, client, or personal data into tools not approved by IT.
       </p>
@@ -47,14 +58,17 @@
     </div>
 
     <footer class="frontpage__footer">
-      <a class="pill" href="index.html">Back to news &rarr;</a>
+      <span class="frontpage__footer-actions">
+        <a class="pill" href="index.html">Back to the front page &rarr;</a>
+        <a class="pill" href="events.html" data-slide="left">Go to News &rarr;</a>
+      </span>
       <p class="frontpage__note">
         Curated by i2e Consulting AI Labs — techniques gathered by the ALerts curator agent.
       </p>
     </footer>
   </main>
 
-  <script src="assets/app.js?v=7"></script>
+  <script src="assets/app.js?v=8"></script>
   <script>
     loadUsecases()
       .then(function (usecases) {
@@ -70,7 +84,7 @@
 
         if (dateline) {
           dateline.innerHTML =
-            'Community-sourced ways people use AI &amp; its tools &middot; ' + usecases.length + ' entries';
+            'Ways to use AI in your daily work — field-tested &middot; ' + usecases.length + ' entries';
         }
 
         function render(role) {
@@ -82,6 +96,7 @@
             return;
           }
           list.innerHTML = '<div class="contents">' + filtered.map(renderUsecaseItem).join('') + '</div>';
+          if (typeof initRowCounters === 'function') initRowCounters(document.getElementById('list'));
         }
 
         renderRoleFilter(document.getElementById('role-filter'), render);
@@ -90,17 +105,17 @@
       .catch(function (err) {
         document.getElementById('list').innerHTML =
           '<div class="card">' +
-            '<h2 class="state-card__title">The AI Guide couldn&rsquo;t be loaded.</h2>' +
+            '<h2 class="state-card__title">The i2e AI Guide couldn&rsquo;t be loaded.</h2>' +
             '<p class="state-card__body">Could not load use-cases: ' + escapeHtml(err.message) + '. Try again in a moment.</p>' +
-            '<a class="ghost-link" href="index.html">Back to news &rarr;</a>' +
+            '<a class="ghost-link" href="index.html">Back to the front page &rarr;</a>' +
           '</div>';
       });
 
     // Dynamic header: retract the masthead on scroll-down, pin the compact
-    // "AI Guide" bar top-left, restore the masthead on scroll-up.
+    // "i2e AI Guide" bar top-left, restore the masthead on scroll-up.
     initDynamicHeader({
-      title: 'AI Guide',
-      sub: 'Community-sourced ways people use AI',
+      title: 'i2e AI Guide',
+      sub: 'Ways to use AI in your daily work — field-tested',
       collapseAfter: document.querySelector('.hero')
     });
 
