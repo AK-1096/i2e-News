@@ -168,7 +168,9 @@ attempts, leaves `alerts:viewed:`/`alerts:shared:` unwritten so the next open or
 Upvotes keep their own reconcile instead. Finally totals
 are memoised in `sessionStorage` under `alerts:ctr:<key>` for **5 minutes**, so a role-filter re-render or a Back out of
 an article repaints for free, and a `/hit` folds its returned total back into the memo — including the
-reader's own upvote, so the list they go back to already shows their vote. The third counter per row
+reader's own upvote, so the list they go back to already shows their vote. Rows also repaint from the
+memo on a back-forward-cache restore (`pageshow` with `persisted`, no requests issued), so the
+reader's own upvote, view or share shows on the list without a refresh. The third counter per row
 therefore costs far less than the raw 50% suggests: the budget constants are unchanged, and the
 lazy-by-viewport reads plus the memo absorb it. Each row still degrades on its own — it paints
 whichever of the three totals came back and stays empty only when all three fail, rather than showing

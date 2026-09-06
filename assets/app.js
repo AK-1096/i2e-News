@@ -1039,7 +1039,10 @@ function initViewCount(kind, id) {
 //       degrade-to-nothing the whole feature already has.
 //     * Anything still fresh in the session memo paints straight away, before
 //       any observing starts and without a request. That is what makes a
-//       role-filter re-render and a Back out of an article free.
+//       role-filter re-render and a Back out of an article free. A Back that
+//       comes out of the back-forward cache restores the old DOM instead of
+//       re-running any of this, so a `pageshow` listener repaints the rows
+//       from the memo there too — cache only, no requests, observer untouched.
 //     * A throttled or failed read is re-queued exactly once. counterBackoff()
 //       has already paused the row drain by then, so the retry naturally lands
 //       after the pause rather than immediately re-tripping the limit.
@@ -1116,22 +1119,48 @@ function initRowCounters(container) {
     return ROW_STATS.map(function (m) { return counterKey(m.prefix, kind, id); });
   }
 
+  // The number currently painted for one metric, or null when that metric is
+  // not in the cluster. Lets a partial repaint keep the sides it knows nothing
+  // about instead of dropping them.
+  function paintedStat(slot, name) {
+    var el = slot.querySelector('.row__stat[data-stat="' + name + '"] .row__stat-n');
+    if (!el) return null;
+    var n = parseInt(el.textContent, 10);
+    return (typeof n === 'number' && isFinite(n)) ? n : null;
+  }
+
   // `values` is one entry per ROW_STATS metric: a number, or null when that
-  // read failed. A metric that came back is painted whatever the others did;
-  // only an all-null row says nothing at all.
+  // read failed or wasn't attempted. Each metric is then resolved
+  // independently — memo, then the value handed in, then whatever is already
+  // painted — so the cluster always shows the freshest number this page knows
+  // per metric, and a partial repaint never erases the others. Only a row with
+  // nothing known at all says nothing.
   function paint(row, values) {
     var slot = row.querySelector('.row__stats');
     if (!slot) return;
     var any = false;
-    for (var i = 0; i < values.length; i++) if (values[i] !== null) any = true;
-    if (!any) return;                       // every read failed — say nothing
+    var keys = keysFor(row);
+    var resolved = [];
+    for (var i = 0; i < ROW_STATS.length; i++) {
+      // Cache-first, per metric. The memo is written by every confirmed read
+      // *and* by the reader's own hit on the detail page, so it is never staler
+      // than the value handed in here — and a metric this call knows nothing
+      // about (null) keeps whatever is already on the row rather than
+      // disappearing from the cluster.
+      var n = counterCacheRead(keys[i]);
+      if (n === null && values && values[i] !== undefined) n = values[i];
+      if (n === null) n = paintedStat(slot, ROW_STATS[i].icon);
+      if (n !== null) any = true;
+      resolved.push(n);
+    }
+    if (!any) return;                       // nothing known at all — say nothing
 
     var html = '';
     var label = [];
     ROW_STATS.forEach(function (m, i) {
-      var n = values[i];
+      var n = resolved[i];
       if (n === null) return;
-      html += '<span class="row__stat' + (n > 0 ? ' is-on' : '') + '">' +
+      html += '<span class="row__stat' + (n > 0 ? ' is-on' : '') + '" data-stat="' + m.icon + '">' +
         STAT_ICONS[m.icon] + '<span class="row__stat-n">' + n + '</span></span>';
       label.push(rowStatUnit(n, m.one, m.many));
     });
@@ -1140,19 +1169,23 @@ function initRowCounters(container) {
     slot.setAttribute('aria-hidden', 'false');
   }
 
-  // All three totals still fresh in the session memo? Paint them now, spend
-  // nothing. A partly-cached row goes through the read path, where the cached
-  // sides resolve without a request anyway.
+  // Paint whatever the session memo already holds for this row, and report
+  // whether that covered all three metrics. One memoised metric is worth
+  // painting on its own — that is what makes the reader's own upvote show up on
+  // the list — but a partly-cached row still goes through the read path, where
+  // the cached sides resolve without a request anyway.
   function paintFromCache(row) {
     var keys = keysFor(row);
     var values = [];
+    var have = 0;
     for (var i = 0; i < keys.length; i++) {
       var v = counterCacheRead(keys[i]);
-      if (v === null) return false;
+      if (v !== null) have++;
       values.push(v);
     }
+    if (!have) return false;
     paint(row, values);
-    return true;
+    return have === keys.length;
   }
 
   // Read one row's three counters. A cached side resolves without a request, so
@@ -1172,6 +1205,25 @@ function initRowCounters(container) {
     if (row.getAttribute('data-counters-read') === '1') return;
     row.setAttribute('data-counters-read', '1');
     one(row);
+  }
+
+  // Pressing Back out of a detail page usually restores this document from the
+  // browser's back-forward cache: the old DOM comes back untouched, so the row
+  // the reader just opened still shows its pre-visit numbers even though the
+  // view, share or upvote they landed has already been folded into the memo.
+  // `pageshow` with persisted=true is the only signal that happened (no load,
+  // no DOMContentLoaded), so repaint from the memo there. Cache only — no
+  // requests are issued on a restore, and the observer set up by whichever
+  // render is current is left exactly as it is. A row whose memo has since
+  // expired keeps the numbers it is showing. Registered once per container;
+  // persisted=false is an ordinary load, which paints itself.
+  if (container.getAttribute('data-counters-pageshow') !== '1') {
+    container.setAttribute('data-counters-pageshow', '1');
+    window.addEventListener('pageshow', function (e) {
+      if (!e || !e.persisted) return;
+      var live = container.querySelectorAll('.row[data-kind][data-id]');
+      for (var r = 0; r < live.length; r++) paintFromCache(live[r]);
+    });
   }
 
   // Free rows first, so a re-render repaints everything it can before deciding
