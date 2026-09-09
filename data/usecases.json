@@ -1,5 +1,34 @@
 [
   {
+    "id": "blog-claude-extended-thinking-2025-02-24",
+    "title": "Enable Claude's extended thinking mode for complex analysis — deeper reasoning, fewer missed steps",
+    "tools": [
+      "Claude",
+      "Claude Code"
+    ],
+    "category": "prompting-technique",
+    "whatItDoes": "Extended thinking is a reasoning mode in Claude (available on Fable-class models and above) that allocates a dedicated token budget for the model to reason privately before writing its answer. When enabled, Claude explores multiple approaches, checks its own logic, and resolves contradictions in an internal scratchpad that runs before the visible response — producing more accurate outputs on multi-step analytical tasks without any change to the prompt itself.",
+    "whatItImproves": "Without extended thinking, Claude commits to an answer in a single forward pass, meaning logical gaps and missed edge cases only surface during your review of the output. With extended thinking on, the model catches those gaps before it answers — raising first-draft accuracy on complex tasks and reducing the number of follow-up correction rounds needed to reach a usable result.",
+    "howToTry": "1. In Claude.ai, open a conversation, click the model selector, choose a Fable-class or higher model, and toggle 'Extended thinking' on before sending your query — no change to your prompt is required.\n2. Send a genuinely complex task: reviewing a multi-section validation protocol for logical gaps, assessing regulatory risk across several criteria simultaneously, or reasoning through a multi-step data inconsistency in a client dataset.\n3. Read the collapsible 'Thinking' block that appears above the answer — it shows the reasoning steps Claude took; scan it to verify the logic before using the final output.\n4. Via the API, add {\"thinking\": {\"type\": \"enabled\", \"budget_tokens\": 8000}} to your request parameters; increase budget_tokens (up to the model's documented maximum) for the most demanding tasks.\n5. Reserve extended thinking for tasks where missing an edge case has real consequences — for routine drafting or simple queries, keep it off to avoid unnecessary token cost.",
+    "sourceUrl": "https://www.anthropic.com/news/claude-3-7-sonnet",
+    "sourcePlatform": "blog",
+    "author": "Anthropic",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2025-02-24",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc"
+    ],
+    "relevance": {
+      "dailyImpact": "You can toggle extended thinking on in Claude.ai before any demanding document review task and receive a more thorough, self-audited response without writing a longer or more complex prompt.",
+      "practicalBenefit": "The visible thinking block returned with each extended-thinking response gives you a reviewable reasoning trace you can screenshot and include in a review log as documented evidence of the analytical steps behind an AI-assisted conclusion in a GxP-adjacent deliverable.",
+      "whyRelevant": "When you use Claude to review a complex validation protocol, assess cross-referenced regulatory requirements, or reason through a multi-step GxP data problem for a pharma client, a single-pass response risks missing logical dependencies that extended thinking catches internally before the answer is written."
+    }
+  },
+  {
     "id": "blog-copilot-excel-natural-language-data-analysis-2024-09-16",
     "title": "Replace VLOOKUP and pivot tables with plain English questions in Excel using Copilot",
     "tools": [
