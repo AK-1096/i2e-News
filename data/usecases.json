@@ -1,5 +1,32 @@
 [
   {
+    "id": "blog-github-copilot-slash-commands-context-2026-06-01",
+    "title": "Use slash commands and context references in Copilot Chat to run structured code reviews without leaving VS Code",
+    "tools": [
+      "GitHub Copilot"
+    ],
+    "category": "workflow",
+    "whatItDoes": "GitHub Copilot Chat's built-in slash commands — /explain, /fix, /tests, /doc — combined with context references — #file, #selection, #codebase — let you run targeted, repeatable code-review steps directly inside VS Code without writing long freeform prompts. Scoping a command with a context reference (e.g. /tests #file:patients.py) locks Copilot's response to exactly the artifact you name, eliminating irrelevant suggestions from unrelated files. The commands cover the four most common review actions — understand, test, fix, and document — and can be combined in a standardised sequence that every developer on a project follows identically.",
+    "whatItImproves": "Without slash commands and context references, developers write long manually scoped prompts and still receive suggestions that drift into unrelated parts of the codebase, requiring a second pass to separate useful feedback from noise. After adopting the structured command pattern each Copilot response is anchored to the specific file or selection in view, cutting the review overhead on every code change and making AI-assisted review consistent and repeatable across all contributors rather than varying by how each person phrases a freeform prompt.",
+    "howToTry": "1. Open a file in VS Code and highlight a function or block of code, then open Copilot Chat (Ctrl+Alt+I) and type /explain #selection to receive a plain-English walkthrough of exactly the highlighted code with no additional context required.\n2. Type /tests #selection to generate unit tests for the selected function — Copilot proposes cases covering expected inputs, edge conditions, and error paths visible in the selection.\n3. Type /fix #file:yourfile.py to ask Copilot to identify and correct issues across an entire file rather than only the current selection, useful for a final sweep before raising a pull request.\n4. Type /doc #selection to generate a docstring or inline comment block for the selected function, keeping documentation in sync with code as you review.\n5. Capture your standard command sequence (e.g. /explain #selection → /tests #selection → /fix #file: → /doc #selection) in a shared team wiki or CLAUDE.md equivalent as a named code-review checklist so every reviewer on the project runs the same structured steps on every GxP-relevant change.",
+    "sourceUrl": "https://docs.github.com/en/copilot/github-copilot-chat/using-github-copilot-chat-in-your-ide",
+    "sourcePlatform": "blog",
+    "author": "GitHub",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2026-06-01",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "developers",
+      "qa"
+    ],
+    "relevance": {
+      "dailyImpact": "You can run a consistent /explain → /tests → /fix → /doc sequence on any changed file before raising a pull request, catching logic gaps and missing test coverage in minutes without switching away from VS Code or writing a new prompt from scratch each time.",
+      "practicalBenefit": "Documenting a shared slash-command review checklist for the team gives every developer and QA engineer the same AI-assisted code-review steps on every GxP-relevant change, producing consistent review coverage you can reference in validation documentation as a repeatable, named quality step applied to each commit.",
+      "whyRelevant": "When reviewing code changes on a validated pharma client system, scoping each Copilot review step to a specific file or selection with a slash command means every AI suggestion is anchored to the exact artifact under review rather than drifting across the codebase and generating noise that slows down a compliance-sensitive code review."
+    }
+  },
+  {
     "id": "blog-tree-of-thoughts-prompting-2026-01-17",
     "title": "Map every reasoning branch before you commit — Tree of Thoughts finds the best answer on complex decisions",
     "tools": [
