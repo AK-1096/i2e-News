@@ -1,5 +1,27 @@
 [
   {
+    "id": "techcrunch-claude-token-theft-2026-09-08",
+    "title": "Claude tokens are being actively stolen — rotate your API keys before attackers drain your allowance",
+    "url": "https://techcrunch.com/2026/09/08/hackers-are-stealing-claude-tokens-from-subscribers/",
+    "source": "TechCrunch",
+    "summary": "Hackers are actively targeting Claude subscribers to steal their API tokens, granting attackers unauthorised use of victims' Claude allowances and potential exposure of prompt content sent through those credentials. The attack targets stored or exposed credentials rather than Anthropic's infrastructure, making individual and enterprise credential hygiene the primary line of defence.",
+    "topic": "Latest",
+    "publishedDate": "2026-09-08",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "Check that your Claude API keys are stored only in a secrets manager or environment variable, never in source code or shared documents, and rotate any key that has been exposed — doing this now prevents an attacker from silently consuming your allowance mid-project and avoids the disruption of losing Claude access during a client deadline.",
+      "practicalBenefit": "Auditing and rotating Claude credentials across i2e project repos and shared tooling reduces the risk of unauthorised access to prompts containing GxP document content or pharma client data, and gives you a concrete security step to document in any AI tool governance review.",
+      "whyRelevant": "Every i2e employee who uses Claude — whether through the API, Claude Code, or Claude Cowork — holds credentials that could be targeted; a stolen token gives an attacker full access to your Claude allowance and any sensitive prompt content you send, including client validation documents or project data."
+    }
+  },
+  {
     "id": "techcrunch-pentagon-chatgpt-grok-2026-08-31",
     "title": "AI tools are now running in classified government environments — what it signals for regulated enterprise adoption",
     "url": "https://techcrunch.com/2026/08/31/the-pentagon-now-has-its-own-version-of-chatgpt-and-grok/",
