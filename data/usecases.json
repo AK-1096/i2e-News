@@ -1,5 +1,32 @@
 [
   {
+    "id": "blog-claude-code-changelog-memory-ralph-loop-2026-03-23",
+    "title": "Use CHANGELOG.md and the Ralph loop to keep Claude Code on task across multi-session builds",
+    "tools": [
+      "Claude Code"
+    ],
+    "category": "workflow",
+    "whatItDoes": "Two complementary techniques for long-running Claude Code sessions: a CHANGELOG.md progress file that acts as the agent's portable memory across sessions — recording completed tasks, failed approaches, and checkpoint results — and the Ralph loop, a scaffolding command that automatically re-prompts Claude Code when it falsely declares a complex task complete before the real acceptance criteria are met. Both are encoded in the project's CLAUDE.md so they apply automatically on every session start.",
+    "whatItImproves": "Without a progress file, each new session re-discovers dead ends and duplicates work from prior sessions, losing hours on approaches already proven wrong. Without the Ralph loop, multi-step builds stop prematurely when Claude reports done but the task is not yet at spec — a failure mode that only surfaces on manual review. Together these patterns reduce wasted session restarts and keep autonomous builds converging toward their completion criteria across days of unattended work.",
+    "howToTry": "1. Create a CLAUDE.md at the repo root containing the project plan, acceptance criteria, and an explicit instruction for Claude to maintain a CHANGELOG.md that records: current status, completed tasks, failed approaches with reasons, and test or accuracy results at key checkpoints.\n2. At the start of each new session, tell Claude Code: 'Read CHANGELOG.md and pick up the next task' — this replays prior context without re-pasting it manually.\n3. Install the Ralph loop plugin inside Claude Code by running /plugin install ralph-loop, or add a plain bash wrapper that re-prompts Claude every time it outputs a completion signal before the real acceptance criterion is met.\n4. Invoke the loop with: /ralph-loop:ralph-loop \"Keep working until [your success criterion]\" --max-iterations 20 --completion-promise \"DONE\", replacing the criterion with a concrete, testable condition such as all existing tests passing at the required accuracy threshold.\n5. Encode a Git commit instruction in CLAUDE.md — e.g. 'Commit and push after every meaningful unit of work' — so progress is recoverable if a session ends unexpectedly and the CHANGELOG.md serves as an auditable change record.",
+    "sourceUrl": "https://www.anthropic.com/news/long-running-Claude",
+    "sourcePlatform": "blog",
+    "author": "Siddharth Mishra-Sharma",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-03-23",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "developers",
+      "qa"
+    ],
+    "relevance": {
+      "dailyImpact": "You can leave Claude Code running on a multi-file refactor or test-fix task overnight and return to a session that has continued making progress rather than stopping at the first false completion signal, cutting the number of manual check-ins needed on unattended builds.",
+      "practicalBenefit": "A version-controlled CHANGELOG.md that records failed approaches and checkpoint results gives you an auditable log of what the agent tried and why certain paths were abandoned — a defensible artifact to include in GxP validation documentation when AI assistance contributed to a software change.",
+      "whyRelevant": "When you run Claude Code to build or refactor a validated software component across multiple sessions for a pharma client, lost progress and premature task completion are the two most common failure modes — CHANGELOG.md and the Ralph loop directly eliminate both."
+    }
+  },
+  {
     "id": "blog-negative-constraint-prompting-2026-09-01",
     "title": "List what you don't want the AI to write — negative constraints cut more rework than positive instructions",
     "tools": [
