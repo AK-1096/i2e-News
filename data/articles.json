@@ -1,5 +1,25 @@
 [
   {
+    "id": "intuitionlabs-pharma-ai-governance-gap-2026-08-08",
+    "title": "75% of pharma firms have deployed AI but fewer than half have governance policies — use the gap when scoping client work",
+    "url": "https://intuitionlabs.ai/articles/boutique-life-sciences-consulting-pharma-ai",
+    "source": "IntuitionLabs",
+    "summary": "An IntuitionLabs report on AI adoption in pharma and life sciences finds that while 75% of life sciences companies have implemented AI tools in the past two years and 86% plan wide deployment within the next two years, fewer than half have formal AI governance policies or auditing procedures in place, and only 31% of UK pharma firms report a demonstrable positive ROI from AI so far — pointing to a governance execution gap rather than a tool availability problem.",
+    "topic": "Latest",
+    "publishedDate": "2026-08-08",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can cite the 75% adoption versus 31% positive-ROI contrast in a client status update or steering-committee deck to shift the conversation from tool selection to governance design, opening scope for the process, validation, and workflow work i2e delivers.",
+      "practicalBenefit": "The report's identification of AI governance as the primary gap in pharma AI adoption gives you a concrete, independently sourced evidence base for scoping validation, compliance documentation, and workflow design engagements with life-sciences clients — replacing generic AI-strategy framing with reported numbers a pharma client can verify.",
+      "whyRelevant": "When a pharma client questions why their AI investments haven't delivered measurable returns, this report gives you a sourced data point — fewer than half of life sciences companies have formal AI governance policies — to explain exactly where the execution gap sits and to frame i2e's GxP validation and compliance expertise as the intervention that converts tool adoption into auditable ROI."
+    }
+  },
+  {
     "id": "techcrunch-abliteration-ai-guardrail-removal-2026-09-03",
     "title": "A company now sells AI guardrail removal as a service — add vendor guardrail verification to your pharma AI checklists",
     "url": "https://techcrunch.com/2026/09/03/abliteration-ai-is-making-a-business-out-of-removing-ai-guardrails/",
