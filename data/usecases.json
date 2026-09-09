@@ -1,5 +1,36 @@
 [
   {
+    "id": "blog-negative-constraint-prompting-2026-09-01",
+    "title": "List what you don't want the AI to write — negative constraints cut more rework than positive instructions",
+    "tools": [
+      "ChatGPT",
+      "Claude",
+      "M365 Copilot"
+    ],
+    "category": "prompting-technique",
+    "whatItDoes": "Negative constraint prompting adds an explicit 'Do not:' section to any prompt, listing phrasing, structures, or vocabulary the model must avoid — banned opening words, forbidden filler terms, disallowed rhetorical patterns, or length ceilings. Where positive instructions tell the model what to include, negative constraints eliminate specific failure modes before the first word is generated, narrowing the model's output space to responses that already meet your quality bar. The technique is distinct from asking for a style (e.g. 'be concise') because it targets concrete, testable tokens rather than leaving interpretation to the model.",
+    "whatItImproves": "Without negative constraints, the same prompt reliably produces the same recurring flaws — generic openers, junk filler phrases, or structures that require manual cleanup on every pass. After adding a compact 'Do not:' block, those failure modes disappear from the first draft, removing a systematic editing step from every AI-assisted writing task and making outputs closer to submission-ready without an extra correction round.",
+    "howToTry": "1. Run a prompt you use regularly and note two or three specific things in the output that consistently require editing — a filler opener, a banned word, an unwanted structure, or excessive length.\\n2. Add a 'Do not:' block at the end of your prompt. List each failure mode as a concrete, testable rule — for example: 'Do not start with In today's, In the world of, or Whether you are' rather than 'Be concise.'\\n3. Ban vocabulary classes rather than requesting a style — 'Do not use the words: leverage, streamline, delve, unlock, or transform' outperforms 'Write simply' because it eliminates specific tokens the model can test against.\\n4. Test: run the same task with and without your 'Do not:' block and compare first-draft quality — the gain is most visible on writing tasks you run repeatedly.\\n5. Build a reusable 'Do not:' block for each recurring deliverable type — client status update, validation finding summary, executive brief — and add it to your saved prompt templates so the constraint applies automatically every session.",
+    "sourceUrl": "https://www.aitooldiscovery.com/guides/prompt-engineering",
+    "sourcePlatform": "blog",
+    "author": "Amara",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2026-09-01",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can add a five-line 'Do not:' block to any recurring prompt template and stop manually editing out the same filler phrases, generic openers, and overused vocabulary from every AI-assisted deliverable in your weekly workflow.",
+      "practicalBenefit": "Encoding negative constraints in shared prompt templates for GxP document reviews and client deliverables gives every team member the same quality floor on first drafts, reducing per-document cleanup time across the engagement and making AI-assisted output consistently closer to submission-ready.",
+      "whyRelevant": "When you use Claude or M365 Copilot to draft client status updates or validation finding summaries, the same junk phrases and generic openers appear every time because nothing in your prompt eliminates them — a negative constraint block removes those specific failure modes before the first draft is generated."
+    }
+  },
+  {
     "id": "blog-github-copilot-repo-custom-instructions-2025-10-01",
     "title": "Add a copilot-instructions.md file so GitHub Copilot learns your project rules automatically",
     "tools": [
