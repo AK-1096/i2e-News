@@ -1,5 +1,37 @@
 [
   {
+    "id": "blog-source-locked-document-prompting-2026-07-14",
+    "title": "Add a source-lock and refusal instruction to stop the AI from going off-document",
+    "tools": [
+      "ChatGPT",
+      "Claude",
+      "M365 Copilot",
+      "GitHub Copilot"
+    ],
+    "category": "prompting-technique",
+    "whatItDoes": "A source-lock instruction tells the AI to answer only from a specific uploaded document or pasted text, and to say 'I don't know' rather than pulling from general training data when the answer isn't there. You add two lines to any prompt: one scoping the AI to your source material ('Reference only the following document') and one explicit refusal rule ('If the answer is not in this document, say so — do not use outside knowledge'). The technique works in any chat-based AI tool that accepts pasted or uploaded content.",
+    "whatItImproves": "Without a source-lock, AI tools blend your uploaded document with their broader training data, producing answers that sound plausible but mix your internal SOP language with external best-practice generalisations — a failure mode that is invisible until a subject-matter expert or regulator spots the discrepancy. After adding the two-line source-lock, every answer is traceable back to the document in the prompt, and gaps in the source material surface as explicit 'not in this document' signals instead of silent hallucinations — making AI-assisted document work auditable by design.",
+    "howToTry": "1. Upload or paste the document you want the AI to work from — an SOP, validation protocol section, client brief, or procedure — into your Claude, ChatGPT, or M365 Copilot session.\\n2. Prefix your question with the source-lock instruction: 'Using only the document above, answer the following. If the answer is not in the document, say so — do not use outside knowledge.'\\n3. Ask your question (for example: 'Walk me through how to release a drawing revision' or 'What are the acceptance criteria for this test step?').\\n4. When the AI responds, spot-check the answer against the source: if it cites a section number or quotes a phrase, verify it exists in the document — any answer without a traceable phrase is a sign the refusal instruction was not followed and the response should be discarded.\\n5. For recurring tasks, save the source-lock prefix as a reusable template in your prompt library and apply it every time you need AI assistance grounded in a specific internal document rather than general knowledge.",
+    "sourceUrl": "https://hawkridgesys.com/blog/how-engineers-use-ai-2026",
+    "sourcePlatform": "blog",
+    "author": "Hawk Ridge Systems",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2026-07-14",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can paste any validation procedure or client brief into Claude and add the source-lock prefix before asking review questions, ensuring every answer the model gives is traceable back to the document rather than drawn from general AI knowledge that may not match your client's specific standards.",
+      "practicalBenefit": "AI responses produced under a source-lock instruction carry an implicit audit trail — each answer is either traceable to a named section of the input document or flagged as absent, giving you a defensible basis for including AI-assisted findings in GxP document reviews and gap analyses for pharma clients.",
+      "whyRelevant": "When you use Claude or M365 Copilot to answer questions from a client's SOP or validation protocol, the model silently blends your document with its training data — a source-lock instruction forces it to stay within the document and flag gaps instead of filling them with plausible-sounding external content."
+    }
+  },
+  {
     "id": "blog-github-copilot-slash-commands-context-2026-06-01",
     "title": "Use slash commands and context references in Copilot Chat to run structured code reviews without leaving VS Code",
     "tools": [
