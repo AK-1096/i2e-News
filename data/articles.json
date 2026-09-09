@@ -1,5 +1,26 @@
 [
   {
+    "id": "techcrunch-abliteration-ai-guardrail-removal-2026-09-03",
+    "title": "A company now sells AI guardrail removal as a service — add vendor guardrail verification to your pharma AI checklists",
+    "url": "https://techcrunch.com/2026/09/03/abliteration-ai-is-making-a-business-out-of-removing-ai-guardrails/",
+    "source": "TechCrunch",
+    "summary": "Abliteration.ai has launched a commercial service that strips safety guardrails from AI models for enterprise customers, creating a new vendor risk category: any AI tool deployed by a client, partner, or third party may have had its safety constraints commercially removed without disclosure, making standard tool assessments insufficient on their own.",
+    "topic": "Latest",
+    "publishedDate": "2026-09-03",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm"
+    ],
+    "relevance": {
+      "dailyImpact": "When completing a vendor assessment or updating AI tool validation documentation for a client, you can now add a specific guardrail-removal due-diligence question: require written confirmation from the vendor that the model version deployed has not had safety constraints commercially removed.",
+      "practicalBenefit": "Naming Abliteration.ai's guardrail-removal service as a concrete risk category in client GxP validation documents gives pharma clients a verifiable threat to reference in their AI procurement governance frameworks, replacing vague safety assurances with a documented, auditable control requirement.",
+      "whyRelevant": "When assessing AI vendors and tools for pharma clients, the commercial availability of guardrail-removal services means a model that appears safe in initial evaluation may have had its safety constraints stripped before deployment — a risk that does not surface in a standard procurement review."
+    }
+  },
+  {
     "id": "mckinsey-state-of-ai-2026-08-25",
     "title": "Use McKinsey's 2026 AI survey data to close the gap between individual productivity gains and enterprise ROI with your pharma clients",
     "url": "https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai",
