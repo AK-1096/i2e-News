@@ -1,5 +1,26 @@
 [
   {
+    "id": "openai-navier-stokes-millennium-prize-2026-09-08",
+    "title": "10,000 AI agents solved a 90-year maths problem in 88 hours — calibrate your AI capability conversations with clients now",
+    "url": "https://openai.com/index/navier-stokes-solution/",
+    "source": "OpenAI",
+    "summary": "An internal OpenAI system used 10,000 coordinating agents to resolve the Navier–Stokes existence and smoothness problem — one of mathematics' seven Millennium Prize Problems — in 88 hours, producing both an analytical proof and a formal Lean verification. The model behind the result is described by OpenAI as significantly more capable than GPT-6 Astra and has been in training since August 28, signalling a further step-change in frontier AI reasoning capability.",
+    "topic": "Latest",
+    "publishedDate": "2026-09-08",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "developers",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can reference this result in client status updates and AI roadmap discussions to ground expectations about multi-agent AI capability — showing that coordinated agentic systems are now operating at a level that reshapes what is feasible on complex, long-horizon scientific and analytical workflows.",
+      "practicalBenefit": "Knowing that OpenAI's new internal model exceeds GPT-6 Astra and used 10,000 concurrent agents to resolve a frontier mathematics problem gives you a sourced, high-signal data point to include in AI vendor assessments and technology roadmap documents when advising pharma clients on next-generation AI tool selection and investment timing.",
+      "whyRelevant": "When a pharma client questions what AI models can realistically achieve for complex analytical or scientific tasks, OpenAI's resolution of a 90-year unsolved Millennium Prize problem using autonomous agents gives you a concrete, independently verifiable benchmark for the current capability frontier."
+    }
+  },
+  {
     "id": "intuitionlabs-pharma-ai-governance-gap-2026-08-08",
     "title": "75% of pharma firms have deployed AI but fewer than half have governance policies — use the gap when scoping client work",
     "url": "https://intuitionlabs.ai/articles/boutique-life-sciences-consulting-pharma-ai",
