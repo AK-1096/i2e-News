@@ -1,5 +1,33 @@
 [
   {
+    "id": "blog-copilot-excel-natural-language-data-analysis-2024-09-16",
+    "title": "Replace VLOOKUP and pivot tables with plain English questions in Excel using Copilot",
+    "tools": [
+      "M365 Copilot"
+    ],
+    "category": "workflow",
+    "whatItDoes": "Copilot in Excel lets you query, summarize, and visualize tabular data using plain English questions typed into a side panel, without writing formulas, creating pivot tables, or knowing Excel functions. You describe what you want — 'show me the top 10 rows by total value' or 'highlight all rows where the status is Overdue' — and Copilot generates the formula, conditional format, or chart, explains what it will do, and applies it directly to your sheet. The feature works on any formatted Excel table and is available to all Microsoft 365 Copilot subscribers.",
+    "whatItImproves": "Before Copilot in Excel, non-technical team members had to ask a developer or analyst to answer ad hoc data questions, or invest time learning VLOOKUP, SUMIF, and pivot table syntax to get answers themselves. After enabling Copilot, anyone who can describe a question in plain English can get the answer directly from the spreadsheet in seconds — removing the dependency on a technical colleague and the turnaround delay on every data request.",
+    "howToTry": "1. Open an Excel workbook containing your data and format it as a table: select any cell in the data range, press Ctrl+T, and confirm the range so Copilot can read its structure.\n2. Click the Copilot button in the Home ribbon (requires a Microsoft 365 Copilot licence) to open the Copilot side panel.\n3. Type a plain English question about your data — for example: 'What are the top 5 items by total value?' or 'Highlight all rows where the Status column says Overdue.'\n4. Review Copilot's explanation of what it will do before clicking Apply to let it insert the formula, conditional format, or chart into your sheet.\n5. If the result needs adjustment, refine your question in plain English — for example, 'Now group those results by month and show them as a bar chart' — without editing any formula directly.",
+    "sourceUrl": "https://techcommunity.microsoft.com/t5/excel-blog/copilot-in-excel-is-generally-available/ba-p/4240194",
+    "sourcePlatform": "blog",
+    "author": "Microsoft Excel Team",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2024-09-16",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can open any formatted Excel sheet — a test case log, a validation milestone tracker, or a client project dashboard — and ask Copilot to surface overdue items, summarize completion rates, or highlight gaps without touching a formula or constructing a pivot table.",
+      "practicalBenefit": "Replacing manual formula work with plain English queries on recurring Excel deliverables such as validation status reports and client project dashboards cuts the time spent on data summarization and eliminates formula errors in documents reviewed by pharma clients.",
+      "whyRelevant": "When you need to answer a quick data question from a pharma client's validation status tracker or project delivery spreadsheet, Copilot in Excel lets you get the answer by describing it in plain English rather than waiting for a developer or building a formula yourself."
+    }
+  },
+  {
     "id": "blog-claude-code-changelog-memory-ralph-loop-2026-03-23",
     "title": "Use CHANGELOG.md and the Ralph loop to keep Claude Code on task across multi-session builds",
     "tools": [
