@@ -1,5 +1,26 @@
 [
   {
+    "id": "anthropic-pwc-claude-enterprise-2026-05-14",
+    "title": "PwC is running Claude in pharma production with 70% delivery gains — use these deployment patterns with your own clients",
+    "url": "https://www.anthropic.com/news/pwc-expanded-partnership",
+    "source": "Anthropic",
+    "summary": "Anthropic and PwC have expanded their strategic alliance to deploy Claude across PwC's global consulting practice in pharma, life sciences, healthcare, and financial services, with reported delivery improvements of up to 70%. The partnership covers compressing clinical development cycles, regulatory submissions, and safety case processing while meeting FDA and EMA standards, and includes rollout of Claude Code and Cowork to PwC's global workforce of hundreds of thousands of professionals.",
+    "topic": "Latest",
+    "publishedDate": "2026-05-14",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "developers",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "When scoping an AI-assisted workflow for a pharma client or preparing a client status update on AI adoption, you can cite PwC's production results — insurance underwriting compressed from ten weeks to ten days, delivery improvements up to 70% — as a third-party-validated benchmark from a consulting firm working the same domain.",
+      "practicalBenefit": "The article details how PwC structures Claude deployments for regulated industries including life sciences and healthcare, giving you a reference architecture for proposing Claude-powered delivery improvements on validation, regulatory submission, and safety case processing work with your own pharma clients.",
+      "whyRelevant": "PwC is deploying Claude in pharma and life sciences production — compressing regulatory submissions and clinical development cycles while meeting FDA and EMA standards — setting a concrete benchmark for what consulting firms working in your sector are now expected to deliver with AI."
+    }
+  },
+  {
     "id": "anthropic-claude-science-workbench-2026-06-30",
     "title": "Run auditable, reproducible life sciences analyses end-to-end with Anthropic's new Claude Science workbench",
     "url": "https://www.anthropic.com/news/claude-science-ai-workbench",
