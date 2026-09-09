@@ -1,5 +1,27 @@
 [
   {
+    "id": "anthropic-claude-science-workbench-2026-06-30",
+    "title": "Run auditable, reproducible life sciences analyses end-to-end with Anthropic's new Claude Science workbench",
+    "url": "https://www.anthropic.com/news/claude-science-ai-workbench",
+    "source": "Anthropic",
+    "summary": "Anthropic has launched Claude Science in beta — an AI workbench for life sciences researchers that integrates over 60 curated tools and databases for genomics, proteomics, and cheminformatics into a single environment. Every output carries a full auditable history showing exactly how it was produced, and a built-in reviewer agent checks citations and calculations in real time, making results reproducible and traceable for regulated scientific workflows.",
+    "topic": "Latest",
+    "publishedDate": "2026-06-30",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "When scoping an AI-assisted protocol review or literature synthesis workflow for a pharma client, you can reference Claude Science's auditable artifact model as a concrete example of how AI research tools can be structured to satisfy documentation and traceability standards.",
+      "practicalBenefit": "Claude Science's pre-configured connectors to PubMed, ChEMBL, and major genomics databases let pharma research teams run multi-step analyses in a single validated environment, reducing the number of separate tools that need individual qualification in your GxP system landscape.",
+      "whyRelevant": "Claude Science produces auditable artifacts with full trace histories and a built-in reviewer agent that flags incorrect citations and untraceable numbers — meeting the documented provenance requirements you need when AI tools contribute to GxP-adjacent pharma research."
+    }
+  },
+  {
     "id": "techcrunch-claude-token-theft-2026-09-08",
     "title": "Claude tokens are being actively stolen — rotate your API keys before attackers drain your allowance",
     "url": "https://techcrunch.com/2026/09/08/hackers-are-stealing-claude-tokens-from-subscribers/",
