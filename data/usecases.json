@@ -1,5 +1,34 @@
 [
   {
+    "id": "blog-m365-copilot-workflows-agent-automation-2026-04-01",
+    "title": "Build automated M365 workflows from a plain English description — no Power Automate experience needed",
+    "tools": [
+      "M365 Copilot"
+    ],
+    "category": "automation",
+    "whatItDoes": "The Workflows Agent in Microsoft 365 Copilot lets you describe an automated task in plain English — for example, 'each weekday morning, summarise my unread emails and send the digest to my Teams channel' — and it generates and deploys a working workflow connecting Outlook, Teams, SharePoint, and Planner without you writing a single connector rule. The agent configures the trigger, the AI processing step, and the actions automatically, then presents a visual designer where you can test, monitor, and adjust the result.",
+    "whatItImproves": "Before the Workflows Agent, creating a recurring automation in Microsoft 365 required knowledge of Power Automate connector logic, trigger types, and action configuration — a barrier that left most employees dependent on IT or a developer to set up even simple recurring tasks. After describing the workflow in plain text, the agent handles all configuration and connects the required services, so any team member can create and own a working automation in minutes without a Power Automate licence or training.",
+    "howToTry": "1. Sign in to Microsoft Copilot at microsoft365.com or in Teams desktop, open the Agents panel in the left navigation, and add the Workflows Agent (Frontier) from the Agent Store — the agent is available to Microsoft 365 Personal, Family, and Premium plans in the Frontier early-access programme.\n2. Select the Workflows Agent and type a plain-English description of the automation you want — for example: 'Every weekday morning, check my Outlook inbox for unread emails from the last 24 hours, identify anything high-priority or time-sensitive, and post a summary to my Teams chat organised into Needs Response, For Your Information, and Other.'\n3. Review the workflow the agent generates in the Workflow tab, checking the trigger, the AI prompt step, and the output action to confirm the services connected match your intent.\n4. Select Test to run the workflow once and review the output in the Activity tab — confirm the summary arrives in Teams with the expected sections and that the sender, subject, and next steps are captured correctly.\n5. When satisfied, save and turn the workflow on; monitor all runs from the Activity page and refine the natural-language description at any time to adjust what the agent filters, how it labels sections, or where it sends output.",
+    "sourceUrl": "https://support.microsoft.com/en-us/microsoft-365-copilot/get-started-with-workflows-in-microsoft-365-copilot",
+    "sourcePlatform": "blog",
+    "author": "Microsoft",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2026-04-01",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "ba-pc",
+      "pm",
+      "qa",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can set up a workflow that monitors your Outlook inbox for pharma client project updates overnight and delivers a prioritised summary to your Teams chat each morning, cutting the time you spend triaging email before your first client call and ensuring time-sensitive validation queries are never missed.",
+      "practicalBenefit": "Automating recurring status-check and notification steps — such as alerting the team when a SharePoint validation document is updated or posting a daily summary of open Planner tasks to a project channel — removes manual monitoring overhead from client engagement workflows and creates a lightweight audit trail of communication activity across a GxP project.",
+      "whyRelevant": "When you manage recurring information-gathering tasks across Microsoft 365 — triaging project emails, monitoring SharePoint document updates, or tracking open Planner tasks — the Workflows Agent lets you automate the collection and digest step without raising a ticket with IT or learning Power Automate connector logic."
+    }
+  },
+  {
     "id": "blog-claude-extended-thinking-2025-02-24",
     "title": "Enable Claude's extended thinking mode for complex analysis — deeper reasoning, fewer missed steps",
     "tools": [
