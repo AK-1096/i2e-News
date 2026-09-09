@@ -1,5 +1,25 @@
 [
   {
+    "id": "techcrunch-google-cloud-accenture-fde-2026-09-08",
+    "title": "Every major AI platform now has a forward-deployed engineer unit — know what that means for your clients",
+    "url": "https://techcrunch.com/2026/09/08/google-cloud-races-to-catch-up-in-the-ai-deployment-wars-with-accenture-deal/",
+    "source": "TechCrunch",
+    "summary": "Google Cloud and Accenture have launched the Accenture Gemini Enterprise Business Group, a dedicated unit of 1,000 forward-deployed engineers who embed directly inside enterprise clients to build and scale Google's agentic AI tools — joining OpenAI, Anthropic, Microsoft, and Amazon, all of which now run separate FDE units. Ramp data cited in the article shows Google holds just 6% of enterprise AI spending versus Anthropic's 43.5% and OpenAI's 39.7%, framing embedded delivery as the strategy every major platform is using to convert infrastructure investment into enterprise revenue.",
+    "topic": "Latest",
+    "publishedDate": "2026-09-08",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "When preparing a client status update or positioning i2e on an AI engagement, you can cite the FDE arms race and the Ramp spending data — Anthropic 43.5%, OpenAI 39.7%, Google 6% — to give clients a concrete vendor-landscape picture and to differentiate i2e's pharma-domain and GxP depth over a generic platform rollout team.",
+      "practicalBenefit": "Knowing that Google's new 1,000-FDE unit sits under Accenture rather than Google Cloud itself gives you a concrete example of the partnership model major platforms are using to reach regulated-sector clients — a data point to include in client AI strategy documents and vendor assessment frameworks when advising pharma accounts on AI tool selection.",
+      "whyRelevant": "Every major AI platform vendor — Google, Anthropic, OpenAI, Microsoft, and Amazon — now runs a dedicated forward-deployed engineer unit competing in the same embedded consulting space i2e operates in, and pharma clients who encounter these teams will arrive at engagements expecting that standard of on-site AI delivery expertise."
+    }
+  },
+  {
     "id": "techcrunch-mistral-3b-sovereign-ai-2026-09-08",
     "title": "Propose Mistral as a sovereign EU-hosted AI option when clients need data-residency guarantees",
     "url": "https://techcrunch.com/2026/09/08/mistral-raises-e3b-as-sovereign-ai-becomes-big-business/",
