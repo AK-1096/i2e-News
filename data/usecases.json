@@ -1,5 +1,37 @@
 [
   {
+    "id": "blog-react-prompting-technique-2026-04-19",
+    "title": "Work through multi-step problems with the ReAct loop — Thought, Action, Observation, repeat",
+    "tools": [
+      "ChatGPT",
+      "Claude",
+      "M365 Copilot",
+      "GitHub Copilot"
+    ],
+    "category": "prompting-technique",
+    "whatItDoes": "ReAct (Reason + Act) is a prompting pattern that instructs the model to cycle through three explicitly labelled steps — THOUGHT (what should I do next?), ACTION (take that step), and OBSERVATION (what did I learn from it?) — repeating the loop until a task is fully resolved. Unlike chain-of-thought, which produces a single linear reasoning trace and then stops, ReAct treats each step as a checkpoint that can change direction based on what the previous action revealed, making it suited to multi-step analytical, research, and review tasks.",
+    "whatItImproves": "Without ReAct, complex tasks collapse into a single unguided response that commits to an approach before testing it, so gaps and wrong assumptions only surface after the final answer is already written. After applying the ReAct pattern the model self-corrects mid-task: each OBSERVATION feeds the next THOUGHT, so missing information or a flawed assumption is caught inside the loop rather than surfacing in a client review of the finished deliverable.",
+    "howToTry": "1. Add the ReAct instruction at the end of your prompt: 'Work through this step by step. For each step, label it THOUGHT (what you should do next), ACTION (do it), and OBSERVATION (what you learned). Repeat until you have a complete, verified answer.'\\n2. Give the model a multi-step analytical task — for example, reviewing a validation protocol section for gaps, checking a client data report for inconsistencies, or building a risk register from a project brief.\\n3. Read each OBSERVATION before the model moves on. If an observation misses a relevant condition, prompt it: 'Continue from your last OBSERVATION and also check [specific aspect] before proceeding.'\\n4. Once all loops are complete, ask for a synthesis: 'Summarise your findings from all THOUGHT-ACTION-OBSERVATION cycles into a single structured output in [format].'\\n5. Save the ReAct instruction as a standard suffix in your prompt library for any task that requires checking multiple conditions or sources — it adds negligible tokens and consistently improves completeness on analytical work.",
+    "sourceUrl": "https://pasqualepillitteri.it/en/news/1090/prompt-engineering-2026-frameworks-complete-guide",
+    "sourcePlatform": "blog",
+    "author": "Pasquale Pillitteri",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-04-19",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm"
+    ],
+    "relevance": {
+      "dailyImpact": "You can apply the ReAct loop to any multi-condition document review — such as checking a test script for logical gaps or cross-referencing a client brief against project requirements — and get a structured trace of every reasoning step rather than a single summary that may have skipped something.",
+      "practicalBenefit": "ReAct's labelled THOUGHT-ACTION-OBSERVATION steps produce an auditable reasoning trace you can include in a review log, giving you documented evidence of the checks performed during an AI-assisted validation step on a pharma client deliverable.",
+      "whyRelevant": "When reviewing a validation protocol or performing a GxP-aware data check, a single-pass prompt misses edge cases that a ReAct loop catches by forcing the model to observe what it found before deciding what to check next."
+    }
+  },
+  {
     "id": "blog-self-evaluation-loop-prompting-2026-05-09",
     "title": "Add a self-evaluation step so the model critiques and rewrites its own output before you read it",
     "tools": [
