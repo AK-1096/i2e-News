@@ -1,5 +1,36 @@
 [
   {
+    "id": "blog-few-shot-prompting-varied-examples-2026-08-20",
+    "title": "Use two or three worked examples instead of instructions to get consistent AI output every time",
+    "tools": [
+      "ChatGPT",
+      "Claude",
+      "M365 Copilot",
+      "GitHub Copilot"
+    ],
+    "category": "prompting-technique",
+    "whatItDoes": "Few-shot prompting supplies the AI with two or three concrete input-output examples before stating the actual task, letting the model pattern-match a visible template rather than interpret a written description. The examples teach format, tone, field names, and edge-case handling simultaneously — information that instructions alone rarely convey with enough precision. Three deliberately varied examples covering a normal case, a borderline case, and a near-miss edge case outperform a longer instruction block on every repeated, structured task.",
+    "whatItImproves": "Without examples, the same prompt produces differently structured responses on every run, forcing manual cleanup before the output can be used in a deliverable, review log, or shared template. After adding a small example set, the model locks onto the demonstrated pattern and reproduces it reliably across different inputs — removing the reformatting step and making the output ready to insert directly into a document or pass to a downstream step without post-processing.",
+    "howToTry": "1. Pick a task you run repeatedly — for example, summarising a validation finding, writing a client status bullet, or flagging a test-script gap — and collect two or three outputs you already consider correct.\n2. Format each as an explicit Example block: Input: [the raw text] → Output: [the structured result you want], matching the exact headings, field names, and length you expect.\n3. Include at least one example that shows a tricky or borderline case — an input with missing data, an ambiguous phrasing, or an edge condition the model is likely to encounter — so it learns how to handle the hard cases, not just the easy ones.\n4. Paste all examples above the live task in your prompt, then add: 'Now apply the same format to the following input:' followed by the real content.\n5. Test the prompt on three different inputs and check whether the output structure is identical each time; if a field drifts or disappears, replace the weakest example with one that demonstrates the expected behaviour for that field.",
+    "sourceUrl": "https://promptrefinery.ai/ai-prompting-techniques-2026/",
+    "sourcePlatform": "blog",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2026-08-20",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can build a three-example few-shot block once for each recurring deliverable type — validation finding summary, gap-analysis row, client status bullet — paste it at the top of your prompt, and receive consistently formatted output across every session without manual cleanup.",
+      "practicalBenefit": "Standardising a shared few-shot block for GxP document reviews means every team member gets the same field names, heading order, and length constraints in their AI output regardless of how they word the rest of the prompt, reducing individual variation and making AI-assisted drafts audit-ready from the first pass.",
+      "whyRelevant": "When you use Claude or M365 Copilot to extract findings from a validation protocol or produce a structured client status update, a written description of the format you want is rarely precise enough — two worked examples using your own document style give the model an exact template to copy rather than approximate."
+    }
+  },
+  {
     "id": "blog-react-prompting-technique-2026-04-19",
     "title": "Work through multi-step problems with the ReAct loop — Thought, Action, Observation, repeat",
     "tools": [
