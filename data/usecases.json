@@ -1,5 +1,32 @@
 [
   {
+    "id": "blog-github-copilot-repo-custom-instructions-2025-10-01",
+    "title": "Add a copilot-instructions.md file so GitHub Copilot learns your project rules automatically",
+    "tools": [
+      "GitHub Copilot"
+    ],
+    "category": "workflow",
+    "whatItDoes": "A .github/copilot-instructions.md file in any repository gives GitHub Copilot standing project-specific context — coding conventions, test frameworks, naming patterns, GxP documentation requirements, and restricted modules — that applies automatically to every inline suggestion and Copilot Chat response in that repo without re-stating it each session. The file is plain Markdown and is read by GitHub Copilot in VS Code, Visual Studio, and JetBrains IDEs with no plugin or settings change required.",
+    "whatItImproves": "Without a custom instructions file, every developer re-explains the same project conventions in Copilot Chat at the start of each session, producing inconsistent AI suggestions across the team. After adding the file, Copilot applies the same standing context to every suggestion automatically — removing the per-session re-briefing step and making AI assistance consistent across all contributors on a shared project.",
+    "howToTry": "1. Create a .github folder at the root of your repository if one does not already exist.\n2. Add a file named copilot-instructions.md inside that folder.\n3. Write your project conventions in plain Markdown — for example: test naming pattern (test_<method>_when_<scenario>), required GxP-traceable comment format for each change, dependency injection style, and any modules the AI must not modify.\n4. Commit and push the file; GitHub Copilot picks it up immediately in VS Code with no extension update or additional configuration required.\n5. Open Copilot Chat and ask a project-specific question to verify — the response should reflect your stated conventions without you having to mention them.",
+    "sourceUrl": "https://docs.github.com/en/copilot/customizing-copilot/adding-repository-custom-instructions-for-github-copilot",
+    "sourcePlatform": "blog",
+    "author": "GitHub",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2025-10-01",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "developers",
+      "qa"
+    ],
+    "relevance": {
+      "dailyImpact": "You open VS Code on a client project and GitHub Copilot already knows the test framework, naming patterns, and GxP documentation requirements encoded in the repo's copilot-instructions.md, so every suggestion and chat response is aligned from the first keystroke without any per-session setup.",
+      "practicalBenefit": "Encoding GxP-traceable comment requirements and restricted module rules in a shared, version-controlled copilot-instructions.md gives your pharma client an auditable record of the AI assistance conventions applied consistently across their validated codebase.",
+      "whyRelevant": "When multiple i2e developers work on the same validated software project, each person currently re-explains GxP comment standards, test naming conventions, and restricted module rules in separate Copilot Chat sessions — producing inconsistent AI assistance across the team on every pharma client engagement."
+    }
+  },
+  {
     "id": "blog-few-shot-prompting-varied-examples-2026-08-20",
     "title": "Use two or three worked examples instead of instructions to get consistent AI output every time",
     "tools": [
