@@ -1,5 +1,35 @@
 [
   {
+    "id": "blog-tree-of-thoughts-prompting-2026-01-17",
+    "title": "Map every reasoning branch before you commit — Tree of Thoughts finds the best answer on complex decisions",
+    "tools": [
+      "ChatGPT",
+      "Claude",
+      "M365 Copilot"
+    ],
+    "category": "prompting-technique",
+    "whatItDoes": "Tree of Thoughts (ToT) prompting instructs the model to generate and evaluate multiple distinct reasoning paths before committing to a final answer. Instead of following a single chain of thought, the model explores several possible approaches — like a decision tree — scores each branch for likely accuracy and completeness, and selects the path with the strongest logic. It is particularly effective for problems with multiple valid strategies, trade-off decisions, or situations where the first obvious approach may not be optimal.",
+    "whatItImproves": "A standard chain-of-thought prompt locks the model into a single reasoning path, so if that path contains an early incorrect assumption, the entire answer is compromised. ToT catches this by exploring alternative approaches before committing, raising the quality of final answers on complex analytical tasks — such as multi-criteria risk assessments, protocol gap analyses, and vendor selection decisions — where the best answer requires systematically weighing competing options rather than following the first plausible route.",
+    "howToTry": "1. State your task, then append: 'Before answering, generate three distinct approaches to this problem. Label them Approach A, B, and C. For each, write a 2-3 sentence reasoning outline and score it 1-5 for likely accuracy and completeness.'\n2. After the model scores all three approaches, follow up: 'Based on your scores, choose the strongest approach and use it to produce a complete, detailed answer.'\n3. For tasks involving uncertain inputs, add a pruning step before scoring: 'Discard any approach that relies on an assumption you cannot verify from the information provided.'\n4. To tighten the output, ask the model to format its approach comparison as a table — Approach, Outline, Score — before selecting the best path, so the reasoning is scannable rather than buried in prose.\n5. Save the ToT instruction block as a reusable suffix in your prompt library for any task involving trade-offs, risk prioritisation, or multi-criteria analysis — it adds a short preamble of tokens and consistently improves first-draft quality on decisions where a single-path answer carries real risk.",
+    "sourceUrl": "https://www.analyticsvidhya.com/blog/2026/01/master-prompt-engineering/",
+    "sourcePlatform": "blog",
+    "author": "Soumil Jain",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-01-17",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "qa",
+      "ba-pc",
+      "pm"
+    ],
+    "relevance": {
+      "dailyImpact": "You can apply the ToT instruction block to any multi-criteria decision on a client engagement — comparing validation approaches, assessing vendor risk options, or reviewing competing test strategies — and receive a structured comparison of all paths before a recommendation is made, without running multiple separate prompts.",
+      "practicalBenefit": "The labelled Approach A, B, C comparison the model produces before selecting an answer gives you a documented exploration of alternatives that you can include in a GxP decision-rationale log, turning an informal AI-assisted recommendation into an auditable, evidence-backed choice for a pharma client deliverable.",
+      "whyRelevant": "When reviewing a complex validation protocol or selecting between multiple system design options for a pharma client, a single-path prompt commits to one approach before it has been tested against alternatives — ToT forces the model to map all viable paths first, so the one it recommends is the strongest available given the information provided."
+    }
+  },
+  {
     "id": "blog-m365-copilot-workflows-agent-automation-2026-04-01",
     "title": "Build automated M365 workflows from a plain English description — no Power Automate experience needed",
     "tools": [
