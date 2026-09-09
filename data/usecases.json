@@ -1,5 +1,36 @@
 [
   {
+    "id": "blog-self-evaluation-loop-prompting-2026-05-09",
+    "title": "Add a self-evaluation step so the model critiques and rewrites its own output before you read it",
+    "tools": [
+      "Claude",
+      "ChatGPT",
+      "M365 Copilot"
+    ],
+    "category": "prompting-technique",
+    "whatItDoes": "Instead of accepting a first-draft AI response, you append a structured critique-and-revise instruction asking the model to score its own output against explicit quality criteria — accuracy, completeness, appropriate length, absence of unsupported claims — and then rewrite any section that falls short. The technique turns a single prompt into a two-stage loop: generate, then self-evaluate, then refine. It works in one combined prompt or as a two-call chain where the second call receives the first output as input.",
+    "whatItImproves": "Without a self-evaluation step, the first AI response is treated as final even when it contains gaps, inconsistencies, or sections that fail the delivery standard — and those gaps only surface during your manual review round. Adding the critique step moves that discovery upstream: the model flags and fixes its own weaknesses before you read the output, raising first-draft quality and cutting the back-and-forth correction cycles that slow document delivery work.",
+    "howToTry": "1. Write your task prompt as normal and get a first response from Claude, ChatGPT, or Copilot.\\n2. Send a follow-up instruction — or append it to the original prompt — using this pattern: 'Now evaluate your response against these criteria: [list your criteria, e.g. factual accuracy, completeness against the source, no unsupported claims, consistent terminology, appropriate length]. Score each criterion 1–5 and list any specific gap.'\\n3. Send a third instruction: 'Rewrite only the sections that scored below 4, correcting the identified gaps without changing sections that passed.'\\n4. For recurring deliverables, embed all three stages in a single system prompt or saved prompt template so the loop runs automatically on every use.\\n5. Tune the criteria list to your delivery standard — for GxP validation documents, add criteria such as 'no claim made without a traceable source in the input document' and 'terminology matches the input protocol exactly'.",
+    "sourceUrl": "https://jobsbyculture.com/blog/prompt-engineering-best-practices-2026",
+    "sourcePlatform": "blog",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-05-09",
+    "addedDate": "2026-09-09",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can embed a self-evaluation step into your standard validation document review prompt so Claude flags incomplete sections, inconsistent terminology, or unsupported assertions before you read the output, cutting the time you spend on a first-pass review of each GxP deliverable.",
+      "practicalBenefit": "A reusable self-evaluation prompt template applied to recurring client deliverables — gap analyses, validation summaries, status reports — produces consistently higher-quality first drafts that require fewer correction rounds before submission, reducing revision time per document across the engagement.",
+      "whyRelevant": "When you use Claude or ChatGPT to draft validation protocols or client deliverables, a model that self-critiques against your specific quality criteria catches gaps in completeness and unsupported claims before you do — removing a manual review round from every AI-assisted document session."
+    }
+  },
+  {
     "id": "blog-claude-projects-persistent-context-2024-11-19",
     "title": "Load every client SOP and standing rule into a Claude Project — brief it once, never again",
     "tools": [
