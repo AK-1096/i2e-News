@@ -1,5 +1,33 @@
 [
   {
+    "id": "youtube-skills-over-agents-anthropic-2025-12-10",
+    "title": "Build skills, not agents — decompose AI capabilities into testable, reusable components",
+    "tools": [
+      "Claude Code",
+      "Codex"
+    ],
+    "category": "workflow",
+    "whatItDoes": "Instead of building a single large agent to handle all tasks end-to-end, decompose capabilities into small, independently testable 'skills' — each a focused function with one responsibility, such as fetching GitHub issues, running a test suite, parsing output, or writing a commit message. An orchestrator agent calls these skills in sequence, passing their outputs forward, rather than attempting the full task in one opaque loop. This pattern was developed and validated by Anthropic's own Claude Code engineering team and presented at AI Engineer World's Fair.",
+    "whatItImproves": "Monolithic agent loops fail in opaque ways — a single large session compounds errors across steps and makes it impossible to isolate which action broke, turning every bug into a full-session restart. Decomposing into skills means each capability is tested in isolation before being composed into a larger workflow, so failures surface in a single testable unit, new skills can be added without touching working ones, and validated skills can be reused across engagements without rebuilding from scratch.",
+    "howToTry": "1. List the distinct capabilities your agent needs for a target task — for example: read a GitHub issue, write code to fix it, run existing tests, fix any failures, write a commit message, open a PR — and treat each as a candidate skill rather than a step inside one big prompt.\n2. Implement each skill as a single, focused function, Claude Code slash command, or short standalone prompt that does exactly one thing and returns a structured result; test it in isolation with a manual run or a unit test before connecting it to anything else.\n3. Write a lightweight orchestrator prompt whose only job is to call the right skill at the right time and pass its output to the next skill — keep the orchestrator's role to sequencing and decision-making, not to executing the individual steps.\n4. When a skill fails, debug it in isolation without re-running the full agent; this isolation is the core payoff — failures are specific, addressable in minutes, and do not contaminate the working parts of the workflow.\n5. Maintain a shared skills library for your team — document each skill's input contract, expected output, and any dependencies — so a skill validated on one project (such as a GxP-traceable commit-message generator or a validation test runner) can be dropped into a new engagement without rebuilding or retesting from scratch.",
+    "sourceUrl": "https://www.youtube.com/watch?v=nLuFLVz_BaM",
+    "sourcePlatform": "youtube",
+    "author": "Barry Zhang, Mahesh Murag (Anthropic)",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2025-12-10",
+    "addedDate": "2026-09-10",
+    "audience": [
+      "developers",
+      "qa"
+    ],
+    "relevance": {
+      "dailyImpact": "You can reuse a skill validated on one client engagement — such as a test-runner skill that checks GxP-relevant acceptance criteria — on the next project without rebuilding it, cutting agent setup time and giving you a growing library of trusted, tested components rather than one-off scripts.",
+      "practicalBenefit": "A shared team skills library with documented input-output contracts turns AI agent work into a repeatable, auditable process — each skill is a named, testable artifact you can reference in a validation package as evidence of the automated step applied during a client software delivery.",
+      "whyRelevant": "When you build Claude Code agents for pharma client deliverables, a monolithic agent loop that fails mid-task forces a full restart and leaves no record of which step broke — decomposing into tested skills gives you a traceable, restartable workflow where each unit can be audited individually."
+    }
+  },
+  {
     "id": "blog-source-locked-document-prompting-2026-07-14",
     "title": "Add a source-lock and refusal instruction to stop the AI from going off-document",
     "tools": [
