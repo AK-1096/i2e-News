@@ -33,7 +33,7 @@ Two surfaces, joined by a single data contract — they never call each other di
 | `events.html` | All news, newest first, with the section header and an edge portal to the i2e AI Guide. |
 | `playbook.html` | The i2e AI Guide (all use-cases) with the section header and an edge portal back to News. |
 | `usecase.html` | Per-use-case view, reached by `?id=<id>`. |
-| `archive.html` | Full published history, newest first. |
+| `archive.html` | Month index of News and i2e AI Guide entries filed 30+ days ago; open a month to read its record. |
 | `article.html` | Per-article view, reached by `?id=<id>` — the Teams-ping target. |
 | `assets/app.js` | Shared logic: loads/sorts both contracts, renders rows, tags, upvotes, share, per-row upvote/view/share counters. |
 | `assets/nav.js` | Direction-aware page slides: reads the from/to pages off `navigation.activation` in `pagereveal` so the i2e AI Guide → News crossing slides the mirror way. |

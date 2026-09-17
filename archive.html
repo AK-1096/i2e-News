@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Archive — ALerts</title>
-  <link rel="stylesheet" href="assets/styles.css?v=5">
+  <link rel="stylesheet" href="assets/styles.css?v=6">
   <script src="assets/nav.js?v=2"></script>
 </head>
 <body>
@@ -24,10 +24,8 @@
   <main class="frontpage">
     <section class="hero">
       <h1 class="hero__display">Archive</h1>
-      <p class="caption" id="dateline">Every article filed by the curator</p>
+      <p class="caption" id="dateline">News and i2e AI Guide entries filed more than 30 days ago</p>
     </section>
-
-    <div id="role-filter"></div>
 
     <div id="list">
       <p class="state-loading">Setting the page&hellip;</p>
@@ -41,83 +39,179 @@
     </footer>
   </main>
 
-  <script src="assets/app.js?v=11"></script>
+  <script src="assets/app.js?v=12"></script>
   <script>
-    // Groups articles by month+year of addedDate. loadArticles() returns
-    // items sorted newest-first, so equal-month runs are always consecutive
-    // and each month is emitted as a single ruled block.
-    function monthLabel(addedDate) {
-      var t = Date.parse(addedDate);
-      if (isNaN(t)) return 'Undated';
-      return new Date(t).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+    // The archive merges News and i2e AI Guide entries into one list and only
+    // carries items 30+ days old (see loadArchive()/isArchived() in app.js).
+    // It has two screens, both driven by location.hash and both painted into
+    // #list:
+    //
+    //   - Picker (no hash, or a hash matching no month) — a year-grouped grid
+    //     of month tiles, one per calendar month present in the archive
+    //     (monthsFrom() in app.js). Opening a tile sets the hash.
+    //   - Month record (hash "#YYYY-MM" matching a real month) — that month's
+    //     header and count, a role filter, its rows (renderArchiveItem(),
+    //     already newest-first), and prev/next pills to neighbouring months.
+    //
+    // Selection lives entirely in the hash, so the back/forward buttons move
+    // between the two screens for free; hashMonthKey() is the one place that
+    // parses it.
+    var list = document.getElementById('list');
+    var ARCHIVE_ITEMS = null;      // set once loadArchive() resolves
+    var scrollOnHashClick = false; // set by the click listener below
+
+    // The hash as a month key, or null when it's empty/unparseable — covers
+    // both "#" and a stray hash typed by hand. Strict so "#2026-8" (no
+    // leading zero) falls through to the picker rather than half-matching.
+    function hashMonthKey() {
+      var h = window.location.hash || '';
+      return /^#\d{4}-\d{2}$/.test(h) ? h.slice(1) : null;
     }
 
-    // Build the month-grouped markup for a given (already filtered) list.
-    // Months with no surviving articles are never emitted, so an empty month
-    // header can't appear. Returns '' when nothing matches.
-    function renderGrouped(articles) {
+    // "6 items &middot; 4 News &middot; 2 AI Guide" — shared by a tile's count
+    // line and a month record's header line. Numbers only, so no escaping.
+    function monthCountLine(m) {
+      return m.total + ' item' + (m.total === 1 ? '' : 's') +
+        ' &middot; ' + m.articles + ' News &middot; ' + m.usecases + ' AI Guide';
+    }
+
+    // One tile in the picker grid.
+    function renderMonthTile(m) {
+      var name = m.label.split(' ')[0]; // "August 2026" -> "August"
+      var teaser = m.newest ? m.newest.title : '';
+      return '<a class="month-tile" href="#' + escapeHtml(m.key) + '">' +
+        '<span class="month-tile__name">' + escapeHtml(name) + '</span>' +
+        '<span class="month-tile__count caption">' + monthCountLine(m) + '</span>' +
+        '<span class="month-tile__teaser">' + escapeHtml(teaser) + '</span>' +
+      '</a>';
+    }
+
+    // The picker: every month, newest year first, tiled under a year label.
+    // `months` is monthsFrom(ARCHIVE_ITEMS) — newest-first — so a run of equal
+    // years is always consecutive and each year is emitted as one grid.
+    function renderPicker(months) {
       var html = '';
-      var currentLabel = null;
-      var groupHtml = '';
-
-      function flushGroup() {
-        if (currentLabel === null || groupHtml === '') return;
-        html +=
-          '<h2 class="caption month-header">' + escapeHtml(currentLabel) + '</h2>' +
-          '<div class="contents">' + groupHtml + '</div>';
-      }
-
-      for (var i = 0; i < articles.length; i++) {
-        var label = monthLabel(articles[i].addedDate);
-        if (label !== currentLabel) {
-          flushGroup();
-          currentLabel = label;
-          groupHtml = '';
+      var i = 0;
+      while (i < months.length) {
+        var year = months[i].year;
+        html += '<h2 class="caption month-header">' + year + '</h2><div class="month-grid">';
+        while (i < months.length && months[i].year === year) {
+          html += renderMonthTile(months[i]);
+          i++;
         }
-        groupHtml += renderListItem(articles[i]);
+        html += '</div>';
       }
-      flushGroup();
-      return html;
+      list.innerHTML = html;
     }
 
-    loadArticles()
-      .then(function (articles) {
-        var list = document.getElementById('list');
+    // The rows (or the role-filter empty state) for one month. Split out so a
+    // role change can repaint just this part without rebuilding the header,
+    // which always reflects the whole month regardless of role.
+    function renderMonthRows(key, items, role) {
+      var monthItems = items.filter(function (it) { return monthKey(it.addedDate) === key; });
+      var filtered = filterByRole(monthItems, role);
+      if (filtered.length === 0) {
+        return '<h2 class="state-card__title">Nothing filed for this role in ' + escapeHtml(monthLabel(key)) + '.</h2>' +
+          '<p class="state-card__body">Try another role, or pick &ldquo;Everyone&rdquo; to see the whole month.</p>';
+      }
+      var rowsHtml = '';
+      for (var i = 0; i < filtered.length; i++) rowsHtml += renderArchiveItem(filtered[i]);
+      return '<div class="contents">' + rowsHtml + '</div>';
+    }
+
+    // The month record: header + role filter + rows + prev/next. `months` is
+    // the full monthsFrom(ARCHIVE_ITEMS), so prev/next can find real
+    // neighbouring months instead of assuming one exists.
+    function renderMonthRecord(key, items, months) {
+      var idx = -1;
+      for (var i = 0; i < months.length; i++) {
+        if (months[i].key === key) { idx = i; break; }
+      }
+      var m = months[idx];
+
+      var html = '<p><a class="pill" href="#">&larr; All months</a></p>';
+      html += '<p class="caption">Archive</p>';
+      html += '<h2 class="section-front__title">' + escapeHtml(m.label) + '</h2>';
+      html += '<p class="section-front__sub">' + monthCountLine(m) + '</p>';
+      html += '<div id="role-filter"></div>';
+      html += '<div id="month-rows"></div>';
+
+      var older = idx + 1 < months.length ? months[idx + 1] : null; // left
+      var newer = idx - 1 >= 0 ? months[idx - 1] : null;             // right
+      if (older || newer) {
+        html += '<nav class="month-nav" aria-label="Neighbouring months">';
+        if (older) html += '<a class="pill" href="#' + escapeHtml(older.key) + '">&larr; ' + escapeHtml(older.label) + '</a>';
+        if (newer) html += '<a class="pill" href="#' + escapeHtml(newer.key) + '">' + escapeHtml(newer.label) + ' &rarr;</a>';
+        html += '</nav>';
+      }
+      list.innerHTML = html;
+
+      var rowsEl = document.getElementById('month-rows');
+      function render(role) {
+        rowsEl.innerHTML = renderMonthRows(key, items, role);
+        if (typeof initRowCounters === 'function') initRowCounters(rowsEl);
+      }
+      // A fresh role filter every time, so the selection always starts back
+      // at "Everyone" when the month changes.
+      renderRoleFilter(document.getElementById('role-filter'), render);
+      render(null);
+    }
+
+    // Paint whichever screen the current hash calls for. A hash that matches
+    // no real month (an old link, a typo) falls back to the picker, same as
+    // no hash at all.
+    function paint() {
+      var months = monthsFrom(ARCHIVE_ITEMS);
+      var key = hashMonthKey();
+      var found = false;
+      for (var i = 0; i < months.length; i++) {
+        if (months[i].key === key) { found = true; break; }
+      }
+      if (found) renderMonthRecord(key, ARCHIVE_ITEMS, months);
+      else renderPicker(months);
+
+      // Only follow a click here — the browser already puts the reader where
+      // they expect on back/forward, and re-scrolling would fight it.
+      if (scrollOnHashClick) {
+        scrollOnHashClick = false;
+        if (list.scrollIntoView) list.scrollIntoView({ block: 'start' });
+      }
+    }
+
+    loadArchive()
+      .then(function (items) {
         var dateline = document.getElementById('dateline');
 
-        if (articles.length === 0) {
+        if (items.length === 0) {
           list.innerHTML =
-            '<h2 class="state-card__title">Nothing has been filed yet.</h2>' +
-            '<p class="state-card__body">The curator hasn&rsquo;t published any articles. Check back once the next edition goes out.</p>';
+            '<h2 class="state-card__title">Nothing has reached the archive yet.</h2>' +
+            '<p class="state-card__body">Items move here 30 days after the curator files them. Until then, find them under News and the i2e AI Guide.</p>';
           return;
         }
 
         if (dateline) {
           dateline.innerHTML =
-            'Every article filed by the curator &middot; ' + articles.length + ' clippings';
+            'News and i2e AI Guide entries filed more than 30 days ago &middot; ' + items.length + ' items';
         }
 
-        function render(role) {
-          var filtered = filterByRole(articles, role);
-          var html = renderGrouped(filtered);
-          if (html === '') {
-            list.innerHTML =
-              '<h2 class="state-card__title">Nothing filed for this role yet.</h2>' +
-              '<p class="state-card__body">No clippings match that role right now. Try another role, or pick &ldquo;Everyone&rdquo; to see the full record.</p>';
-            return;
-          }
-          list.innerHTML = html;
-          if (typeof initRowCounters === 'function') initRowCounters(document.getElementById('list'));
-        }
+        ARCHIVE_ITEMS = items;
 
-        renderRoleFilter(document.getElementById('role-filter'), render);
-        render(null);
+        // A click on any in-page hash link (a month tile, "All months", a
+        // prev/next pill) is a navigation the reader chose; a hashchange
+        // fired without one of these — back/forward — leaves the flag unset.
+        list.addEventListener('click', function (e) {
+          var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+          if (a) scrollOnHashClick = true;
+        });
+
+        window.addEventListener('hashchange', paint);
+        paint();
       })
       .catch(function (err) {
-        document.getElementById('list').innerHTML =
+        list.innerHTML =
           '<div class="card">' +
             '<h2 class="state-card__title">The record couldn&rsquo;t be loaded.</h2>' +
-            '<p class="state-card__body">Could not load articles: ' + escapeHtml(err.message) + '. Try again in a moment.</p>' +
+            '<p class="state-card__body">Could not load the archive: ' + escapeHtml(err.message) + '. Try again in a moment.</p>' +
             '<a class="ghost-link" href="index.html">Back to latest &rarr;</a>' +
           '</div>';
       });
@@ -126,7 +220,7 @@
     // "Archive" bar top-left, restore the masthead on scroll-up.
     initDynamicHeader({
       title: 'Archive',
-      sub: 'Every article filed by the curator',
+      sub: 'News and i2e AI Guide entries filed more than 30 days ago',
       collapseAfter: document.querySelector('.hero')
     });
   </script>

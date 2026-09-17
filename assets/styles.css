@@ -756,17 +756,106 @@ a {
 }
 
 /* --------------------------------------------------------------------------
-   archive.html — month-grouped list. Reuses .hero / .hero__display, .caption,
-   .contents, and .row from the front-page section above; these two rules are
-   the only archive-specific additions.
+   archive.html — month index. A year-grouped grid of month tiles (the picker)
+   opens into a single month's record: its own header, role filter and rows.
+   Reuses .hero / .hero__display, .caption, .contents, .row, .pill, .chip,
+   .section-front__title/__sub and .state-card__* from above; the rules below
+   are the only archive-specific additions.
    -------------------------------------------------------------------------- */
 
+/* Year label, in the picker, and (unused today but kept general) a month
+   grouping header. */
 .month-header {
   margin: var(--spacing-40) 0 var(--spacing-12);
 }
 
 .month-header:first-of-type {
   margin-top: 0;
+}
+
+/* Kind chip — News vs AI Guide, leading the tag row on a merged archive row.
+   A second axis from the lime topic/category chip beside it: News keeps
+   .chip's plain cream-on-outline look, AI Guide goes cornflower — the same
+   fill .tool-chip already uses to mark a tool as a different kind of tag. */
+.chip--news {
+  background: var(--color-manuscript-cream);
+  border: 1px solid var(--color-press-black);
+}
+
+.chip--guide {
+  background: var(--color-cornflower-wash);
+  border: 1px solid var(--color-press-black);
+}
+
+/* Month-index picker: a responsive grid of month tiles beneath each year
+   label. One column on a phone, widening as the page does. Tracks are
+   minmax(0, 1fr), not bare 1fr — a bare 1fr's automatic minimum is the
+   tile's min-content width, and the nowrap teaser's min-content is its
+   full headline, which blew the columns out past the viewport. */
+.month-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--spacing-16);
+  margin-bottom: var(--spacing-40);
+}
+
+@media (min-width: 600px) {
+  .month-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .month-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* One month tile: a .card's border/radius/padding, worn as a link. Transparent
+   at rest — like .pill — so the grid reads as paper until a reader hovers or
+   tabs to one; the shared :focus-visible rule handles the keyboard outline, so
+   there is nothing bespoke to add for that here. */
+.month-tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+  min-width: 0;
+  border: 1px solid var(--color-press-black);
+  border-radius: var(--radius-cards);
+  padding: var(--card-padding);
+  text-decoration: none;
+  color: var(--color-press-black);
+  transition: background 0.12s ease;
+}
+
+.month-tile:hover {
+  background: var(--color-paper-shadow);
+}
+
+.month-tile__name {
+  font-family: var(--font-serif);
+  font-size: var(--text-heading-sm);
+  line-height: var(--leading-heading-sm);
+  font-weight: var(--font-weight-regular);
+}
+
+.month-tile__teaser {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.27;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Prev/next footer beneath a month record's row list. */
+.month-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-12);
+  justify-content: space-between;
+  margin-top: var(--spacing-40);
 }
 
 /* --------------------------------------------------------------------------
