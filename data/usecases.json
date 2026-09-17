@@ -1,5 +1,33 @@
 [
   {
+    "id": "blog-openai-agents-api-handoffs-2026-09-10",
+    "title": "Chain specialist agents with typed handoffs using the OpenAI Agents API",
+    "tools": [
+      "ChatGPT",
+      "Codex"
+    ],
+    "category": "integration",
+    "whatItDoes": "The OpenAI Agents API provides a Python and JavaScript SDK that lets you declare specialist agents — each with a role, a tool list, and a typed list of agents it can hand off to — and run them as a structured pipeline without writing any manual state or context-passing code. When one agent decides it has finished its responsibility, the SDK executes the handoff automatically, passing the accumulated context to the next agent in the declared topology. Guardrails can be attached to the entry-point agent to validate or reject inputs before the pipeline starts.",
+    "whatItImproves": "Before the Agents API, multi-agent pipelines required hand-written orchestration: manual prompt chaining, custom state dictionaries, and bespoke handoff logic that broke silently when any step failed or produced unexpected output. After adopting the SDK, each specialist agent is defined and testable in isolation, handoffs are typed objects the framework executes reliably, and a failure surfaces in a named agent's output rather than corrupting the entire pipeline — making debugging and auditing straightforward on complex, multi-step workflows.",
+    "howToTry": "1. Install the SDK: pip install openai-agents (Python) or npm install @openai/agents (JavaScript/TypeScript).\\n2. Define two or three specialist agents, each with a clear role instruction, its own tool list, and a handoffs parameter naming the agents it can pass control to — for example: Agent(name='Triage', instructions='Classify the document section and route it', tools=[classify_tool], handoffs=[gap_agent, summary_agent]).\\n3. Attach an input guardrail to the entry-point agent to validate or reject unsafe or off-topic inputs before the pipeline runs.\\n4. Start a run with Runner.run(triage_agent, 'your task description') — the SDK manages context passing, agent switching, and tool call orchestration automatically.\\n5. Inspect the RunResult object after the run: it records which agents executed, in what order, what each produced, and where handoffs occurred — use this as the auditable trace of the pipeline's reasoning chain.",
+    "sourceUrl": "https://openai.com/index/introducing-the-agents-api",
+    "sourcePlatform": "blog",
+    "author": "OpenAI",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-09-10",
+    "addedDate": "2026-09-17",
+    "audience": [
+      "developers",
+      "qa"
+    ],
+    "relevance": {
+      "dailyImpact": "You can route a batch of validation document sections through a Triage agent that hands off to a gap-analysis agent and a summary agent in a single SDK-managed run, getting structured output from each specialist without writing any orchestration code between steps.",
+      "practicalBenefit": "Typed handoffs and the RunResult trace make the pipeline auditable by design — each specialist agent's input, output, and handoff decision is a named, inspectable object you can reference in GxP validation documentation as evidence of the structured, repeatable AI-assisted review step applied to a pharma client deliverable.",
+      "whyRelevant": "When you build multi-step document review or data extraction pipelines for a pharma client, the Agents API lets you define each review step as a named, independently testable specialist agent rather than a single monolithic prompt that fails opaquely when one step goes wrong."
+    }
+  },
+  {
     "id": "youtube-skills-over-agents-anthropic-2025-12-10",
     "title": "Build skills, not agents — decompose AI capabilities into testable, reusable components",
     "tools": [
