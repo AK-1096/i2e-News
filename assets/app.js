@@ -66,6 +66,91 @@ function loadUsecases() {
     });
 }
 
+// --- Archive (news + i2e AI Guide, 30+ days old) -----------------------------
+// The archive merges both collections into one newest-first list and keeps
+// only what has aged out of "recent" (see isArchived / ARCHIVE_AFTER_DAYS,
+// defined further down). Rejects if either fetch fails, same as the two above.
+function loadArchive() {
+  return Promise.all([loadArticles(), loadUsecases()]).then(function (results) {
+    var articles = results[0];
+    var usecases = results[1];
+    // Neither data contract has a `kind` field, so stamping one directly onto
+    // the freshly-parsed objects is safe — nothing else owns or reads these.
+    articles.forEach(function (a) { a.kind = 'article'; });
+    usecases.forEach(function (u) { u.kind = 'usecase'; });
+    var merged = articles.concat(usecases).filter(function (it) {
+      return isArchived(it.addedDate);
+    });
+    return sortByAddedDate(merged);
+  });
+}
+
+// --- Archive months -----------------------------------------------------------
+// Groups archived items by calendar month for the two-screen archive UI (a
+// month-index picker, then a per-month record — see archive.html). Everything
+// here is derived from the data by monthsFrom(); nothing is hard-coded, which
+// is what lets a new month appear on its own the moment its first item crosses
+// the 30-day line in isArchived().
+
+// 'YYYY-MM-DD' -> 'YYYY-MM'. '' for a date Date.parse can't read, so an
+// undated item is skipped by monthsFrom() rather than grouped under a fake key.
+function monthKey(addedDate) {
+  var t = Date.parse(addedDate);
+  if (isNaN(t)) return '';
+  return String(addedDate).slice(0, 7);
+}
+
+// 'YYYY-MM' -> 'August 2026'. Built from a UTC date and read back out pinned to
+// UTC, so a reader west of Greenwich never sees the label slip a month the way
+// a plain `new Date('2026-08-01')` (parsed as UTC midnight, formatted in local
+// time) can. '' for a key that doesn't parse to a real year/month.
+function monthLabel(key) {
+  var parts = String(key).split('-');
+  var year = parseInt(parts[0], 10);
+  var month = parseInt(parts[1], 10) - 1;
+  if (!isFinite(year) || !isFinite(month)) return '';
+  return new Date(Date.UTC(year, month, 1))
+    .toLocaleDateString(undefined, { month: 'long', year: 'numeric', timeZone: 'UTC' });
+}
+
+// Newest-first array of { key, label, year, total, articles, usecases, newest }
+// — one entry per calendar month present in `items`, `newest` being that
+// month's own first (newest) item. Items with an invalid addedDate (monthKey()
+// returns '') are skipped. `items` need not already be sorted: each month's
+// newest is decided here by comparing addedDate strings directly, which works
+// because the contract's dates are plain YYYY-MM-DD.
+function monthsFrom(items) {
+  var map = {};
+  var keys = [];
+  for (var i = 0; i < items.length; i++) {
+    var it = items[i];
+    var key = monthKey(it.addedDate);
+    if (!key) continue;
+    if (!map[key]) {
+      map[key] = { key: key, total: 0, articles: 0, usecases: 0, newest: null };
+      keys.push(key);
+    }
+    var g = map[key];
+    g.total++;
+    if (it.kind === 'article') g.articles++;
+    else if (it.kind === 'usecase') g.usecases++;
+    if (g.newest === null || it.addedDate > g.newest.addedDate) g.newest = it;
+  }
+  keys.sort(function (a, b) { return a < b ? 1 : (a > b ? -1 : 0); });
+  return keys.map(function (key) {
+    var g = map[key];
+    return {
+      key: key,
+      label: monthLabel(key),
+      year: parseInt(key.slice(0, 4), 10),
+      total: g.total,
+      articles: g.articles,
+      usecases: g.usecases,
+      newest: g.newest
+    };
+  });
+}
+
 // --- Role filter (shared by archive.html, playbook.html, future landing) ----
 // Items carry an `audience` array of role slugs. The filter is single-select
 // and per-visit (no storage, no URL state) — it resets on reload.
@@ -222,6 +307,22 @@ function isRecent(addedDate) {
   return (todayUtc - t) / 86400000 < RECENT_DAYS;
 }
 
+var ARCHIVE_AFTER_DAYS = 30;
+
+// The complement of "recent": true once `addedDate` (YYYY-MM-DD) is at least
+// ARCHIVE_AFTER_DAYS whole days old — the cutoff is "today minus 30 days", not
+// a rolling window off RECENT_DAYS, so the two ideas can move independently.
+// Same UTC-midnight pinning as isRecent, for the same reason: whole days,
+// no timezone flicker. An invalid/unparseable date returns false, so an
+// undated item never reaches the archive.
+function isArchived(addedDate) {
+  var t = Date.parse(addedDate);
+  if (isNaN(t)) return false;
+  var now = new Date();
+  var todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  return (todayUtc - t) / 86400000 >= ARCHIVE_AFTER_DAYS;
+}
+
 // The subject tag's text, or '' when the item has no real subject — blank, or
 // the "Latest" placeholder described above.
 function subjectLabel(s) {
@@ -233,8 +334,16 @@ function subjectLabel(s) {
 // The tag row for one item, wrapped in `cls` (each surface has its own spacing
 // class). Returns '' when the item has neither tag, so callers drop the line
 // entirely rather than printing an empty one.
-function renderTags(cls, addedDate, subject) {
+//
+// `kind` (optional) is set by the archive, where articles and use-cases are
+// merged into one list and a reader otherwise has no way to tell them apart
+// at a glance. It renders a leading kind chip — News (cream, outlined) or
+// AI Guide (cornflower) — ahead of the Latest/subject chips. Omitted, the
+// output is byte-for-byte what it was before this option existed.
+function renderTags(cls, addedDate, subject, kind) {
   var tags = '';
+  if (kind === 'article') tags += '<span class="chip chip--kind chip--news">News</span>';
+  else if (kind === 'usecase') tags += '<span class="chip chip--kind chip--guide">AI Guide</span>';
   if (isRecent(addedDate)) tags += '<span class="chip chip--latest">Latest</span>';
   var subj = subjectLabel(subject);
   if (subj) tags += '<span class="chip">' + escapeHtml(subj) + '</span>';
@@ -264,7 +373,14 @@ function rowStatsSlot() {
 // Render one use-case as an editorial list row (reuses the .row component).
 // Category leads as the chip; the meta line carries platform, the ALerts
 // publish date and tools.
-function renderUsecaseItem(u) {
+//
+// `opts.kindLabel` (optional) is set by the archive, where articles and
+// use-cases are merged into one list and a reader otherwise has no way to
+// tell them apart at a glance. It adds the "AI Guide" kind chip ahead of the
+// category chip (see renderTags()) rather than touching the meta line.
+// Omitted, the output is byte-for-byte what it was before this option
+// existed — playbook.html's own list must not change.
+function renderUsecaseItem(u, opts) {
   var href = 'usecase.html?id=' + encodeURIComponent(u.id);
   var tools = Array.isArray(u.tools) ? u.tools.join(' · ') : '';
   var meta = escapeHtml(platformLabel(u.sourcePlatform)) + ' &middot; ' + formatDate(u.addedDate);
@@ -272,7 +388,7 @@ function renderUsecaseItem(u) {
   var aud = audienceMeta(u.audience);
   if (aud) meta += ' &middot; ' + escapeHtml(aud);
   return '<article class="row" data-kind="usecase" data-id="' + escapeHtml(u.id) + '">' +
-    renderTags('row__chip', u.addedDate, u.category) +
+    renderTags('row__chip', u.addedDate, u.category, opts && opts.kindLabel ? 'usecase' : undefined) +
     '<h2 class="row__headline"><a href="' + href + '">' + escapeHtml(u.title) + '</a></h2>' +
     '<p class="row__meta caption">' + meta + '</p>' +
     '<p class="row__summary">' + escapeHtml(u.whatItDoes) + '</p>' +
@@ -283,18 +399,29 @@ function renderUsecaseItem(u) {
 // Render one article as an editorial list row. The headline is the single real
 // link (one tab stop per row); a stretched ::after overlay makes the whole row
 // a click target. Every injected field is escaped; the id is URL-encoded.
-function renderListItem(a) {
+//
+// `opts.kindLabel` (optional) — see renderUsecaseItem() above. Adds the "News"
+// kind chip ahead of the topic chip; omitted, output is unchanged from before.
+function renderListItem(a, opts) {
   var href = 'article.html?id=' + encodeURIComponent(a.id);
   var meta = escapeHtml(a.source) + ' &middot; ' + formatDate(a.addedDate);
   var aud = audienceMeta(a.audience);
   if (aud) meta += ' &middot; ' + escapeHtml(aud);
   return '<article class="row" data-kind="article" data-id="' + escapeHtml(a.id) + '">' +
-    renderTags('row__chip', a.addedDate, a.topic) +
+    renderTags('row__chip', a.addedDate, a.topic, opts && opts.kindLabel ? 'article' : undefined) +
     '<h2 class="row__headline"><a href="' + href + '">' + escapeHtml(a.title) + '</a></h2>' +
     '<p class="row__meta caption">' + meta + '</p>' +
     '<p class="row__summary">' + escapeHtml(a.summary) + '</p>' +
     rowStatsSlot() +
     '</article>';
+}
+
+// Render one archive row, dispatching on the `kind` loadArchive() stamped onto
+// the item. Both branches pass kindLabel so renderTags() prints the News / AI
+// Guide kind chip and a merged list can tell the two apart at a glance.
+function renderArchiveItem(it) {
+  if (it.kind === 'usecase') return renderUsecaseItem(it, { kindLabel: true });
+  return renderListItem(it, { kindLabel: true });
 }
 
 // --- Upvotes (detail pages only) --------------------------------------------
