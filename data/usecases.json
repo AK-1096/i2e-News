@@ -1,5 +1,33 @@
 [
   {
+    "id": "blog-claude-code-explore-plan-code-checkpoints-2026-09-17",
+    "title": "Run Claude Code with an explore-first, checkpoint-guarded loop to prevent agentic drift",
+    "tools": [
+      "Claude Code",
+      "GitHub Copilot"
+    ],
+    "category": "workflow",
+    "whatItDoes": "The explore → plan → code three-phase Claude Code workflow instructs the agent to read and understand the codebase before proposing any changes, then produce an explicit written plan for your review, then implement — all while taking automatic git-based checkpoints before any risky multi-file operation. A CLAUDE.md file at the repo root or directory level encodes architectural decisions, standing constraints, and naming conventions that the agent applies consistently across every session without re-briefing. The pattern was distilled from a YC founder walkthrough on the Y Combinator Full Stack series and validated against real production codebases.",
+    "whatItImproves": "Without this structure, Claude Code starts editing files immediately from a vague brief, accumulates errors across a context window that degrades as it fills, and can confidently refactor service boundaries in ways that pass all tests but silently break integration contracts — leaving you debugging a problem you did not create. After adding the explore-first phase, a human-approved plan gate, and automatic git checkpoints, the agent understands the system before touching it, every change has an explicit justification you reviewed in advance, and a one-click undo is always available if a run goes wrong.",
+    "howToTry": "1. Create a CLAUDE.md at the repo root and encode hard-won architectural decisions and standing constraints — for example: 'We use eventual consistency for user preferences; never add a microservice without updating /docs/architecture.md' — so the agent applies them from the first message of every session without you re-stating them.\n2. Before any task, start your Claude Code prompt with: 'Explore the relevant parts of the codebase first, then produce a written plan listing exactly which files will change and why. Do not modify any files until I approve the plan.'\n3. Read the plan Claude returns and verify the scope, the files listed, and the proposed approach match your intent before typing 'proceed' — this gate is where scope drift and wrong-file edits are caught at zero cost.\n4. Let Claude Code execute; it takes automatic git checkpoints before risky multi-file operations — use one-click undo in the Checkpoints panel if a run produces unexpected changes or breaks something you did not anticipate.\n5. After each significant unit of work, prompt: 'Write a structured overview of what changed, what problem it solved, and what architectural decisions were made, then commit it to the repo' — this creates a persistent context artifact future sessions can pick up directly.",
+    "sourceUrl": "https://www.kunalganglani.com/blog/ai-coding-workflow-2026",
+    "sourcePlatform": "blog",
+    "author": "Kunal Ganglani",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-06-05",
+    "addedDate": "2026-09-24",
+    "audience": [
+      "developers",
+      "qa"
+    ],
+    "relevance": {
+      "dailyImpact": "You can give Claude Code a task and review a concrete plan — listing exactly which files will change and why — before a single line is modified, so every agentic coding session on a GxP-relevant codebase begins with a human-approved change specification rather than optimistic guessing.",
+      "practicalBenefit": "Git-based checkpoints before every risky operation and a structured post-task overview committed to the repo give you a one-click rollback path and a documented change record for each agent session — two artifacts that directly support the traceability requirements of GxP validation documentation on pharma client software.",
+      "whyRelevant": "When you build or maintain validated software for a pharma client using Claude Code, starting an agent session without an explicit explore-and-plan phase is the most common reason the agent touches the wrong files and breaks integration contracts that were not visible from the task description alone."
+    }
+  },
+  {
     "id": "blog-openai-agents-api-handoffs-2026-09-10",
     "title": "Chain specialist agents with typed handoffs using the OpenAI Agents API",
     "tools": [
