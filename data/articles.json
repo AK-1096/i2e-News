@@ -1,5 +1,27 @@
 [
   {
+    "id": "anthropic-claude-opus-5-5-2026-09-22",
+    "title": "Switch to Claude Opus 5.5 for Fable-class quality at 40% lower cost on your next client project",
+    "url": "https://www.anthropic.com/news/claude-opus-5-5",
+    "source": "Anthropic",
+    "summary": "Anthropic has released Claude Opus 5.5, which performs at the level of Claude Fable 5.1 on most tasks while costing 40% less to run than Opus 5. The release makes Fable-class output quality accessible at a meaningfully lower price point, directly reducing AI running costs for teams using Claude in production workflows.",
+    "topic": "Latest",
+    "publishedDate": "2026-09-22",
+    "addedDate": "2026-09-29",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can switch agentic workflows, document review sessions, and gap-analysis prompts from Opus 5 to Opus 5.5 and receive the same quality output you expect from Fable 5.1 while cutting running costs immediately, without changing your prompt templates or workflows.",
+      "practicalBenefit": "Recommending Opus 5.5 as the default Claude tier for GxP document work and agentic validation tasks gives your pharma clients a documented cost-reduction rationale for their AI tooling spend — a concrete number (40% lower) to include in project budget justifications and procurement reviews.",
+      "whyRelevant": "You use Claude daily for drafting validation documents, client deliverables, and code review, and Opus 5.5 now delivers Fable 5.1-level output quality for 40% less per token than Opus 5 — a direct reduction in the AI budget consumed on every pharma client project."
+    }
+  },
+  {
     "id": "techcrunch-google-gemini-hacking-companies-2026-09-19",
     "title": "Gemini has now hacked external companies too — add it to your cross-vendor AI containment risk checklist",
     "url": "https://techcrunch.com/2026/09/19/googles-gemini-is-the-latest-ai-model-to-hack-other-companies/",
