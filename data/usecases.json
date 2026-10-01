@@ -1,5 +1,32 @@
 [
   {
+    "id": "youtube-aieng-trim-claude-md-fable-2026-08-01",
+    "title": "Cut your CLAUDE.md by 80% — fewer instructions get better results from Fable-class models",
+    "tools": [
+      "Claude Code"
+    ],
+    "category": "workflow",
+    "whatItDoes": "When Claude Code upgraded to Fable-class models, Anthropic's own engineering team found that heavy, prescriptive CLAUDE.md files were actively suppressing output quality. Fable is more capable and creative than the instructions written for earlier models, so detailed procedural directives become a ceiling rather than a floor. Trimming CLAUDE.md to essential constraints only — hard architectural rules, naming conventions, tool preferences, restricted modules — and removing step-by-step procedural how-to sections lets Fable exercise its improved judgment on every task. Anthropic's team also observed the ask-user-question tool leap from barely functional under Opus 4 to generating embedded HTML questionnaires under Fable once the heavy system prompt was removed.",
+    "whatItImproves": "A CLAUDE.md packed with procedural instructions written for an earlier model produces compliant but mediocre outputs — the agent follows your outdated procedure faithfully instead of finding the best approach available to a more capable model. After trimming to constraint-only content, Fable routes around the missing procedures and discovers better implementation paths, with Anthropic's Claude Code team reporting a measurable step-change in output quality after cutting 80% of their own internal CLAUDE.md.",
+    "howToTry": "1. Open your existing CLAUDE.md and label every line as one of three types: hard architectural constraint (keep), style or naming rule (keep if genuinely important), or a procedural instruction telling the agent how to do something (candidate for deletion).\n2. Remove all procedural how-to steps and replace them with outcome statements — write 'ensure all existing tests pass before committing' rather than a numbered testing procedure the agent should follow.\n3. Keep only hard rules the model must never violate: framework version, restricted modules, GxP-traceable comment format, naming conventions, and any compliance boundary the project requires.\n4. Run a representative task you previously ran with the heavier file and compare output quality, approach creativity, and autonomy — Fable will often find a better solution path than the procedure you had specified.\n5. If Fable makes a mistake not covered by a hard rule, add that specific constraint rather than restoring procedural steps; keep the file lean and constraint-based rather than instructional, and re-test after each addition.",
+    "sourceUrl": "https://www.youtube.com/watch?v=9fubhllmsBU",
+    "sourcePlatform": "youtube",
+    "author": "Thariq Shihipar (Anthropic)",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-08-01",
+    "addedDate": "2026-10-01",
+    "audience": [
+      "developers",
+      "qa"
+    ],
+    "relevance": {
+      "dailyImpact": "You can audit your project CLAUDE.md today — removing procedural how-to steps and keeping only hard constraints — and immediately receive higher-quality, more autonomous outputs on the same coding and refactoring tasks your team already runs on pharma client repositories.",
+      "practicalBenefit": "A leaner CLAUDE.md that encodes constraints rather than procedures gives every developer on a pharma client engagement the same quality floor from Fable without restricting the model's ability to find better implementation paths than your written procedure anticipated, reducing the rework rounds that follow a procedure-constrained first draft.",
+      "whyRelevant": "When your team uses Claude Code on GxP validation software, a CLAUDE.md written for earlier models actively suppresses Fable's superior judgment, producing outputs that follow your old procedure rather than finding the safest, most correct approach for the codebase under review."
+    }
+  },
+  {
     "id": "blog-claude-code-explore-plan-code-checkpoints-2026-09-17",
     "title": "Run Claude Code with an explore-first, checkpoint-guarded loop to prevent agentic drift",
     "tools": [
