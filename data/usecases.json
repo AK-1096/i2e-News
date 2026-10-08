@@ -1,5 +1,35 @@
 [
   {
+    "id": "blog-n8n-make-ai-prompt-chain-automation-2026-06-03",
+    "title": "Automate a recurring AI task with no code — chain your prompt into an event-triggered workflow in Make or Zapier",
+    "tools": [
+      "ChatGPT",
+      "Claude",
+      "M365 Copilot"
+    ],
+    "category": "automation",
+    "whatItDoes": "Instead of manually triggering the same AI prompt every time a recurring input arrives, you connect your AI tool to a no-code automation platform — Make, Zapier, or n8n — so that a predictable event such as a new Outlook email, a SharePoint file upload, or a daily schedule automatically sends the relevant data through your refined prompt and routes the AI output to a destination such as a Teams channel, Excel row, or Planner task. The automation runs end-to-end without manual input after the initial setup, turning a one-off prompt into a continuously running processing step.",
+    "whatItImproves": "Before connecting an AI tool to an automation platform, the same prompt must be triggered by hand on every matching input — opening an email, pasting content into a chat window, copying the response, and routing it somewhere useful. After the event-triggered chain is active, the full cycle runs automatically on every trigger, removing the manual steps entirely and ensuring the AI output arrives at the right destination at the same quality on every run, regardless of who is available to do it.",
+    "howToTry": "1. Pick a recurring task that starts with a predictable event — a new email from a client, a SharePoint document upload, a daily calendar trigger, or a new row in an Excel table — and write down the AI prompt you would run on that input, including any variable parts (e.g., the email body or file name) that change each time.\\n2. Open Make (make.com) or Zapier and create a new scenario or zap; choose the trigger app and event that matches your input (e.g., Microsoft Outlook > New email matching a filter, or OneDrive > New file in folder).\\n3. Add an AI action step: in Make, use the OpenAI or Anthropic HTTP module; in Zapier, select the ChatGPT or Claude action. Paste your prompt in the message field and insert dynamic tokens from the trigger step — such as the email subject, body, or file content — as the variable input so each run uses real data.\\n4. Add a final action step that routes the AI output to its destination: insert a row in an Excel table, post a message to a Teams channel, send an Outlook reply, or create a Planner task — all using the AI response as the content.\\n5. Click Test in Make or Zapier to run the scenario once on a real sample trigger, verify the output is correctly formatted and routed, then activate the scenario so it runs automatically on every future matching event without any manual step.",
+    "sourceUrl": "https://www.techwithsanjay.in/2026/06/prompt-engineering-ai-workflow-automation-guide.html",
+    "sourcePlatform": "blog",
+    "author": "Sanjay",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2026-06-03",
+    "addedDate": "2026-10-08",
+    "audience": [
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can configure Make to watch your Outlook inbox for new validation-query emails from a pharma client, pass each one through your Claude or ChatGPT summary prompt, and post the structured result to your project Teams channel — so every query is triaged and summarised before you open it, with no copy-paste work required.",
+      "practicalBenefit": "An event-triggered AI prompt chain produces a consistent, formatted output on every matching input without human intervention, giving your team a lightweight, repeatable processing step for recurring document intake or communication routing that runs at the same quality on every trigger and creates an auditable log of inputs and AI outputs across the engagement.",
+      "whyRelevant": "When you run the same AI prompt on a recurring input — summarising daily project emails, classifying incoming client queries, or drafting a status update from a tracker file — connecting that prompt to an event-triggered automation in Make or Zapier removes the manual trigger from every cycle, so the output arrives automatically at the right place without you opening a chat window each time."
+    }
+  },
+  {
     "id": "youtube-aieng-trim-claude-md-fable-2026-08-01",
     "title": "Cut your CLAUDE.md by 80% — fewer instructions get better results from Fable-class models",
     "tools": [
