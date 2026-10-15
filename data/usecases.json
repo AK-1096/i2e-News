@@ -1,5 +1,32 @@
 [
   {
+    "id": "blog-anthropic-batch-api-document-processing-2024-09-24",
+    "title": "Queue overnight document batches with Anthropic's Batch API — 50% cheaper, no rate-limit waits",
+    "tools": [
+      "Claude"
+    ],
+    "category": "workflow",
+    "whatItDoes": "The Anthropic Messages Batches API lets you submit up to 10,000 Claude prompts in a single API call and retrieve the results when processing completes — typically within one hour and at most 24 hours. Batches are processed asynchronously at 50% of the standard per-token price, with separate higher rate limits that do not count against your synchronous call quota. Each request in the batch is fully independent and receives its own complete Claude response, making the API suited to any workload where individual requests do not depend on each other's output.",
+    "whatItImproves": "Without the Batches API, processing hundreds of documents through Claude requires sequential or carefully rate-limited synchronous calls, with cost and throughput both constrained by your live API tier. After switching to batch submission, the same queue of documents is submitted in one call, processed in parallel overnight at half the cost, and returned as a downloadable results file — eliminating both the rate-limit management overhead and the continuous monitoring required for large sequential runs.",
+    "howToTry": "1. Install the Anthropic SDK: pip install anthropic (Python) or npm install @anthropic-ai/sdk (JavaScript), and ensure your API key is set in the environment.\n2. Build a list of request objects — each with a unique custom_id string, model name, max_tokens, and messages array — one per document or task; for example, one structured-summary prompt per SOP section you want processed.\n3. Submit the batch: batch = client.beta.messages.batches.create(requests=[...]) and save the returned batch.id for retrieval.\n4. Check status by polling client.beta.messages.batches.retrieve(batch_id) until processing_status is 'ended', or supply a webhook_url in the create call to receive a completion notification without polling.\n5. Stream results with for result in client.beta.messages.batches.results(batch_id) — each result includes the custom_id you supplied and the full Claude response, giving you a direct mapping from source document to AI output for logging and audit purposes.",
+    "sourceUrl": "https://www.anthropic.com/news/message-batches-api",
+    "sourcePlatform": "blog",
+    "author": "Anthropic",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2024-09-24",
+    "addedDate": "2026-10-15",
+    "audience": [
+      "developers",
+      "qa"
+    ],
+    "relevance": {
+      "dailyImpact": "You can submit a batch of 200 SOP section summaries before leaving work, retrieve the structured results the next morning, and eliminate the manual pacing and rate-limit management that slows sequential document processing on active client projects.",
+      "practicalBenefit": "Each batch result carries the custom_id you supplied at submission, giving you a one-to-one mapping between source documents and AI outputs that you can include in a GxP processing log as auditable evidence of which prompt version was applied to which document and when.",
+      "whyRelevant": "When you run Claude across a large set of validation documents, SOPs, or test scripts for a pharma client, the Batches API processes the entire queue at half the standard API cost — directly reducing AI tooling spend on high-volume document review engagements without changing the prompt or output quality."
+    }
+  },
+  {
     "id": "blog-n8n-make-ai-prompt-chain-automation-2026-06-03",
     "title": "Automate a recurring AI task with no code — chain your prompt into an event-triggered workflow in Make or Zapier",
     "tools": [
