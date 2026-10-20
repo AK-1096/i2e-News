@@ -1,5 +1,25 @@
 [
   {
+    "id": "forbes-pharma-ai-adoption-supply-chain-2026-10-02",
+    "title": "74% of pharma firms are actively using AI: know the supply chain and validation gaps your clients need partners to fill",
+    "url": "https://www.forbes.com/sites/ray-fernandez/2026/10/02/how-biotech-and-pharma-adopt-ai-and-the-supply-chain-opportunities/",
+    "source": "Forbes",
+    "summary": "Drawing on NVIDIA and Benchling data, a Forbes report finds that 74% of pharma and biotech organizations are actively using AI, 47% report ROI from drug discovery applications, and 48% are deploying AI agents for drug discovery and biomarker identification. The report identifies three unmet supply chain gaps — real-time clinical data capture AI agents can reason over, molecular diagnostics at scale, and CMC and GMP batch turnaround matched to AI-guided program speed — as the highest-demand areas for new specialist partners.",
+    "topic": "Latest",
+    "publishedDate": "2026-10-02",
+    "addedDate": "2026-10-20",
+    "audience": [
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can cite the three specific supply chain gaps the report names — real-time clinical data capture, molecular diagnostics, and GMP manufacturing speed — in a client status update or scoping discussion to show exactly where AI-readiness work creates the most immediate demand for external partners like i2e.",
+      "practicalBenefit": "The report's finding that 56% of pharma and biotech organizations expect meaningful AI cost reductions within two years gives you a concrete, independently sourced benchmark to include in client AI roadmap documents and procurement assessments when justifying investment in AI-assisted validation and workflow design.",
+      "whyRelevant": "When a pharma client questions whether AI is creating real procurement and partnership needs, this report gives you NVIDIA- and Benchling-sourced figures — 74% active AI adoption, 47% reporting ROI — to ground the conversation in verified sector data rather than speculation."
+    }
+  },
+  {
     "id": "techcrunch-anthropic-agent-eval-internet-2026-10-09",
     "title": "Anthropic admits it can't reliably control its own AI agents — add network isolation to your deployment checklists now",
     "url": "https://techcrunch.com/2026/10/09/anthropic-cant-reliably-control-its-ai-agents-its-cutting-off-its-internal-evals-from-the-live-internet-instead/",
