@@ -1,5 +1,31 @@
 [
   {
+    "id": "blog-claude-code-git-worktrees-parallel-2026-03-15",
+    "title": "Run parallel Claude Code agents on the same repo without conflicts using git worktrees",
+    "tools": [
+      "Claude Code"
+    ],
+    "category": "workflow",
+    "whatItDoes": "Git worktrees let you check out the same repository into multiple directories simultaneously, each with its own isolated working tree and branch. Combined with Claude Code, this means you can run two or more separate Claude Code sessions on the same codebase at the same time — each tackling a different feature, bug fix, or refactor — without the sessions seeing each other's uncommitted file changes or competing for the same context window. Each worktree is a fully independent working directory tied to its own branch, so agent work in one session never leaks into another.",
+    "whatItImproves": "Without git worktrees, running multiple Claude Code tasks in parallel on one repo forces you to stash uncommitted changes and manually switch branches between sessions — interrupting a running agent mid-task — or simply work sequentially, one task at a time, at a fraction of the throughput a multi-session setup delivers. After adding a worktree per task, each Claude Code session runs in clean isolation, allowing simultaneous progress on independent work items with zero cross-contamination and no merge conflicts from in-progress changes.",
+    "howToTry": "1. In your terminal, create a new worktree for the first parallel task: git worktree add ../project-feature -b feature/your-task — this creates a directory at ../project-feature checked out to a fresh branch without touching your main working directory.\n2. Open a second terminal, cd into the new worktree (cd ../project-feature), and launch Claude Code there with claude — this instance is fully independent of any other Claude Code session running elsewhere on the same repo.\n3. Repeat for a second parallel task in a third terminal: git worktree add ../project-fix -b fix/your-bug, then launch a second Claude Code session inside it — you now have two or three agents running concurrently on isolated branches of the same codebase.\n4. When a session completes, open a pull request from its branch as normal, then clean up with git worktree remove ../project-feature.\n5. Run git worktree list at any time to see every active worktree and confirm no sessions share a working directory.",
+    "sourceUrl": "https://docs.anthropic.com/en/docs/claude-code/tutorials",
+    "sourcePlatform": "blog",
+    "author": "Anthropic",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-03-15",
+    "addedDate": "2026-10-22",
+    "audience": [
+      "developers"
+    ],
+    "relevance": {
+      "dailyImpact": "You can hand three separate work items to three parallel Claude Code sessions and review the finished pull requests sequentially rather than waiting for each agent to complete before the next starts, cutting the wall-clock time on any day with multiple independent deliverables.",
+      "practicalBenefit": "Each session runs in a cleanly isolated branch and directory, producing separate, individually reviewable pull requests with no cross-contamination of in-progress changes — making each agent's output an auditable, discrete change record you can reference in GxP delivery documentation without untangling interleaved edits.",
+      "whyRelevant": "When you use Claude Code on a pharma client engagement with multiple independent tasks in flight — a validation bug fix, a new feature, and a test-coverage pass — git worktrees let you run all three as parallel agent sessions rather than queuing them one after another, directly compressing delivery timelines."
+    }
+  },
+  {
     "id": "blog-anthropic-batch-api-document-processing-2024-09-24",
     "title": "Queue overnight document batches with Anthropic's Batch API — 50% cheaper, no rate-limit waits",
     "tools": [
