@@ -1,5 +1,27 @@
 [
   {
+    "id": "techcrunch-openai-no-live-internet-training-2026-10-23",
+    "title": "OpenAI stops training on live internet data — add this vendor commitment to your pharma AI governance documentation now",
+    "url": "https://techcrunch.com/2026/10/23/openai-says-it-will-no-longer-train-its-ai-models-on-the-live-internet-citing-significant-risks/",
+    "source": "TechCrunch",
+    "summary": "OpenAI has announced it will no longer train its AI models on live internet data, citing significant risks associated with the practice. The decision marks a concrete, vendor-published policy shift that directly affects how enterprises and regulated-industry clients should document AI training data boundaries in their AI governance and procurement frameworks.",
+    "topic": "Latest",
+    "publishedDate": "2026-10-23",
+    "addedDate": "2026-10-27",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can update client-facing AI tool assessments, validation plans, and vendor risk sections to cite OpenAI's live internet training cessation as a concrete, vendor-confirmed boundary — reducing the time you spend explaining data exposure risks when justifying ChatGPT or GPT-based tools in GxP-adjacent workflows.",
+      "practicalBenefit": "Including OpenAI's publicly stated training boundary in the vendor risk section of pharma client governance frameworks gives you a first-party, company-published data point that directly supports GxP documentation requirements for AI tool transparency and traceability, and strengthens the defensibility of any AI tool procurement decision that references this vendor.",
+      "whyRelevant": "When a pharma client asks how you ensure that AI models used on their validation documents are not trained on sensitive or live web-scraped data, OpenAI's formal commitment to stop live internet training gives you a named, vendor-sourced policy change to reference directly in your AI governance documentation."
+    }
+  },
+  {
     "id": "forbes-pharma-ai-adoption-supply-chain-2026-10-02",
     "title": "74% of pharma firms are actively using AI: know the supply chain and validation gaps your clients need partners to fill",
     "url": "https://www.forbes.com/sites/ray-fernandez/2026/10/02/how-biotech-and-pharma-adopt-ai-and-the-supply-chain-opportunities/",
