@@ -1,5 +1,34 @@
 [
   {
+    "id": "blog-copilot-teams-meeting-intelligence-2025-11-01",
+    "title": "Capture structured decisions and action items from every Teams meeting using Copilot",
+    "tools": [
+      "M365 Copilot"
+    ],
+    "category": "workflow",
+    "whatItDoes": "Copilot in Microsoft Teams transcribes meetings in real time and generates a structured recap immediately after each call — covering key discussion points, decisions made, action items with owners, and open questions — all accessible in the meeting's Recap tab without any manual note-taking. Copilot also answers follow-up questions about the meeting content, such as 'What did each person commit to?' or 'What were the unresolved items?', drawing only from the transcript rather than general knowledge.",
+    "whatItImproves": "Before enabling Copilot for Teams meetings, a team member must take manual notes and then format and distribute them — a step that typically takes 15–30 minutes per call and produces inconsistent outputs depending on who takes notes. After Copilot is enabled, the structured recap is generated within seconds of the meeting ending with no manual effort, and the transcript remains queryable for any participant who needs to catch up.",
+    "howToTry": "1. In Teams, start or join a meeting, click the More actions (…) menu, and select 'Record and transcribe' > 'Start transcription' — transcription must be active for Copilot to work even without full recording.\n2. During the meeting, click the Copilot icon in the meeting controls to open the Copilot panel and ask real-time questions: 'Summarise what has been discussed so far' or 'What are the open disagreements on the timeline?'\n3. After the meeting ends, open the Recap tab (accessible via the meeting's Teams chat) to review the AI-generated summary covering key points, decisions, action items, and follow-up questions.\n4. Use Copilot's chat within the recap to ask targeted queries: 'List all action items and their owners', 'What was decided about the go-live date?', or 'What questions were left unresolved?'\n5. Copy the structured output into your project tracker or SharePoint notes page, or share the recap link directly so stakeholders can query the meeting themselves without having attended.",
+    "sourceUrl": "https://support.microsoft.com/en-us/office/use-copilot-in-microsoft-teams-meetings-0bf9dd3c-96f7-44e2-8bb8-790bedf066b1",
+    "sourcePlatform": "blog",
+    "author": "Microsoft",
+    "difficulty": "beginner",
+    "curatorVerified": false,
+    "publishedDate": "2025-11-01",
+    "addedDate": "2026-10-29",
+    "audience": [
+      "ba-pc",
+      "pm",
+      "qa",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can review the AI-generated recap immediately after a client call, verify the action items it captured, and share the structured summary to your project SharePoint page in under two minutes — cutting the post-meeting write-up that previously consumed 15–30 minutes.",
+      "practicalBenefit": "A Copilot-generated transcript and structured recap creates a searchable, timestamped record of every decision made in a pharma client meeting, giving you an auditable reference point when scope disputes or requirement clarifications arise later in a GxP validation engagement.",
+      "whyRelevant": "When you run weekly status calls or client review meetings on a pharma engagement, Copilot in Teams generates a structured recap with decisions and action items automatically, eliminating the manual note-taking step that currently falls to one person per call."
+    }
+  },
+  {
     "id": "blog-claude-code-git-worktrees-parallel-2026-03-15",
     "title": "Run parallel Claude Code agents on the same repo without conflicts using git worktrees",
     "tools": [
