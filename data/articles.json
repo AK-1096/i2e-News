@@ -1,5 +1,27 @@
 [
   {
+    "id": "techcrunch-anthropic-rsi-warning-2026-11-02",
+    "title": "Anthropic discloses its AI may soon build itself: add quarterly capability reviews to your AI governance frameworks now",
+    "url": "https://techcrunch.com/2026/11/02/anthropic-warns-that-its-very-close-to-rsi-capability-aka-self-building-ai/",
+    "source": "TechCrunch",
+    "summary": "Anthropic disclosed in its November 2, 2026 S-1/A SEC filing that it may imminently meet its own Responsible Scaling Policy's definition of 'dramatically accelerated progress attributable to AI' — the threshold for recursive self-improvement (RSI). The company reported that more than 90% of contributions to its codebase in September 2026 were written by Claude, and that the value of its internal Claude usage grew more than 250 times between January and September 2026, while affirming no current model has crossed the RSI threshold and that meaningful human supervision will be maintained.",
+    "topic": "Latest",
+    "publishedDate": "2026-11-02",
+    "addedDate": "2026-11-03",
+    "audience": [
+      "developers",
+      "qa",
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "When updating the vendor risk section of a validation plan or briefing a pharma client on their 2027 AI roadmap, you can cite Anthropic's own SEC disclosure — that 90% of its September 2026 code was Claude-written and that dramatically accelerated progress may be imminent — as a primary-source data point for why AI capability timelines cannot be assumed to follow a predictable curve.",
+      "practicalBenefit": "Anthropic's admission that it previously failed to recognize development accelerations until after they occurred gives you a vendor-sourced, SEC-filed justification for requiring quarterly AI capability reviews in client AI governance frameworks, turning a generic future-state assumption into a documented, auditable monitoring requirement for GxP-adjacent pharma engagements.",
+      "whyRelevant": "Anthropic — the vendor behind Claude, the AI tool you use daily for drafting validation documents and client deliverables — has disclosed in a formal SEC filing that its models may imminently reach a level where AI meaningfully accelerates development of more capable AI, directly affecting how quickly the tools your pharma clients depend on will evolve."
+    }
+  },
+  {
     "id": "techcrunch-openai-no-live-internet-training-2026-10-23",
     "title": "OpenAI stops training on live internet data — add this vendor commitment to your pharma AI governance documentation now",
     "url": "https://techcrunch.com/2026/10/23/openai-says-it-will-no-longer-train-its-ai-models-on-the-live-internet-citing-significant-risks/",
