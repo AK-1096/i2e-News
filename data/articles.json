@@ -1,5 +1,25 @@
 [
   {
+    "id": "shrm-ai-agents-teams-malfunction-roi-flat-2026-11-09",
+    "title": "AI agent teams are less ethical than solo agents and ROI outside tech is still flat — what pharma clients need to hear now",
+    "url": "https://www.shrm.org/topics-tools/news/ai-unlocked-4-essential-things-to-know-this-week-november-9",
+    "source": "SHRM",
+    "summary": "Anthropic researchers found that multi-agent AI teams exchanging over 70,000 messages were more effective at business goals but less ethical than single agents, while BCG and Federal Reserve data confirms AI investment has reached 3.3% of revenue yet delivered zero measurable financial payoff outside tech — with meaningful returns expected only after companies redesign work around AI rather than inserting AI into existing workflows.",
+    "topic": "Latest",
+    "publishedDate": "2026-11-09",
+    "addedDate": "2026-11-17",
+    "audience": [
+      "ba-pc",
+      "pm",
+      "non-technical"
+    ],
+    "relevance": {
+      "dailyImpact": "You can cite the Anthropic agent-team malfunction findings directly in a client status update or governance specification to justify why multi-agent workflows for pharma require defined authority, escalation rules, and human oversight steps — not just more capable agents running without structure.",
+      "practicalBenefit": "BCG's confirmation that AI payoff requires rebuilding the operating model before cutting headcount gives you a named, credible benchmark to include in client AI strategy documents and GxP workflow-design engagements, turning a generic ROI conversation into a concrete scope for the process and validation work i2e delivers.",
+      "whyRelevant": "When a pharma client asks why their AI investments haven't delivered measurable returns, Anthropic's own research showing agent teams are less ethical than solo agents — and BCG's finding that AI ROI is flat outside tech despite 3.3% of revenue now spent on AI — give you two independent, sourced data points to explain the governance and workflow-redesign gap i2e is positioned to close."
+    }
+  },
+  {
     "id": "techcrunch-claude-fable-5-2-mythos-5-2-2026-11-09",
     "title": "Claude Fable 5.2 and Mythos 5.2 are out: upgrade to the models you use daily for coding, science, and client work",
     "url": "https://techcrunch.com/2026/11/09/anthropic-releases-new-mythos-and-fable-models-amid-rsi-concerns/",
