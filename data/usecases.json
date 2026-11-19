@@ -1,5 +1,32 @@
 [
   {
+    "id": "blog-openai-codex-cloud-sandbox-2026-11-18",
+    "title": "Queue multiple Codex tasks in isolated cloud sandboxes and review diffs on your own schedule",
+    "tools": [
+      "Codex"
+    ],
+    "category": "workflow",
+    "whatItDoes": "Codex's cloud mode runs each coding task in a fresh, network-disabled container with a pre-cloned copy of your repository, so the agent can read, write, and execute code without touching your local environment. You queue tasks from the web interface or CLI, each runs independently in its own sandbox, and you review the resulting diffs and pull requests asynchronously — no terminal session to babysit. The sandbox isolation means no two tasks can contaminate each other's working state, and the network-off default prevents unintended external calls during execution.",
+    "whatItImproves": "Before cloud Codex, every AI coding session blocked a terminal on your local machine and ran sequentially — starting a second task meant finishing or cancelling the first. With cloud sandboxes, you can queue three or four independent tasks at once, each running in a fully isolated container, and return to review completed diffs on your own schedule rather than watching a progress bar. The shift from synchronous babysitting to async review directly reclaims the time previously lost to waiting between tasks.",
+    "howToTry": "1. Connect your GitHub or GitLab repository in the Codex dashboard at platform.openai.com/codex and confirm it has access to the branch you work from.\n2. Create an AGENTS.md file at the repo root with standing context: coding conventions, test-run commands, restricted files, and any project-specific requirements (such as GxP-traceable comment format or naming rules) that should apply to every task without re-stating them.\n3. Click New Task and describe one self-contained work item — a single bug fix, a test addition, or a documentation update — with explicit acceptance criteria rather than an open-ended instruction, so the sandbox knows when the task is done.\n4. Queue two or three more independent tasks while the first runs; each gets its own fresh container cloned at the current HEAD, so tasks never see each other's uncommitted changes.\n5. Return to the Codex dashboard at your convenience to review completed diffs: inspect the changes, accept or request edits, and open a pull request directly from the interface without touching your local environment.",
+    "sourceUrl": "https://openai.com/index/inside-the-codex-sandbox",
+    "sourcePlatform": "blog",
+    "author": "OpenAI",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-11-18",
+    "addedDate": "2026-11-19",
+    "audience": [
+      "developers",
+      "qa"
+    ],
+    "relevance": {
+      "dailyImpact": "You can queue today's independent coding tasks before a client call and return to finished diffs ready to review, eliminating the context-switching overhead of monitoring a local agent session while simultaneously attending to other project work.",
+      "practicalBenefit": "Each Codex task produces a discrete, reviewable pull request from an isolated, network-disabled container with no cross-contamination between tasks — giving you a clean, individually auditable change record for each work item that directly supports the traceability requirements of GxP validation documentation on pharma client software.",
+      "whyRelevant": "When you have multiple independent tasks on a pharma client project — a bug fix, a test update, and a documentation change — Codex cloud lets you run all three as parallel sandbox agents rather than waiting for each to complete, compressing a half-day of sequential agentic work into a single review session."
+    }
+  },
+  {
     "id": "blog-anthropic-agent-skills-standard-2026-10-27",
     "title": "Build an Agent Skill once and deploy it across 70+ platforms using the open Agent Skills standard",
     "tools": [
