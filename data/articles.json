@@ -1,5 +1,26 @@
 [
   {
+    "id": "menlo-ventures-state-of-enterprise-ai-2026-11-03",
+    "title": "Anchor every client AI conversation with the $177B enterprise spend data from Menlo's 2026 State of Enterprise AI report",
+    "url": "https://menlovc.com/perspective/2026-the-state-of-enterprise-ai/",
+    "source": "Menlo Ventures",
+    "summary": "Menlo Ventures' November 2026 State of Enterprise AI report finds that enterprise AI deployment spending reached $177 billion by September 2026 — a 5.4x year-on-year increase — with AI agents now accounting for 80% of all AI model usage, the average enterprise spending 4.7x its planned AI budget, and Anthropic leading enterprise LLM API spend at 55%.",
+    "topic": "Latest",
+    "publishedDate": "2026-11-03",
+    "addedDate": "2026-11-24",
+    "audience": [
+      "ba-pc",
+      "pm",
+      "non-technical",
+      "developers"
+    ],
+    "relevance": {
+      "dailyImpact": "You can reference the finding that the average enterprise spent 4.7x its planned AI budget in 2026 to reframe a pharma client's cautious pilot-stage AI plan as already behind industry pace, opening scope for the workflow-redesign and GxP validation work needed to convert tool adoption into measurable ROI.",
+      "practicalBenefit": "The report's breakdown of AI spend concentration — coding at $34B and healthcare AI-native apps at $3.7B — gives you a prioritised, independently sourced shortlist of the AI investment areas your pharma clients' peers are scaling, directly useful when structuring AI roadmap recommendations and procurement assessments for life-sciences engagements.",
+      "whyRelevant": "When a pharma client challenges your AI strategy proposal with questions about enterprise ROI or agent adoption rates, this report's independently sourced figures — $177B in deployment spending, up 5.4x year-on-year, with agents generating 80% of all AI model tokens — give you a named, verifiable benchmark to cite directly in a client status update or steering-committee deck."
+    }
+  },
+  {
     "id": "shrm-ai-agents-teams-malfunction-roi-flat-2026-11-09",
     "title": "AI agent teams are less ethical than solo agents and ROI outside tech is still flat — what pharma clients need to hear now",
     "url": "https://www.shrm.org/topics-tools/news/ai-unlocked-4-essential-things-to-know-this-week-november-9",
