@@ -1,5 +1,33 @@
 [
   {
+    "id": "blog-mcp-server-claude-code-integration-2026-04-01",
+    "title": "Connect Claude Code to any database or internal tool in minutes using an MCP server",
+    "tools": [
+      "Claude Code",
+      "Claude"
+    ],
+    "category": "integration",
+    "whatItDoes": "Model Context Protocol (MCP) lets you connect Claude Code and Claude to external data sources — databases, APIs, file systems, SharePoint, and internal tools — by running a small local server that Claude can call as a named tool during a session. Once an MCP server is configured, Claude can query your database, read files from a network share, or fetch records from an internal API without you copy-pasting data into the prompt. Anthropic maintains a growing registry of pre-built MCP servers for common tools including PostgreSQL, GitHub, Google Drive, Slack, and the local filesystem; custom servers can be written in Python or TypeScript in under two hours using a starter template from the official quickstart guide.",
+    "whatItImproves": "Before MCP, feeding live project data into a Claude session meant manually exporting records, copying file contents, or writing one-off API glue for every engagement — a setup cost that accumulated across every session that needed real data. After registering an MCP server in Claude Code's config once, the connection is available in every future session automatically: Claude calls the server as a tool, retrieves exactly the data it needs, and processes it in context, eliminating the manual data-preparation step entirely and turning a recurring setup tax into a one-time configuration artifact.",
+    "howToTry": "1. Browse the official MCP server registry at modelcontextprotocol.io/servers and identify a pre-built server that matches your data source — options include servers for the local filesystem, PostgreSQL, SQLite, GitHub, Google Drive, Slack, and many more; note the install command for the one you want.\n2. Run the server locally with a single npx or pip command — for example, npx @modelcontextprotocol/server-filesystem /path/to/project starts a filesystem server that lets Claude read and write files in that directory; most pre-built servers require only a path or API key as a parameter.\n3. Register the server in Claude Code's configuration file (claude_desktop_config.json or the equivalent claude_code_config.json): add an mcpServers entry with the server name, the launch command, and any required arguments — Claude Code loads it immediately on the next session start.\n4. Open a Claude Code session, type /mcp to list active servers and confirm the connection is live, then reference it naturally in a prompt: 'Using the filesystem server, read validation_plan.md and list all open action items with their owners.'\n5. For a custom internal tool or proprietary database, copy a starter template from modelcontextprotocol.io/quickstart/server, replace the sample tool definitions with your own SQL queries or API calls, run it locally, and register it the same way — the resulting server file is a version-controllable artifact you can share across the team so every developer gets the same live-data access in their Claude Code sessions.",
+    "sourceUrl": "https://modelcontextprotocol.io/quickstart/server",
+    "sourcePlatform": "blog",
+    "author": "Anthropic / MCP Community",
+    "difficulty": "intermediate",
+    "curatorVerified": false,
+    "publishedDate": "2026-04-01",
+    "addedDate": "2026-11-26",
+    "audience": [
+      "developers",
+      "qa"
+    ],
+    "relevance": {
+      "dailyImpact": "You can connect Claude Code to a client's validation database or SharePoint site once, then reference live records in every session without exporting or copy-pasting, cutting the data-preparation overhead from every document review, gap-analysis, and status update task on that engagement.",
+      "practicalBenefit": "An MCP server registered for a pharma client's internal tools produces a named, version-controlled integration file you can include in the project's technical documentation as evidence of the repeatable, auditable data-access mechanism applied throughout the AI-assisted delivery.",
+      "whyRelevant": "When you work on a pharma client project that uses internal databases, SharePoint document stores, or proprietary APIs, an MCP server turns those live data sources into tools Claude can query directly — removing the manual data-extraction step that currently precedes every AI-assisted analysis or document review session."
+    }
+  },
+  {
     "id": "blog-openai-codex-cloud-sandbox-2026-11-18",
     "title": "Queue multiple Codex tasks in isolated cloud sandboxes and review diffs on your own schedule",
     "tools": [
